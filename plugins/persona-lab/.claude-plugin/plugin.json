@@ -3,7 +3,8 @@
   "version": "0.3.0",
   "description": "Task-specific AI persona panels plus a recallable global persona library. CLI + Claude Code/Codex plugin.",
   "author": {
-    "name": "Tyrone Ross"
+    "name": "Tyrone Ross",
+    "url": "https://github.com/tyroneross"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -13,5 +14,7 @@
     "product",
     "research",
     "evaluation"
-  ]
+  ],
+  "repository": "https://github.com/tyroneross/ai-user-personas",
+  "homepage": "https://github.com/tyroneross/ai-user-personas"
 }

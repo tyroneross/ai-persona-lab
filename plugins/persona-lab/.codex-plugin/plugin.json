@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Launch task-specific AI persona panels for UI, product, and workflow review.",
   "author": {
-    "name": "Tyrone Ross"
+    "name": "Tyrone Ross",
+    "url": "https://github.com/tyroneross"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -28,5 +29,7 @@
       "Web"
     ],
     "defaultPrompt": "Run a persona panel for this request. Select task-specific perspectives, verify execution access, define measurements, launch the review, and report findings."
-  }
+  },
+  "repository": "https://github.com/tyroneross/ai-user-personas",
+  "homepage": "https://github.com/tyroneross/ai-user-personas"
 }
