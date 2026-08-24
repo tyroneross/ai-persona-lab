@@ -26,6 +26,9 @@ import {
   listRosters, getRoster, saveRoster, removeRoster,
 } from "../lib/library.mjs";
 import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversarial } from "../lib/roles.mjs";
+import {
+  scaffoldEncounter, saveEncounter, validateEncounter, listEncounters, getEncounter, encountersDir,
+} from "../lib/encounters.mjs";
 
 // --- arg parsing -----------------------------------------------------------
 
@@ -382,6 +385,94 @@ function usage() {
   );
 }
 
+
+// --- encounters: what a persona has SEEN -----------------------------------
+// Minimal CRUD port (new/save/validate/list/show). Run-linking (--run,
+// attach to a multi-persona debate lane) intentionally NOT ported here --
+// this plugin's own autonomous run driver owns run/lane concepts, and
+// mixing two run models in one CLI would be a worse bug than the one this
+// patch fixes. A persona still writes an independent, durable encounter
+// record; it just isn't wired into this plugin's run lanes yet.
+function cmdEncounter(positional, flags) {
+  const sub = positional[0];
+  const rest = positional.slice(1);
+
+  if (sub === "new") {
+    const personaId = rest[0];
+    if (!personaId) die('usage: persona encounter new <persona_id> --artifact <slug> [--label ".."] [--version ".."] [--url ".."]');
+    if (!flags.artifact) die("--artifact <slug> is required: an encounter is always with a named artifact");
+    const scaffold = scaffoldEncounter({
+      persona_id: personaId,
+      artifact: {
+        slug: flags.artifact,
+        label: flags.label || flags.artifact,
+        version: flags.version || null,
+        url: flags.url || null,
+      },
+      blind: true,
+    });
+    if (flags.json) return out(scaffold, true);
+    process.stdout.write(JSON.stringify(scaffold, null, 2) + "\n");
+    process.stderr.write(
+      "\npersona: fill this scaffold (findings, verdict, evidence), then:\n" +
+      "  persona encounter save -\n"
+    );
+    return;
+  }
+
+  if (sub === "save") {
+    const src = rest[0];
+    if (!src) die("usage: persona encounter save <file|->");
+    const raw = src === "-" ? readFileSync(0, "utf8") : readFileSync(src, "utf8");
+    let e;
+    try { e = JSON.parse(raw); } catch (err) { die(`invalid JSON: ${err.message}`); }
+    let saved;
+    try {
+      saved = saveEncounter(e);
+    } catch (err) {
+      die(`could not save ${e.encounter_id || "(unnamed)"}: ${err.message}`);
+    }
+    if (flags.json) return out({ encounter_id: saved.encounter.encounter_id, path: saved.path }, true);
+    process.stdout.write(`saved ${saved.encounter.encounter_id}\n  ${saved.path}\n`);
+    return;
+  }
+
+  if (sub === "validate") {
+    const src = rest[0];
+    if (!src) die("usage: persona encounter validate <file|->");
+    const raw = src === "-" ? readFileSync(0, "utf8") : readFileSync(src, "utf8");
+    let e;
+    try { e = JSON.parse(raw); } catch (err) { die(`invalid JSON: ${err.message}`); }
+    const r = validateEncounter(e);
+    if (flags.json) return out({ encounter_id: e.encounter_id || "(none)", ...r }, true);
+    process.stdout.write(`${r.ok ? "OK" : "FAIL"}  ${e.encounter_id || "(none)"}${r.ok ? "" : "\n  - " + r.errors.join("\n  - ")}\n`);
+    return;
+  }
+
+  if (sub === "list") {
+    const personaId = rest[0];
+    const rows = listEncounters({ persona_id: personaId, artifact: flags.artifact });
+    if (flags.json) return out({ count: rows.length, encounters: rows }, true);
+    if (!rows.length) return process.stdout.write(`No encounters yet.\nStore: ${encountersDir()}\n`);
+    rows.forEach((e) =>
+      process.stdout.write(
+        `${e.encounter_id}\n  ${e.persona_id} met ${e.artifact.label}${e.artifact.version ? ` @ ${e.artifact.version}` : ""}\n`
+      )
+    );
+    return;
+  }
+
+  if (sub === "show") {
+    const e = getEncounter(rest[0]);
+    if (!e) die(`encounter not found: ${rest[0] || "(none)"}`);
+    if (flags.json) return out(e, true);
+    process.stdout.write(JSON.stringify(e, null, 2) + "\n");
+    return;
+  }
+
+  die("usage: persona encounter <new|save|validate|list|show> ...");
+}
+
 // --- dispatch --------------------------------------------------------------
 
 function main() {
@@ -400,6 +491,7 @@ function main() {
     case "archive": return cmdArchive(positional, flags);
     case "roster": return cmdRoster(positional, flags);
     case "panel": return cmdPanel(positional, flags);
+    case "encounter": return cmdEncounter(positional, flags);
     case undefined:
     case "help":
     case "--help":
