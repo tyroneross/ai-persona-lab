@@ -44,6 +44,14 @@ persona encounter show <encounter_id>
 `persona encounter save` refuses an `encounter_id` it has already recorded.
 Encounters are append-only; a second look is a second encounter.
 
+`persona encounter save` also refuses a record whose `persona_id` is missing or
+cannot name a folder, and the refusal names the field. `persona_id` is the folder
+the record lives in, so a value that is not a usable folder name writes the record
+into the shared `encounters/` root instead of a persona's own directory — and a
+value containing `..` writes it outside the store altogether. That save
+would otherwise still report success, and the failure would surface later, to
+someone else, as an unrelated error from a completely different command.
+
 ## The contract every persona session follows
 
 **On start**, load your identity from `personas.json`. Then decide, deliberately, whether to

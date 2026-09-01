@@ -764,4 +764,9 @@ function main() {
   }
 }
 
-main();
+try {
+  main();
+} catch (err) {
+  if (process.env.PERSONA_DEBUG === "1") throw err;
+  die(err && err.message ? err.message : String(err));
+}
