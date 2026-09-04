@@ -177,3 +177,9 @@ fields are goals, behaviors, frustrations, motivations, needs, and
 `job_to_be_done`; demographics are optional decoration. `provenance`
 (`proto | qualitative | synthetic-grounded | synthetic-assumed`) and `anti_goals`
 make the persona's basis and abandonment triggers explicit.
+
+## About
+
+Persona Lab is built by [RossLabs](https://rosslabs.ai). The npm package is
+published as `@tyroneross/persona-lab`, on the same scope as the rest of the
+family; RossLabs is the org behind it if you want the background.
