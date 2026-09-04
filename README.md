@@ -30,6 +30,15 @@ requires at least one adversarial (red-team) lens, runs each persona
 independently to avoid groupthink, and lets personas abstain rather than
 fabricate.
 
+## Quick Start
+
+**As a Claude Code or Codex plugin**, type `/persona-lab:persona-review` and describe what you want
+reviewed. That is the entry point: it selects the lenses, recalls or generates the personas, runs
+each pass independently, and reports back. `/persona-lab:run` drives an existing council run in the
+AI User Personas app, and `/persona-lab:submit-feedback` files a bug or feature request.
+
+**As a CLI**, install it below.
+
 ## Install the CLI
 
 From this plugin directory:

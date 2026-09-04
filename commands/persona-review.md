@@ -53,3 +53,8 @@ Execution rules:
   and next actions. Preserve conflicts as tradeoffs rather than averaging them.
   Stamp the report "hypothesis, not validation"; persona output is synthetic
   critique, never real-user evidence.
+
+## Plugin bugs and feature requests
+
+For a bug or a feature request about the plugin itself, use `/persona-lab:submit-feedback`. It
+drafts the GitHub issue and files it only after the user approves the exact text.
