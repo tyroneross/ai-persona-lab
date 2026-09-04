@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2025-2026 Tyrone Ross, Jr <46267523+tyroneross@users.noreply.github.com>
+# SPDX-License-Identifier: Apache-2.0
+name: release-please
+
+# Keeps ONE release pull request continuously current: every push to main adds its
+# Conventional Commit to the pending changelog and recomputes the next version. The
+# PR is the always-visible answer to "what is queued to ship". Nothing publishes
+# here -- the weekly cut in release-weekly-merge.yml merges that PR, which is what
+# creates the GitHub Release.
+#
+# WHY THIS EXISTS. This repo had no .github/workflows directory at all, so it could neither
+# release nor publish. This workflow gives it the release half; the publish
+# half is still missing (see the note in the job below).
+#
+# Ported from build-loop's .github/workflows/release-please.yml.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Run release-please
+        id: release
+        # Pinned to v5.0.0 by SHA. The action's README still documents v4; the
+        # releases API is the authority and v5.0.0 (2026-04-22) changed only the
+        # runtime to node24 -- its inputs are byte-identical to v4.
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # NO PUBLISH BRIDGE HERE, deliberately. build-loop's release-please.yml
+      # dispatches its publish workflows from this job, because a release created
+      # under GITHUB_TOKEN does not fire an `on: release: [published]` workflow
+      # (GitHub docs, "Triggering a workflow"). This repo has no publish workflow
+      # to dispatch, so there is nothing to bridge to and adding a dispatch step
+      # would fail on a missing workflow file.
+      #
+      # When a publish workflow is added here, add the bridge back -- copy the
+      # "Dispatch publish workflows" step from any sibling repo, and restore
+      # `actions: write` to the permissions block above.
