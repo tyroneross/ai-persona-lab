@@ -70,8 +70,9 @@ Use the [GitHub README skill](skills/github-readme/SKILL.md) to assess whether a
 person can understand the benefit and an agent can install and verify the tool:
 
 ```text
-Use the github-readme skill to review this repository's README with three
-independent perspectives: a new user, an installing agent, and a skeptical adopter.
+Use the github-readme skill to review this repository's README with four
+independent perspectives: a new user, an installing agent, a skeptical adopter,
+and a product marketing expert and storyteller.
 Recommend changes to the opening, example, and installation path. Keep the raw
 reviews separate from the synthesis and verify technical claims against source.
 ```

@@ -65,18 +65,23 @@ ran a review. Explicitly name untested host-specific steps.
 For an explicitly requested persona panel, freeze the README before dispatch.
 Use an immutable copy and content hash for dirty files; a commit alone does not
 identify uncommitted content. Keep that copy unchanged through all review passes.
-Use three independent passes unless the user specifies another budget:
+Use four independent passes unless the user specifies another budget:
 
 1. First-time target user: relevance, output, example, next action.
 2. Installing coding agent: complete setup path and observable success.
 3. Skeptical adopter: unsupported promises, trust boundaries, adoption tradeoffs.
+4. Product marketing expert and storyteller: audience positioning, the problem
+   and its stakes, how the product solves it, and the outcome the reader can
+   expect. Assess whether the opening, example, and next action form a clear
+   story. Recommend concrete wording grounded in product capabilities; do not
+   invent differentiation, customer stories, evidence, or benefits.
 
 Use no prior encounters for first impressions. Give each reviewer the same
 artifact version and its own role, without the requested rewrite, other reviews,
 or the author's preferred conclusion. One pass per reviewer; preserve raw
 reactions before synthesis. Run sequentially when parallel capacity is unavailable.
 If independent agents cannot run, label a single-agent lens review accurately.
-For a solo audit, use these as a checklist without claiming three personas ran.
+For a solo audit, use these as a checklist without claiming four personas ran.
 
 Ask each reviewer what the project does, who benefits, what they would do next,
 and up to three obstacles with exact source quotes. Separate factual omissions
