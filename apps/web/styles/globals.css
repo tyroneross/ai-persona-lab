@@ -119,8 +119,8 @@
   }
   .brand-button { background: #0f766e; }
   .brand-button:hover:not(:disabled) { background: #115e59; }
-  .workspace-intro .text-muted,
-  .template-card .text-muted { color: #556275; }
+  .workspace-intro,
+  .template-card { --color-muted: #556275; }
   .library-count { background: #f3effb; border-color: #ddd3f3; color: #684299; }
   [data-tone="handoff"] { --tone: #0f766e; --tone-wash: #edf8f5; --tone-line: #add5cb; }
   [data-tone="interface"] { --tone: #7142a2; --tone-wash: #f5effc; --tone-line: #d4bfe9; }
