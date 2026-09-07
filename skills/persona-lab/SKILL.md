@@ -1,6 +1,6 @@
 ---
 name: persona-lab
-description: Use when the user asks to execute a Persona Lab workspace/CLI review brief or launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or an unrelated solo UI review.
+description: Use when an agent or user needs professional expertise for planning, building, coaching, investing, marketing, engineering or UI/UX work, or asks to execute a Persona Lab workspace/CLI review brief or launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or an unrelated solo UI review.
 ---
 
 # Persona Lab
@@ -30,6 +30,23 @@ Synthetic personas are legitimate for hypothesis generation and critique, never
 for validation. Every panel output is a hypothesis, not real-user evidence.
 Stamp the report as "hypothesis, not validation" and never present a persona
 finding as proof of real user behavior.
+
+## Professional task consultation
+
+Agents can call `persona consult "<task>" --json` before choosing a panel or
+writing a plan. Use `--mode ui-ux` for interface work and `--specialties` for
+explicit expertise paths. The CLI returns a plan and saved-persona matches or
+composed drafts; it does not execute model calls. Read the returned principles,
+including `avoid_when`, and evidence gaps before dispatch.
+
+Use `persona archetypes --defaults` for five starter perspectives, and
+`persona archetypes` for the expandable professional catalog. `persona compose
+marketer --specialties product-marketing,hardware/networking --save` creates a
+persistent draft. Specialty paths have no fixed depth or closed vocabulary;
+a label does not establish competence. The task consultant instructions live
+in `agents/persona-task-consultant.md`, and `/persona-lab:consult` exposes the
+workflow. Existing review panels, recall rules, encounters and council runs
+remain separate contracts.
 
 ## Workflow
 
@@ -88,8 +105,9 @@ Recommended default critique lenses:
 
 Selection rules:
 
-- Pick perspectives by MECE coverage of goals, jobs-to-be-done, and risk, not by
-  demographics.
+- Pick perspectives by task-relevant goals, jobs-to-be-done and risk. Broad
+  professional archetypes and subspecialties may overlap; do not require a
+  MECE taxonomy. Demographics are not a substitute for expertise.
 - Goals, behaviors, and job-to-be-done are the load-bearing persona elements.
   Demographics are decoration and invite stereotyping. Keep them optional and
   omit unless the topic requires them.
@@ -508,8 +526,7 @@ Saved personas and rosters live in the global library at `~/.persona-lab/`, so a
 roster saved in one repo is recallable by name from any other. Treat CLI output
 as a starting point, not the final review.
 
-The legacy planner `node plugins/persona-lab/scripts/persona-plan.mjs
-"<request>"` still exists but is superseded by the `persona` CLI.
+The legacy planner `node scripts/persona-plan.mjs "<request>"` still exists but is superseded by the `persona` CLI.
 
 ## Autonomous council runs (AI User Personas app)
 

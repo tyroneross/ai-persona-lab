@@ -31,8 +31,13 @@ try {
     goals: ['Review clearly'], frustrations: ['Missing evidence'], motivations: ['Clarity'],
     behaviors: ['Read the facts'], needs: ['Evidence'], anti_goals: ['Unsupported claims'],
     scenarios: [{ title: 'Review', description: 'Review a synthetic artifact.' }],
-    evidence: [{ id: 'evidence_smoke', source_type: 'synthetic', summary: 'Test fixture only.', confidence: 0.4 }],
+    evidence: [{ id: 'evidence_smoke_1234abcd', source_type: 'synthetic', summary: 'Synthetic integration test fixture only.', confidence: 0.4 }],
     confidence: 0.4, provenance: 'synthetic-assumed', tags: ['smoke'],
+    ...(i === 0 ? {
+      lifespan: 'persistent', recall: 'project',
+      composition: { version: '1', archetype_ids: ['marketer', 'engineer'],
+        specialty_paths: [['hardware', 'silicon', 'networking']], evidence_ids: ['evidence_smoke_1234abcd'] },
+    } : {}),
   }));
   const planner = JSON.parse(execFileSync(process.execPath,
     [path.resolve(web, '../../scripts/persona-plan.mjs'), '--json', '--count', '3', 'Review onboarding'],
@@ -63,16 +68,33 @@ try {
   assert.equal(summaries.length, 8);
   const summary = summaries.find(p => p.id === people[0].id);
   for (const key of ['provenance', 'recall', 'lifespan', 'updated_at']) assert.equal(summary[key], people[0][key], key);
-  const updated = await request(`/api/personas/${people[0].id}`, 'PUT', { ...people[0], name: 'Updated by web' });
+  const webRead = (await request(`/api/personas/${people[0].id}`)).persona;
+  assert.deepEqual(webRead.composition, people[0].composition);
+  const { composition: omittedComposition, lifespan: omittedLifespan, recall: omittedRecall, ...olderEditorInput } = people[0];
+  const updated = await request(`/api/personas/${people[0].id}`, 'PUT', { ...olderEditorInput, name: 'Updated by web' });
   assert.equal(updated.persona.name, 'Updated by web');
   assert.equal(getPersona(people[0].id).name, 'Updated by web');
   assert.equal(getPersona(people[0].id).recall, people[0].recall);
   assert.equal(getPersona(people[0].id).lifespan, people[0].lifespan);
+  assert.deepEqual(updated.persona.composition, people[0].composition);
+  assert.deepEqual(getPersona(people[0].id).composition, people[0].composition);
   assert.deepEqual(getPersona(people[0].id).evidence, people[0].evidence);
   assert.equal(getPersona(people[0].id).created_at, people[0].created_at);
   assert.equal(getPersona(people[0].id).id, people[0].id);
-  const created = await request('/api/personas', 'POST', { ...people[1], id: undefined, name: 'Created by web' });
+  const created = await request('/api/personas', 'POST', { ...people[0], id: undefined, name: 'Created by web' });
   assert.equal(validatePersona(getPersona(created.persona.id)).ok, true);
+  assert.deepEqual(getPersona(created.persona.id).composition, people[0].composition);
+  for (const invalidComposition of [null,
+    { ...people[0].composition, specialty_paths: [[]] },
+    { ...people[0].composition, evidence_ids: ['evidence_missing_1234abcd'] }]) {
+    const rejected = await fetch(`${base}/api/personas/${people[0].id}`, {
+      method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...people[0], composition: invalidComposition }),
+      signal: AbortSignal.timeout(10000),
+    });
+    assert.equal(rejected.status, 400, 'Malformed or dangling composition must fail');
+    assert.deepEqual(getPersona(people[0].id).composition, people[0].composition);
+  }
   const { roster } = await request('/api/councils/rosters', 'POST', {
     name: 'Smoke roster', repo_path: temp, persona_ids: people.map(p => p.id),
   });
@@ -86,7 +108,7 @@ try {
     assert.equal(response.status, 200, route);
     assert.match(await response.text(), /<html/);
   }
-  console.log('PASS: shared planner; CLI-to-web read; web-to-CLI create/update; recall preservation; council create/read; five pages. No model calls.');
+  console.log('PASS: shared planner; CLI-to-web read; web-to-CLI create/update; composition and recall preservation; invalid composition rejection; council create/read; five pages. No model calls.');
 } catch (error) {
   console.error(logs);
   throw error;

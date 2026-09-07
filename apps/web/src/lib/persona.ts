@@ -42,12 +42,22 @@ export type EvidenceItem = {
   observed_at?: string;
 };
 
+/** Overlapping professional archetypes with open-ended specialty paths. */
+export type PersonaComposition = {
+  version: "1";
+  archetype_ids: string[];
+  specialty_paths: string[][];
+  /** References this persona's evidence records, not external catalog IDs. */
+  evidence_ids: string[];
+};
+
 export type Persona = {
   schema_version: SchemaVersion;
   id: string;
   status: PersonaStatus;
   name: string;
   archetype: string;
+  composition?: PersonaComposition;
   role: string;
   summary: string;
   primary_goal: string;

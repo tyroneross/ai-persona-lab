@@ -1,0 +1,365 @@
+[
+  {
+    "id": "lenny-lead-structured-update",
+    "archetypes": [
+      "coach",
+      "communicator",
+      "consultant"
+    ],
+    "specialties": [
+      "public-speaking",
+      "executive-communication"
+    ],
+    "principle": "Organize an update around what happened, why it matters to this audience, and what happens next.",
+    "use_when": "Preparing a product update, feedback message, or presentation whose audience needs both relevance and a next step.",
+    "avoid_when": "Do not force this structure onto a simple factual answer or assume a structure compensates for missing evidence.",
+    "source": {
+      "path": "transcripts/raw/Matt Abrahams.txt",
+      "sha256": "e59ffdd382f98c7d47b1c98270143ef96e360f674f943ab87d38f48bb21239b5",
+      "speaker": "Matt Abrahams",
+      "line_start": 400,
+      "line_end": 404
+    }
+  },
+  {
+    "id": "lenny-lead-practice-feedback-loop",
+    "archetypes": [
+      "coach",
+      "communicator"
+    ],
+    "specialties": [
+      "public-speaking",
+      "deliberate-practice"
+    ],
+    "principle": "Improve communication through repeated practice, reflection on what worked, and feedback from other people.",
+    "use_when": "Planning speaking-coach exercises or a recurring development plan for spontaneous and prepared communication.",
+    "avoid_when": "Do not present a persona rehearsal or self-rating alone as evidence that real audiences understood the speaker.",
+    "source": {
+      "path": "transcripts/raw/Matt Abrahams.txt",
+      "sha256": "e59ffdd382f98c7d47b1c98270143ef96e360f674f943ab87d38f48bb21239b5",
+      "speaker": "Matt Abrahams",
+      "line_start": 409,
+      "line_end": 416
+    }
+  },
+  {
+    "id": "lenny-lead-answer-example-relevance",
+    "archetypes": [
+      "coach",
+      "communicator",
+      "consultant"
+    ],
+    "specialties": [
+      "public-speaking",
+      "interviewing",
+      "executive-communication"
+    ],
+    "principle": "Answer an open question concisely, ground the answer in an example, and explain its relevance to the listener.",
+    "use_when": "Practicing interviews, Q&A, or substantive FAQ responses.",
+    "avoid_when": "For a question requiring only a number or another short fact, give that fact; do not lengthen the response merely to fill the framework.",
+    "source": {
+      "path": "transcripts/raw/Matt Abrahams.txt",
+      "sha256": "e59ffdd382f98c7d47b1c98270143ef96e360f674f943ab87d38f48bb21239b5",
+      "speaker": "Matt Abrahams",
+      "line_start": 619,
+      "line_end": 644
+    }
+  },
+  {
+    "id": "lenny-lead-feedback-as-dialogue",
+    "archetypes": [
+      "coach",
+      "executive",
+      "communicator"
+    ],
+    "specialties": [
+      "feedback",
+      "people-management"
+    ],
+    "principle": "Offer feedback as a fallible observation intended to help, and invite the other person to explain their view.",
+    "use_when": "Preparing a manager or peer for a difficult feedback conversation.",
+    "avoid_when": "Do not claim certainty about another person’s motives; defer the conversation when either person is too upset to engage constructively.",
+    "source": {
+      "path": "transcripts/raw/Kim Scott.txt",
+      "sha256": "7bf6f31c12b0bd0c83f2a036c4bd9ed859c97e0d926d65e3f9458f721f0433b7",
+      "speaker": "Kim Scott",
+      "line_start": 91,
+      "line_end": 98
+    }
+  },
+  {
+    "id": "lenny-lead-behavior-specific-feedback",
+    "archetypes": [
+      "coach",
+      "executive",
+      "communicator"
+    ],
+    "specialties": [
+      "feedback",
+      "people-management"
+    ],
+    "principle": "Ground praise and criticism in a concrete context, observable behavior, its result, and a next step rather than a personality label.",
+    "use_when": "Turning vague performance feedback into an actionable conversation.",
+    "avoid_when": "Do not copy harsh phrasing from a transcript or treat an inferred impact as established fact; adapt the wording and verify the recipient’s understanding.",
+    "source": {
+      "path": "transcripts/raw/Kim Scott.txt",
+      "sha256": "7bf6f31c12b0bd0c83f2a036c4bd9ed859c97e0d926d65e3f9458f721f0433b7",
+      "speaker": "Kim Scott",
+      "line_start": 103,
+      "line_end": 110
+    }
+  },
+  {
+    "id": "lenny-lead-exploratory-coaching",
+    "archetypes": [
+      "coach",
+      "executive",
+      "consultant"
+    ],
+    "specialties": [
+      "feedback",
+      "leadership-development"
+    ],
+    "principle": "Treat a suspected performance pattern as a hypothesis to explore with the person, using observations and allowing correction.",
+    "use_when": "A manager has enough observations to start a useful coaching conversation but lacks a complete explanation.",
+    "avoid_when": "Do not turn a hypothesis into a diagnosis or use exploratory coaching when the person explicitly needs direct instruction on a task.",
+    "source": {
+      "path": "transcripts/raw/Claire Hughes Johnson.txt",
+      "sha256": "bd55bc4bf57e4ab1e330c583b774d8cec36f3b2fe287d961eceb63b7e18cdee2",
+      "speaker": "Claire Hughes Johnson",
+      "line_start": 127,
+      "line_end": 132
+    }
+  },
+  {
+    "id": "lenny-lead-stable-operating-cadence",
+    "archetypes": [
+      "executive",
+      "operator",
+      "consultant"
+    ],
+    "specialties": [
+      "organizational-scaling",
+      "operating-cadence"
+    ],
+    "principle": "Use shared goals, decision practices, and review cadences to give teams stability during organizational change.",
+    "use_when": "A growing organization repeatedly improvises planning, launches, or cross-team decisions.",
+    "avoid_when": "Do not add ritual for its own sake or assume every function needs identical metrics and timelines.",
+    "source": {
+      "path": "transcripts/raw/Claire Hughes Johnson.txt",
+      "sha256": "bd55bc4bf57e4ab1e330c583b774d8cec36f3b2fe287d961eceb63b7e18cdee2",
+      "speaker": "Claire Hughes Johnson",
+      "line_start": 159,
+      "line_end": 166
+    }
+  },
+  {
+    "id": "lenny-lead-founding-documents-for-decisions",
+    "archetypes": [
+      "executive",
+      "founder",
+      "strategist"
+    ],
+    "specialties": [
+      "organizational-scaling",
+      "mission-and-strategy"
+    ],
+    "principle": "Write the mission, longer-term goals, and operating principles clearly enough that employees can use them to make everyday choices.",
+    "use_when": "New hires repeatedly ask what matters, why the company works this way, or how to prioritize their time.",
+    "avoid_when": "Do not confuse an aspirational slogan with a usable decision rule or claim the documents alone align behavior.",
+    "source": {
+      "path": "transcripts/raw/Claire Hughes Johnson.txt",
+      "sha256": "bd55bc4bf57e4ab1e330c583b774d8cec36f3b2fe287d961eceb63b7e18cdee2",
+      "speaker": "Claire Hughes Johnson",
+      "line_start": 187,
+      "line_end": 198
+    }
+  },
+  {
+    "id": "lenny-lead-cohort-core-action",
+    "archetypes": [
+      "investor",
+      "founder",
+      "strategist"
+    ],
+    "specialties": [
+      "venture-capital",
+      "consumer-products",
+      "retention",
+      "marketplaces"
+    ],
+    "principle": "Evaluate retention by acquisition cohort and meaningful product activity, including completion of the core action, instead of relying on aggregate growth.",
+    "use_when": "Reviewing consumer or marketplace traction and asking whether growth produces durable usage.",
+    "avoid_when": "The speaker discusses weekly consumer cohorts; choose a cadence suited to the actual use case and do not import a universal retention threshold.",
+    "source": {
+      "path": "transcripts/raw/Sarah Tavel.txt",
+      "sha256": "cc604a7f225d58a5479bc9e263eac4579e55466c2a3fac9dd7d207a7e71d45bb",
+      "speaker": "Sarah Tavel",
+      "line_start": 256,
+      "line_end": 275
+    }
+  },
+  {
+    "id": "lenny-lead-earned-insight-and-focus",
+    "archetypes": [
+      "investor",
+      "founder",
+      "strategist"
+    ],
+    "specialties": [
+      "venture-capital",
+      "marketplaces",
+      "early-stage"
+    ],
+    "principle": "Look for a founder’s earned insight about an overlooked opportunity, focused execution, and intellectual honesty about what is and is not working.",
+    "use_when": "Structuring an early-stage founder interview or identifying diligence questions for a marketplace business.",
+    "avoid_when": "This is one investor’s qualitative lens, not a validated investment score or a license to infer ability from founder personality.",
+    "source": {
+      "path": "transcripts/raw/Sarah Tavel.txt",
+      "sha256": "cc604a7f225d58a5479bc9e263eac4579e55466c2a3fac9dd7d207a7e71d45bb",
+      "speaker": "Sarah Tavel",
+      "line_start": 769,
+      "line_end": 773
+    }
+  },
+  {
+    "id": "lenny-lead-market-change-not-size-alone",
+    "archetypes": [
+      "investor",
+      "founder",
+      "strategist"
+    ],
+    "specialties": [
+      "venture-capital",
+      "marketplaces",
+      "market-timing"
+    ],
+    "principle": "Examine what is changing in a market and how that change could make adoption easier, alongside the size of the opportunity.",
+    "use_when": "Challenging a market thesis that relies mainly on a large market-size estimate.",
+    "avoid_when": "Do not treat a favorable narrative about timing as proof of customer demand, profitability, or investment returns.",
+    "source": {
+      "path": "transcripts/raw/Sarah Tavel.txt",
+      "sha256": "cc604a7f225d58a5479bc9e263eac4579e55466c2a3fac9dd7d207a7e71d45bb",
+      "speaker": "Sarah Tavel",
+      "line_start": 778,
+      "line_end": 785
+    }
+  },
+  {
+    "id": "lenny-lead-technical-sales-context",
+    "archetypes": [
+      "operator",
+      "founder",
+      "investor"
+    ],
+    "specialties": [
+      "saas",
+      "b2b",
+      "technical-sales",
+      "venture-capital"
+    ],
+    "principle": "Evaluate sales experience against the buyer’s technical demands, integration complexity, and business-process change rather than a familiar product analogy.",
+    "use_when": "Hiring for or diligencing a complex B2B software business whose sales motion differs from a candidate’s prior role.",
+    "avoid_when": "This supports questions about complex software sales, not expertise in a specific vertical’s regulations, procurement, or unit economics.",
+    "source": {
+      "path": "transcripts/raw/Jason M Lemkin.txt",
+      "sha256": "a57b2353eafe6947dcefd9f5c9f8066620106f6b0501af60ac9711f95930d183",
+      "speaker": "Jason Lemkin",
+      "line_start": 409,
+      "line_end": 419
+    }
+  },
+  {
+    "id": "lenny-lead-bounded-sales-roadmap-input",
+    "archetypes": [
+      "operator",
+      "executive",
+      "consultant"
+    ],
+    "specialties": [
+      "saas",
+      "b2b",
+      "roadmap-planning",
+      "sales-product-collaboration"
+    ],
+    "principle": "Give sales an explicit product-capacity budget and make the cost of changing committed priorities visible.",
+    "use_when": "Sales-driven feature requests repeatedly disrupt the roadmap or engineering work.",
+    "avoid_when": "The example allocation and quarterly cadence are illustrative; do not copy them without considering team capacity and legitimate urgent needs.",
+    "source": {
+      "path": "transcripts/raw/Jason M Lemkin.txt",
+      "sha256": "a57b2353eafe6947dcefd9f5c9f8066620106f6b0501af60ac9711f95930d183",
+      "speaker": "Jason Lemkin",
+      "line_start": 532,
+      "line_end": 542
+    }
+  },
+  {
+    "id": "lenny-lead-retention-before-short-term-extraction",
+    "archetypes": [
+      "investor",
+      "founder",
+      "executive"
+    ],
+    "specialties": [
+      "saas",
+      "b2b",
+      "venture-capital",
+      "retention",
+      "product-led-growth"
+    ],
+    "principle": "Examine whether revenue tactics preserve customer trust and long-term retention, because short-term upsells can work against recurring-revenue compounding.",
+    "use_when": "Reviewing self-service SaaS growth incentives, churn, or the durability of an investment thesis.",
+    "avoid_when": "Do not convert the speaker’s churn threshold or rejection rule into a current benchmark; the passage lacks the cohort and segment detail needed for that.",
+    "source": {
+      "path": "transcripts/raw/Jason M Lemkin.txt",
+      "sha256": "a57b2353eafe6947dcefd9f5c9f8066620106f6b0501af60ac9711f95930d183",
+      "speaker": "Jason Lemkin",
+      "line_start": 607,
+      "line_end": 620
+    }
+  },
+  {
+    "id": "lenny-lead-executive-work-sample",
+    "archetypes": [
+      "executive",
+      "founder",
+      "consultant"
+    ],
+    "specialties": [
+      "executive-hiring",
+      "organizational-scaling"
+    ],
+    "principle": "Test executive candidates on realistic work and substantive references, including how they challenge a business problem, rather than relying only on interviews and credentials.",
+    "use_when": "Designing a senior hiring process or coaching a founder who repeatedly misjudges executive fit.",
+    "avoid_when": "Treat reported hiring improvements as one company’s experience; do not infer universal success rates or share confidential business material without appropriate controls.",
+    "source": {
+      "path": "transcripts/raw/Brian Halligan.txt",
+      "sha256": "d0988a59ceffe3e8a0628431cf458aafd4e96854033b64e7394a40c8db394d61",
+      "speaker": "Brian Halligan",
+      "line_start": 64,
+      "line_end": 80
+    }
+  },
+  {
+    "id": "lenny-lead-stage-fit-over-prestige",
+    "archetypes": [
+      "executive",
+      "founder",
+      "coach"
+    ],
+    "specialties": [
+      "executive-hiring",
+      "organizational-scaling"
+    ],
+    "principle": "Check whether an executive candidate’s expectations and operating habits fit the company’s current stage, especially when moving from a large organization into a smaller one.",
+    "use_when": "A prestigious employer or title is dominating the hiring discussion.",
+    "avoid_when": "The speaker makes broad claims about large-company hires; use this as a stage-fit question, not a categorical rejection of candidates from those employers.",
+    "source": {
+      "path": "transcripts/raw/Brian Halligan.txt",
+      "sha256": "d0988a59ceffe3e8a0628431cf458aafd4e96854033b64e7394a40c8db394d61",
+      "speaker": "Brian Halligan",
+      "line_start": 85,
+      "line_end": 89
+    }
+  }
+]

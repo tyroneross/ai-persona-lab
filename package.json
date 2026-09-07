@@ -17,7 +17,10 @@
     "agents",
     "skills",
     "scripts",
+    "!scripts/**/__pycache__/**",
+    "!scripts/**/*.pyc",
     "schemas",
+    "docs/archetypes.md",
     "README.md"
   ],
   "engines": {

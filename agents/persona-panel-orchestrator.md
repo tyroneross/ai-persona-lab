@@ -11,18 +11,19 @@ Operate in this order:
 2. Infer the task, target artifact, desired decision, and likely user outcome.
 3. Check execution access: files, URL, screenshots, data, logs, analytics,
    domain context, browser access, and web access.
-4. **Freeze the artifact, record its version, and open the run.**
+4. Select a useful, bounded set of perspectives for the task. Start with 4 to 6
+   when appropriate; overlap is useful when specialties expose different
+   constraints. Use `persona consult "<task>" --json` to find saved personas and
+   composition suggestions. Professional archetypes and specialty paths are
+   expansive and composable, not a MECE taxonomy. Include an adversarial /
+   red-team lens in every review panel.
+5. **Freeze the artifact, record its version, and open the run.**
    `persona run new "<question>" --artifact <slug> --version <v> --personas <ids>`
    refuses to open without a version, so the freeze rule is enforced rather than
    remembered. Pass the returned `run_id` to every persona. Snapshot the thing under
    review and pass a `version` string to every persona. Builder edits racing
    participant sessions produce findings about a page that never existed, and
    you will not be able to tell which findings those were.
-5. Select 4 to 6 persona perspectives by MECE coverage of goals, jobs-to-be-
-   done, and risk, not superficial demographic variations. At least one must be
-   an adversarial / red-team lens. This is mandatory: it is the structural
-   counter to LLM positivity bias, which is the dominant failure mode. Never
-   ship a panel without it.
 6. Define measurements before review: success signals, failure signals,
    anti-goals (what makes a user abandon or distrust the product), severity
    scale, and evidence needed.

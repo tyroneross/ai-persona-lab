@@ -116,6 +116,11 @@ export function normalizePersonaInput(value: unknown, existing?: Persona): Perso
     status: status(record.status),
     name: text(record.name),
     archetype: text(record.archetype),
+    // Preserve omitted metadata when an older editor submits its known fields.
+    // Keep supplied values intact so malformed metadata is rejected, not erased.
+    composition: ("composition" in record ? record.composition : existing?.composition) as PersonaCreateInput["composition"],
+    lifespan: ("lifespan" in record ? record.lifespan : existing?.lifespan) as PersonaCreateInput["lifespan"],
+    recall: ("recall" in record ? record.recall : existing?.recall) as PersonaCreateInput["recall"],
     role: text(record.role),
     summary: text(record.summary),
     primary_goal: text(record.primary_goal),
@@ -160,6 +165,38 @@ export function validatePersona(persona: Persona): PersonaValidationResult {
   }
   if (!nonEmpty(persona.id)) errors.push(error("id", "Persona id is required."));
   if (!statuses.includes(persona.status)) errors.push(error("status", "Persona status is invalid."));
+  if (persona.lifespan !== undefined && !["persistent", "temporary"].includes(persona.lifespan)) {
+    errors.push(error("lifespan", "Lifespan must be persistent or temporary."));
+  }
+  if (persona.recall !== undefined && !["none", "artifact", "project", "all"].includes(persona.recall)) {
+    errors.push(error("recall", "Recall must be none, artifact, project, or all."));
+  }
+  if (persona.lifespan === "temporary" && (persona.recall === "all" || persona.recall === "project")) {
+    errors.push(error("recall", "A temporary persona cannot recall across runs."));
+  }
+  if (persona.composition !== undefined) {
+    const c = persona.composition;
+    const slug = (value: unknown) => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+    if (!c || typeof c !== "object" || Array.isArray(c)) {
+      errors.push(error("composition", "Composition must be an object."));
+    } else {
+      if (Object.keys(c).some((key) => !["version", "archetype_ids", "specialty_paths", "evidence_ids"].includes(key))) {
+        errors.push(error("composition", "Composition contains an unknown field."));
+      }
+      if (c.version !== "1") errors.push(error("composition.version", "Composition version must be 1."));
+      if (!Array.isArray(c.archetype_ids) || !c.archetype_ids.length || !c.archetype_ids.every(slug)) {
+        errors.push(error("composition.archetype_ids", "Archetype IDs must be a non-empty slug array."));
+      }
+      if (!Array.isArray(c.specialty_paths) || !c.specialty_paths.every((parts) => Array.isArray(parts) && parts.length > 0 && parts.every(slug))) {
+        errors.push(error("composition.specialty_paths", "Specialties must contain non-empty slug paths."));
+      }
+      if (!Array.isArray(c.evidence_ids) || !c.evidence_ids.every((id) => typeof id === "string" && /^evidence_[a-z0-9][a-z0-9-]*_[a-f0-9]{8}$/.test(id))) {
+        errors.push(error("composition.evidence_ids", "Composition evidence must contain evidence IDs."));
+      } else if (!c.evidence_ids.every((id) => persona.evidence?.some((item) => item?.id === id))) {
+        errors.push(error("composition.evidence_ids", "Composition evidence must reference this persona's evidence."));
+      }
+    }
+  }
   if (!nonEmpty(persona.name)) errors.push(error("name", "Name is required."));
   if (!nonEmpty(persona.archetype)) errors.push(error("archetype", "Archetype is required."));
   if (!nonEmpty(persona.role)) errors.push(error("role", "Role is required."));

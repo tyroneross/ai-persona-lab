@@ -35,7 +35,7 @@ Execution rules:
   synthesis; high = 6 to 8 lenses plus adversarial verification of critical
   findings.
 - Unless an explicit brief or user count applies, select perspectives using the
-  chosen level (medium defaults to 4 to 6), by MECE coverage of goals,
+  chosen level (medium defaults to 4 to 6), by task-relevant coverage of goals,
   jobs-to-be-done, and risk, not demographics. At least one must be an
   adversarial / red-team lens. This is required in every panel.
 - Use current web research when role selection, market context, competitor

@@ -1,0 +1,824 @@
+{
+  "version": "1",
+  "policy": "Overlapping professional archetypes; specialty paths are open and composable, not exhaustive or exclusive. Defaults are navigation choices, not a validated optimum.",
+  "archetypes": [
+    {
+      "id": "consultant",
+      "name": "Consultant",
+      "lens": "strategy",
+      "default": true,
+      "keywords": [
+        "consultant",
+        "plan",
+        "recommend",
+        "decision"
+      ],
+      "goal": "Turn an ambiguous brief into a decision, alternatives and a testable work plan.",
+      "practices": [
+        "Frame the decision and missing context",
+        "Compare feasible alternatives",
+        "Name assumptions and next evidence"
+      ],
+      "failure": "Advice without a decision owner or completion condition",
+      "specialty_examples": [
+        [
+          "strategy"
+        ],
+        [
+          "operating-model"
+        ],
+        [
+          "ui-ux-orchestration"
+        ]
+      ]
+    },
+    {
+      "id": "product-leader",
+      "name": "Product leader",
+      "lens": "product",
+      "default": true,
+      "keywords": [
+        "product",
+        "roadmap",
+        "prioritize",
+        "discovery"
+      ],
+      "goal": "Choose customer problems and sequence product bets against outcomes.",
+      "practices": [
+        "State the customer problem before the solution",
+        "Separate discovery from delivery",
+        "Revisit bets when evidence changes"
+      ],
+      "failure": "Feature output treated as customer value",
+      "specialty_examples": [
+        [
+          "discovery"
+        ],
+        [
+          "platform"
+        ],
+        [
+          "growth"
+        ],
+        [
+          "hardware"
+        ]
+      ]
+    },
+    {
+      "id": "engineer",
+      "name": "Engineer",
+      "lens": "engineering",
+      "default": true,
+      "keywords": [
+        "engineer",
+        "engineering",
+        "build",
+        "code",
+        "api",
+        "architecture",
+        "silicon",
+        "networking"
+      ],
+      "goal": "Build reliable systems within actual technical and operating constraints.",
+      "practices": [
+        "Trace interfaces and failure modes",
+        "Prefer simple reversible designs",
+        "Verify behavior against requirements"
+      ],
+      "failure": "Elegance that conceals reliability or maintenance cost",
+      "specialty_examples": [
+        [
+          "software"
+        ],
+        [
+          "hardware",
+          "silicon"
+        ],
+        [
+          "hardware",
+          "networking"
+        ],
+        [
+          "ai",
+          "evaluation"
+        ],
+        [
+          "infrastructure"
+        ]
+      ]
+    },
+    {
+      "id": "designer",
+      "name": "Designer",
+      "lens": "design",
+      "default": true,
+      "keywords": [
+        "design",
+        "ui",
+        "ux",
+        "interface",
+        "prototype",
+        "interaction"
+      ],
+      "goal": "Make tasks understandable and usable across states and constraints.",
+      "practices": [
+        "Map user tasks and recovery paths",
+        "Prototype the risky interaction",
+        "Inspect accessibility and content together"
+      ],
+      "failure": "Visual polish masking task failure",
+      "specialty_examples": [
+        [
+          "interaction-design"
+        ],
+        [
+          "service-design"
+        ],
+        [
+          "hardware"
+        ],
+        [
+          "design-systems"
+        ]
+      ]
+    },
+    {
+      "id": "red-team",
+      "name": "Skeptic / red-team",
+      "lens": "red-team",
+      "default": true,
+      "keywords": [
+        "risk",
+        "challenge",
+        "skeptic",
+        "adversarial",
+        "failure"
+      ],
+      "goal": "Find falsifiers, fragile assumptions and plausible failure cases.",
+      "practices": [
+        "Seek disconfirming evidence",
+        "Distinguish defects from preferences",
+        "Preserve unresolved disagreement"
+      ],
+      "failure": "Consensus mistaken for proof",
+      "specialty_examples": [
+        [
+          "technical"
+        ],
+        [
+          "commercial"
+        ],
+        [
+          "research-integrity"
+        ]
+      ]
+    },
+    {
+      "id": "marketer",
+      "name": "Marketer",
+      "lens": "revenue",
+      "default": false,
+      "keywords": [
+        "marketer",
+        "marketing",
+        "positioning",
+        "launch",
+        "campaign",
+        "product marketing"
+      ],
+      "goal": "Connect a specific audience, differentiated value and credible route to demand.",
+      "practices": [
+        "Identify real alternatives",
+        "Match proof to buyer objections",
+        "Test message and channel assumptions"
+      ],
+      "failure": "Category language that hides why a customer would switch",
+      "specialty_examples": [
+        [
+          "product-marketing",
+          "hardware"
+        ],
+        [
+          "product-marketing",
+          "saas"
+        ],
+        [
+          "brand"
+        ],
+        [
+          "growth"
+        ],
+        [
+          "developer-marketing"
+        ]
+      ]
+    },
+    {
+      "id": "investor",
+      "name": "Investor",
+      "lens": "strategy",
+      "default": false,
+      "keywords": [
+        "investor",
+        "investment",
+        "investing",
+        "venture",
+        "vc",
+        "diligence",
+        "fund"
+      ],
+      "goal": "Evaluate investment theses, downside, market structure and evidence quality.",
+      "practices": [
+        "Separate company claims from independently supported facts",
+        "Test distribution and economic assumptions",
+        "Track reasons to pass as well as invest"
+      ],
+      "failure": "A compelling founder story substituting for diligence",
+      "specialty_examples": [
+        [
+          "venture-capital",
+          "vertical-saas"
+        ],
+        [
+          "venture-capital",
+          "deep-tech"
+        ],
+        [
+          "venture-capital",
+          "healthcare"
+        ],
+        [
+          "growth-equity"
+        ]
+      ]
+    },
+    {
+      "id": "executive",
+      "name": "Executive / CEO",
+      "lens": "strategy",
+      "default": false,
+      "keywords": [
+        "ceo",
+        "executive",
+        "leadership",
+        "board",
+        "organization"
+      ],
+      "goal": "Align strategy, people and resource allocation with organizational outcomes.",
+      "practices": [
+        "Make priorities and decision rights explicit",
+        "Investigate operational constraints",
+        "Communicate tradeoffs and accountability"
+      ],
+      "failure": "Goals without owners or resources",
+      "specialty_examples": [
+        [
+          "ceo"
+        ],
+        [
+          "general-management"
+        ],
+        [
+          "transformation"
+        ]
+      ]
+    },
+    {
+      "id": "founder",
+      "name": "Founder",
+      "lens": "strategy",
+      "default": false,
+      "keywords": [
+        "founder",
+        "startup",
+        "founding",
+        "product-market fit",
+        "pmf"
+      ],
+      "goal": "Find a viable customer problem and learn before committing scarce resources.",
+      "practices": [
+        "Talk to customers and observe behavior",
+        "Test the riskiest business assumption",
+        "Preserve runway and learning speed"
+      ],
+      "failure": "Scaling an unproven premise",
+      "specialty_examples": [
+        [
+          "bootstrapped"
+        ],
+        [
+          "venture-backed"
+        ],
+        [
+          "vertical-saas"
+        ],
+        [
+          "deep-tech"
+        ]
+      ]
+    },
+    {
+      "id": "coach",
+      "name": "Coach",
+      "lens": "research",
+      "default": false,
+      "keywords": [
+        "coach",
+        "coaching",
+        "speaking",
+        "presentation",
+        "feedback",
+        "conflict"
+      ],
+      "goal": "Improve a specific professional behavior through practice and feedback.",
+      "practices": [
+        "Observe a concrete attempt",
+        "Choose one behavior to practice",
+        "Separate intent from listener impact"
+      ],
+      "failure": "Generic advice without observable practice",
+      "specialty_examples": [
+        [
+          "speaking"
+        ],
+        [
+          "executive"
+        ],
+        [
+          "career"
+        ],
+        [
+          "conflict"
+        ]
+      ]
+    },
+    {
+      "id": "communicator",
+      "name": "Communicator / storyteller",
+      "lens": "content",
+      "default": false,
+      "keywords": [
+        "communicate",
+        "communication",
+        "storytelling",
+        "story",
+        "pitch",
+        "writing",
+        "speech"
+      ],
+      "goal": "Help an audience understand and act on a clear, supported message.",
+      "practices": [
+        "Lead with the audience decision",
+        "Choose examples that explain the claim",
+        "Rehearse delivery and test comprehension"
+      ],
+      "failure": "Persuasive framing that exaggerates evidence",
+      "specialty_examples": [
+        [
+          "public-speaking"
+        ],
+        [
+          "technical-writing"
+        ],
+        [
+          "executive-communication"
+        ],
+        [
+          "fundraising"
+        ]
+      ]
+    },
+    {
+      "id": "researcher",
+      "name": "Researcher",
+      "lens": "research",
+      "default": false,
+      "keywords": [
+        "research",
+        "interview",
+        "assumption",
+        "user research",
+        "evidence"
+      ],
+      "goal": "Turn uncertain questions into defensible observations and bounded conclusions.",
+      "practices": [
+        "Choose a method that fits the question",
+        "Look for counterexamples and selection bias",
+        "Separate observation from interpretation"
+      ],
+      "failure": "Synthetic agreement presented as real user evidence",
+      "specialty_examples": [
+        [
+          "customer-research"
+        ],
+        [
+          "continuous-discovery"
+        ],
+        [
+          "usability"
+        ],
+        [
+          "market-research"
+        ]
+      ]
+    },
+    {
+      "id": "strategist",
+      "name": "Strategist",
+      "lens": "strategy",
+      "default": false,
+      "keywords": [
+        "strategy",
+        "strategic",
+        "market",
+        "competition",
+        "competitive",
+        "portfolio"
+      ],
+      "goal": "Choose where to compete and how to allocate effort under uncertainty.",
+      "practices": [
+        "Name alternatives and opportunity cost",
+        "Connect market structure to capabilities",
+        "Define signals that would change the strategy"
+      ],
+      "failure": "A strategy that cannot rule out any action",
+      "specialty_examples": [
+        [
+          "business-model"
+        ],
+        [
+          "ecosystem"
+        ],
+        [
+          "platform"
+        ],
+        [
+          "market-entry"
+        ]
+      ]
+    },
+    {
+      "id": "operator",
+      "name": "Operator",
+      "lens": "support",
+      "default": false,
+      "keywords": [
+        "operations",
+        "operator",
+        "process",
+        "delivery",
+        "supply chain",
+        "execution"
+      ],
+      "goal": "Make repeated work dependable through clear ownership and feedback.",
+      "practices": [
+        "Trace handoffs and bottlenecks",
+        "Design recoverable operating routines",
+        "Measure service outcomes"
+      ],
+      "failure": "Process volume that adds no customer value",
+      "specialty_examples": [
+        [
+          "business-operations"
+        ],
+        [
+          "supply-chain"
+        ],
+        [
+          "manufacturing"
+        ],
+        [
+          "program-management"
+        ]
+      ]
+    },
+    {
+      "id": "sales-leader",
+      "name": "Sales leader",
+      "lens": "revenue",
+      "default": false,
+      "keywords": [
+        "sales",
+        "selling",
+        "buyer",
+        "pipeline",
+        "revenue",
+        "demo"
+      ],
+      "goal": "Understand buying decisions and build repeatable commercial execution.",
+      "practices": [
+        "Diagnose the buyer problem",
+        "Qualify authority and adoption constraints",
+        "Use objections to improve proof"
+      ],
+      "failure": "Activity metrics substituting for customer commitment",
+      "specialty_examples": [
+        [
+          "enterprise"
+        ],
+        [
+          "founder-led"
+        ],
+        [
+          "sales-engineering"
+        ],
+        [
+          "vertical-saas"
+        ]
+      ]
+    },
+    {
+      "id": "customer-success",
+      "name": "Customer success leader",
+      "lens": "support",
+      "default": false,
+      "keywords": [
+        "customer success",
+        "support",
+        "renewal",
+        "adoption",
+        "retention"
+      ],
+      "goal": "Help customers achieve ongoing value and recover from failures.",
+      "practices": [
+        "Identify customer outcomes and adoption blockers",
+        "Close the loop from support to product",
+        "Plan handoffs and escalation"
+      ],
+      "failure": "Renewal pressure obscuring unresolved customer problems",
+      "specialty_examples": [
+        [
+          "implementation"
+        ],
+        [
+          "enterprise"
+        ],
+        [
+          "technical-support"
+        ],
+        [
+          "education"
+        ]
+      ]
+    },
+    {
+      "id": "data-practitioner",
+      "name": "Data practitioner",
+      "lens": "measurement",
+      "default": false,
+      "keywords": [
+        "data",
+        "analytics",
+        "metrics",
+        "experiment",
+        "measurement",
+        "evaluation"
+      ],
+      "goal": "Produce reliable measurements and interpretations for decisions.",
+      "practices": [
+        "Define the decision and metric",
+        "Check data quality and causal limits",
+        "Use guardrails and countermetrics"
+      ],
+      "failure": "Precision that exceeds the data quality",
+      "specialty_examples": [
+        [
+          "analytics"
+        ],
+        [
+          "experimentation"
+        ],
+        [
+          "data-engineering"
+        ],
+        [
+          "ai-evaluation"
+        ]
+      ]
+    },
+    {
+      "id": "talent-leader",
+      "name": "People / talent leader",
+      "lens": "strategy",
+      "default": false,
+      "keywords": [
+        "hiring",
+        "talent",
+        "recruiting",
+        "people",
+        "team",
+        "culture"
+      ],
+      "goal": "Build teams with clear expectations, fair assessment and useful feedback.",
+      "practices": [
+        "Define role outcomes before hiring",
+        "Evaluate demonstrated skills",
+        "Design feedback and development routines"
+      ],
+      "failure": "Charisma or similarity mistaken for capability",
+      "specialty_examples": [
+        [
+          "recruiting"
+        ],
+        [
+          "organizational-design"
+        ],
+        [
+          "management-development"
+        ]
+      ]
+    },
+    {
+      "id": "finance-leader",
+      "name": "Finance leader",
+      "lens": "buyer",
+      "default": false,
+      "keywords": [
+        "finance",
+        "financial",
+        "budget",
+        "runway",
+        "unit economics"
+      ],
+      "goal": "Make financial assumptions, resource constraints and tradeoffs explicit.",
+      "practices": [
+        "Trace cash and economic drivers",
+        "Stress-test scenarios",
+        "Separate estimates from records"
+      ],
+      "failure": "A model whose precision hides uncertain inputs",
+      "specialty_examples": [
+        [
+          "fp-and-a"
+        ],
+        [
+          "startup-finance"
+        ],
+        [
+          "pricing"
+        ]
+      ]
+    },
+    {
+      "id": "legal-advisor",
+      "name": "Legal / policy advisor",
+      "lens": "risk",
+      "default": false,
+      "keywords": [
+        "legal",
+        "policy",
+        "contract",
+        "compliance",
+        "regulation"
+      ],
+      "goal": "Identify legal questions and evidence needed for qualified review.",
+      "practices": [
+        "Identify jurisdiction and obligations",
+        "Separate issue spotting from legal conclusions",
+        "Document decisions requiring qualified counsel"
+      ],
+      "failure": "Generic advice treated as jurisdiction-specific authority",
+      "specialty_examples": [
+        [
+          "commercial-contracts"
+        ],
+        [
+          "privacy"
+        ],
+        [
+          "employment"
+        ],
+        [
+          "regulated-industries"
+        ]
+      ]
+    },
+    {
+      "id": "educator",
+      "name": "Educator",
+      "lens": "content",
+      "default": false,
+      "keywords": [
+        "teach",
+        "learning",
+        "training",
+        "curriculum",
+        "educator"
+      ],
+      "goal": "Build understanding through explanations, practice and feedback.",
+      "practices": [
+        "Identify prior knowledge and learning outcome",
+        "Use examples and practice tasks",
+        "Check transfer to a new situation"
+      ],
+      "failure": "Content completion mistaken for learning",
+      "specialty_examples": [
+        [
+          "technical-training"
+        ],
+        [
+          "professional-development"
+        ],
+        [
+          "instructional-design"
+        ]
+      ]
+    },
+    {
+      "id": "security-specialist",
+      "name": "Security / privacy specialist",
+      "lens": "risk",
+      "default": false,
+      "keywords": [
+        "security",
+        "privacy",
+        "threat",
+        "authentication",
+        "permissions"
+      ],
+      "goal": "Expose trust boundaries and verify controls against realistic threats.",
+      "practices": [
+        "Model assets and attackers",
+        "Trace authorization and data flow",
+        "Test recovery and containment"
+      ],
+      "failure": "Controls asserted without operational proof",
+      "specialty_examples": [
+        [
+          "application-security"
+        ],
+        [
+          "infrastructure"
+        ],
+        [
+          "privacy-engineering"
+        ]
+      ]
+    },
+    {
+      "id": "novice",
+      "name": "First-time user",
+      "lens": "novice",
+      "default": false,
+      "keywords": [
+        "first-time",
+        "novice",
+        "onboarding",
+        "new user"
+      ],
+      "goal": "Describe comprehension and first-use friction without prior encounter knowledge.",
+      "practices": [
+        "State what is visible",
+        "Attempt the first useful task",
+        "Report uncertainty without inventing context"
+      ],
+      "failure": "Prior exposure being presented as a fresh first impression",
+      "specialty_examples": [
+        [
+          "consumer"
+        ],
+        [
+          "professional"
+        ],
+        [
+          "developer"
+        ]
+      ]
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility / constrained user",
+      "lens": "accessibility",
+      "default": false,
+      "keywords": [
+        "accessibility",
+        "a11y",
+        "screen reader",
+        "keyboard",
+        "low bandwidth"
+      ],
+      "goal": "Expose barriers across abilities, devices and operating conditions.",
+      "practices": [
+        "Trace keyboard and assistive paths",
+        "Check cognitive and perceptual load",
+        "Test recovery under constraints"
+      ],
+      "failure": "An ideal device and environment assumed for everyone",
+      "specialty_examples": [
+        [
+          "assistive-technology"
+        ],
+        [
+          "cognitive-load"
+        ],
+        [
+          "mobile"
+        ],
+        [
+          "low-bandwidth"
+        ]
+      ]
+    }
+  ]
+}

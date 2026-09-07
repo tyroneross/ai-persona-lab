@@ -2,7 +2,7 @@
 
 ## Default Critique Lenses
 
-Lead with these six research-backed lenses. Pick 4 to 6 by MECE coverage of
+Lead with these six research-backed lenses. Pick 4 to 6 by task-relevant coverage of
 goals, jobs-to-be-done, and risk, not by demographics. Fewer, sharply distinct
 lenses beat many overlapping ones.
 
@@ -115,3 +115,7 @@ context is unverified.
   technical writer/content designer, security reviewer, product manager.
 - For `regulated domain`: domain expert, risk/compliance reviewer, operator,
   product manager, skeptical target user.
+
+## Professional archetypes and specialties
+
+Use `persona archetypes` to browse broad professional roles and `persona consult "<task>" --json` to select task-specific expertise. Roles and specialties may overlap. Compose paths such as `product-marketing/hardware/networking` or combine independent paths such as `venture-capital,vertical-saas/healthcare`. These paths describe requested expertise; attached source principles determine evidence coverage. See `docs/archetypes.md`.

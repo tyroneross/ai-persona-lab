@@ -208,3 +208,25 @@ family; RossLabs is the org behind it if you want the background.
 ## Review workspace
 
 Run `npm run web:dev` and open the home page to prepare a bounded handoff, interface, or product-decision review. Search saved profiles, inspect evidence and recall labels, and copy a previewed brief. Preparing a brief does not run models. See [defaults, research and pilot limits](docs/review-workspace.md).
+
+## Professional archetypes and transcript evidence
+
+Browse 24 overlapping professional archetypes, combine open specialty paths,
+and let an agent plan which saved personas or new drafts a task needs:
+
+```bash
+persona archetypes --defaults
+persona compose marketer --specialties product-marketing,hardware/networking --save
+persona consult "Evaluate a healthcare vertical SaaS venture investment" --json
+persona consult "Plan an accessible onboarding flow" --mode ui-ux --json
+persona sources ingest --root /path/to/lenny-podcast-transcripts
+persona sources verify --root /path/to/lenny-podcast-transcripts
+```
+
+`consult` returns a plan; a host agent executes it through
+`/persona-lab:consult` or the task consultant instructions. The seed evidence
+contains 40 reviewed principles from 13 Lenny podcast interviews, with source
+hashes, line spans, applicability and limits. The full corpus index labels
+keyword matches as candidates. Specialty labels and synthetic personas do not
+establish expertise. See [the archetype guide](docs/archetypes.md) and
+[the reviewed source records](lib/data/lenny-leadership-evidence.json).

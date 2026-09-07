@@ -1,0 +1,547 @@
+[
+  {
+    "id": "lenny-product-competitive-alternatives",
+    "archetypes": [
+      "marketer",
+      "founder",
+      "sales-leader",
+      "strategist"
+    ],
+    "specialties": [
+      "positioning",
+      "b2b-saas"
+    ],
+    "principle": "Define the alternatives a buyer actually considers, including their existing workaround, before claiming differentiation.",
+    "use_when": "A B2B positioning exercise or sales review needs to explain why a buyer should change.",
+    "avoid_when": "Do not assume all lost deals went to a similar vendor or reuse a podcast statistic as a current benchmark.",
+    "source": {
+      "path": "transcripts/raw/April Dunford.txt",
+      "sha256": "2d805f96b602906beb8fc7a669d37a42fb9bc2acdedbe4df1609465ca4ab0c8f",
+      "speaker": "April Dunford",
+      "line_start": 277,
+      "line_end": 299
+    }
+  },
+  {
+    "id": "lenny-product-capability-to-value",
+    "archetypes": [
+      "marketer",
+      "product-leader",
+      "strategist"
+    ],
+    "specialties": [
+      "positioning",
+      "product-marketing",
+      "b2b-saas"
+    ],
+    "principle": "Map capabilities absent from the alternatives to customer value, then identify customers who care most and the category that makes that value clear.",
+    "use_when": "Writing product messaging, selecting a target account profile, or evaluating a category.",
+    "avoid_when": "Do not begin with a desired category and force buyer evidence to fit it.",
+    "source": {
+      "path": "transcripts/raw/April Dunford.txt",
+      "sha256": "2d805f96b602906beb8fc7a669d37a42fb9bc2acdedbe4df1609465ca4ab0c8f",
+      "speaker": "April Dunford",
+      "line_start": 301,
+      "line_end": 320
+    }
+  },
+  {
+    "id": "lenny-product-qualified-buyer-test",
+    "archetypes": [
+      "marketer",
+      "researcher",
+      "sales-leader"
+    ],
+    "specialties": [
+      "positioning",
+      "technical-marketing",
+      "b2b-saas"
+    ],
+    "principle": "Test technical positioning with qualified buyers and judge whether the story makes its relevance and value clear to them.",
+    "use_when": "Reviewing technical product copy or a B2B sales narrative.",
+    "avoid_when": "A generalist persona can critique clarity but cannot substitute for evidence of buyer resonance.",
+    "source": {
+      "path": "transcripts/raw/April Dunford.txt",
+      "sha256": "2d805f96b602906beb8fc7a669d37a42fb9bc2acdedbe4df1609465ca4ab0c8f",
+      "speaker": "April Dunford",
+      "line_start": 244,
+      "line_end": 266
+    }
+  },
+  {
+    "id": "lenny-product-positioning-refresh",
+    "archetypes": [
+      "marketer",
+      "founder",
+      "product-leader"
+    ],
+    "specialties": [
+      "positioning",
+      "product-marketing"
+    ],
+    "principle": "Revisit positioning as the product and market change, combining what sales, marketing, product, and founders each observe.",
+    "use_when": "Teams disagree about the story or previously effective positioning starts fitting poorly.",
+    "avoid_when": "Do not claim a single weak funnel metric diagnoses positioning; investigate alternative causes.",
+    "source": {
+      "path": "transcripts/raw/April Dunford.txt",
+      "sha256": "2d805f96b602906beb8fc7a669d37a42fb9bc2acdedbe4df1609465ca4ab0c8f",
+      "speaker": "April Dunford",
+      "line_start": 205,
+      "line_end": 239
+    }
+  },
+  {
+    "id": "lenny-product-outcome-opportunity-solutions",
+    "archetypes": [
+      "product-leader",
+      "researcher",
+      "designer",
+      "strategist"
+    ],
+    "specialties": [
+      "continuous-discovery",
+      "product-strategy"
+    ],
+    "principle": "Connect the desired outcome to unmet needs and then to alternative solutions and assumption tests.",
+    "use_when": "A task begins with an outcome but no justified feature choice.",
+    "avoid_when": "Do not rename a preferred solution as an opportunity or impose an exhaustive taxonomy on exploratory work.",
+    "source": {
+      "path": "transcripts/raw/Teresa Torres.txt",
+      "sha256": "47837e65ab2b5e4c44e596420dbaae1b1ea9b38ab510c7d480b542093e92b95e",
+      "speaker": "Teresa Torres",
+      "line_start": 67,
+      "line_end": 86
+    }
+  },
+  {
+    "id": "lenny-product-situated-customer-stories",
+    "archetypes": [
+      "researcher",
+      "designer",
+      "product-leader",
+      "marketer"
+    ],
+    "specialties": [
+      "customer-research",
+      "continuous-discovery"
+    ],
+    "principle": "Ask for a recent specific experience and reconstruct the setting and sequence to discover needs that broad preference questions miss.",
+    "use_when": "Planning discovery interviews or separating stated preferences from behavior.",
+    "avoid_when": "Do not fabricate customer stories with personas and treat them as observed research.",
+    "source": {
+      "path": "transcripts/raw/Teresa Torres.txt",
+      "sha256": "47837e65ab2b5e4c44e596420dbaae1b1ea9b38ab510c7d480b542093e92b95e",
+      "speaker": "Teresa Torres",
+      "line_start": 136,
+      "line_end": 149
+    }
+  },
+  {
+    "id": "lenny-product-specific-opportunity",
+    "archetypes": [
+      "researcher",
+      "designer",
+      "product-leader"
+    ],
+    "specialties": [
+      "customer-research",
+      "interaction-design"
+    ],
+    "principle": "Frame an opportunity as a specific person, situation, and difficulty so the team can act on it.",
+    "use_when": "A brief says improve usability without naming the interaction that fails.",
+    "avoid_when": "Do not treat one concrete example as evidence that all users share the same difficulty.",
+    "source": {
+      "path": "transcripts/raw/Teresa Torres.txt",
+      "sha256": "47837e65ab2b5e4c44e596420dbaae1b1ea9b38ab510c7d480b542093e92b95e",
+      "speaker": "Teresa Torres",
+      "line_start": 151,
+      "line_end": 158
+    }
+  },
+  {
+    "id": "lenny-product-recurring-discovery-recruitment",
+    "archetypes": [
+      "researcher",
+      "product-leader",
+      "sales-leader"
+    ],
+    "specialties": [
+      "continuous-discovery",
+      "customer-research",
+      "b2b-saas"
+    ],
+    "principle": "Make interviews recurring by recruiting opted-in users in the product or reaching buyers through teams already speaking with them.",
+    "use_when": "Discovery repeatedly stalls because the product team must rebuild recruiting from scratch.",
+    "avoid_when": "Do not let convenience sampling silently stand for the whole market or bypass consent.",
+    "source": {
+      "path": "transcripts/raw/Teresa Torres.txt",
+      "sha256": "47837e65ab2b5e4c44e596420dbaae1b1ea9b38ab510c7d480b542093e92b95e",
+      "speaker": "Teresa Torres",
+      "line_start": 259,
+      "line_end": 275
+    }
+  },
+  {
+    "id": "lenny-product-write-the-strategy",
+    "archetypes": [
+      "engineer",
+      "product-leader",
+      "strategist"
+    ],
+    "specialties": [
+      "engineering-management",
+      "engineering-strategy"
+    ],
+    "principle": "Write down the strategy being applied so disagreements can be traced to clarity, interpretation, or an unsuitable policy.",
+    "use_when": "Teams accuse one another of lacking strategy or make inconsistent decisions.",
+    "avoid_when": "Do not mistake a written document for proof that the strategy works.",
+    "source": {
+      "path": "transcripts/raw/Will Larson.txt",
+      "sha256": "5079796221d8b1e5937f6cc4ed179d9a6480904dec25a430fc6204112cd34897",
+      "speaker": "Will Larson",
+      "line_start": 130,
+      "line_end": 140
+    }
+  },
+  {
+    "id": "lenny-product-standard-tools-policy",
+    "archetypes": [
+      "engineer",
+      "strategist",
+      "founder"
+    ],
+    "specialties": [
+      "engineering-strategy",
+      "software-platforms"
+    ],
+    "principle": "Use an explicit standard toolset to focus engineering capacity on the company problems that matter.",
+    "use_when": "Routine requests introduce new languages, databases, or infrastructure without a clear business reason.",
+    "avoid_when": "Do not turn a useful default into a ban when requirements demonstrate the existing tools cannot meet the need.",
+    "source": {
+      "path": "transcripts/raw/Will Larson.txt",
+      "sha256": "5079796221d8b1e5937f6cc4ed179d9a6480904dec25a430fc6204112cd34897",
+      "speaker": "Will Larson",
+      "line_start": 142,
+      "line_end": 146
+    }
+  },
+  {
+    "id": "lenny-product-diagnosis-policy-action",
+    "archetypes": [
+      "engineer",
+      "strategist",
+      "product-leader"
+    ],
+    "specialties": [
+      "engineering-strategy",
+      "product-strategy"
+    ],
+    "principle": "Ground strategy in a diagnosis, guiding policies, and actions; make the resulting tradeoffs visible in future decisions.",
+    "use_when": "Choosing a platform direction or explaining constraints across functions.",
+    "avoid_when": "Do not copy the historical data-center or monolith choices without checking the present context.",
+    "source": {
+      "path": "transcripts/raw/Will Larson.txt",
+      "sha256": "5079796221d8b1e5937f6cc4ed179d9a6480904dec25a430fc6204112cd34897",
+      "speaker": "Will Larson",
+      "line_start": 151,
+      "line_end": 179
+    }
+  },
+  {
+    "id": "lenny-product-eval-for-improvement",
+    "archetypes": [
+      "engineer",
+      "data-practitioner",
+      "product-leader"
+    ],
+    "specialties": [
+      "ai-evaluation",
+      "ai-products"
+    ],
+    "principle": "Choose evaluations to expose where the product performs poorly for meaningful user segments and guide improvements.",
+    "use_when": "An AI feature works in demos but its weak cases or affected users remain unclear.",
+    "avoid_when": "Do not use a fixed number of evaluations as the definition of sufficient coverage.",
+    "source": {
+      "path": "transcripts/raw/Chip Huyen.txt",
+      "sha256": "64cb0a243b7fd68bddc691fe933c99786a79e2eb62a5d0ae998a84f2b1558afe",
+      "speaker": "Chip Huyen",
+      "line_start": 172,
+      "line_end": 185
+    }
+  },
+  {
+    "id": "lenny-product-evaluate-intermediate-work",
+    "archetypes": [
+      "engineer",
+      "researcher",
+      "data-practitioner"
+    ],
+    "specialties": [
+      "ai-evaluation",
+      "agent-orchestration",
+      "information-retrieval"
+    ],
+    "principle": "Evaluate intermediate research steps for relevance, diversity, breadth, and depth so a poor final answer can be traced to a failing step.",
+    "use_when": "An agent searches and synthesizes multiple sources.",
+    "avoid_when": "Do not assume intermediate scores alone establish final-answer correctness; retain end-to-end review.",
+    "source": {
+      "path": "transcripts/raw/Chip Huyen.txt",
+      "sha256": "64cb0a243b7fd68bddc691fe933c99786a79e2eb62a5d0ae998a84f2b1558afe",
+      "speaker": "Chip Huyen",
+      "line_start": 178,
+      "line_end": 191
+    }
+  },
+  {
+    "id": "lenny-product-retrieval-context-preparation",
+    "archetypes": [
+      "engineer",
+      "data-practitioner",
+      "researcher"
+    ],
+    "specialties": [
+      "information-retrieval",
+      "ai-products"
+    ],
+    "principle": "Preserve the context needed to retrieve a passage when splitting documents; relevant information may not repeat the query terms.",
+    "use_when": "A retrieval system misses useful passages despite having ingested the source.",
+    "avoid_when": "Do not equate keyword matching or a database choice with demonstrated answer quality.",
+    "source": {
+      "path": "transcripts/raw/Chip Huyen.txt",
+      "sha256": "64cb0a243b7fd68bddc691fe933c99786a79e2eb62a5d0ae998a84f2b1558afe",
+      "speaker": "Chip Huyen",
+      "line_start": 196,
+      "line_end": 203
+    }
+  },
+  {
+    "id": "lenny-product-diagnose-then-design",
+    "archetypes": [
+      "designer",
+      "data-practitioner",
+      "product-leader"
+    ],
+    "specialties": [
+      "product-analytics",
+      "interaction-design"
+    ],
+    "principle": "Use data to locate what is happening and where a problem lies, then design and evaluate possible responses.",
+    "use_when": "A design review needs to connect observed behavior to creative solution options.",
+    "avoid_when": "Do not expect analytics to generate the right solution or treat intuition as sufficient diagnosis.",
+    "source": {
+      "path": "transcripts/raw/Julie Zhuo 2.0.txt",
+      "sha256": "925f41074157eacf3e7c88b097329db13eed911c4129fbb53331b5372f968216",
+      "speaker": "Julie Zhuo",
+      "line_start": 190,
+      "line_end": 200
+    }
+  },
+  {
+    "id": "lenny-product-data-with-context",
+    "archetypes": [
+      "designer",
+      "researcher",
+      "data-practitioner"
+    ],
+    "specialties": [
+      "product-analytics",
+      "experimentation",
+      "customer-research"
+    ],
+    "principle": "Combine qualitative and quantitative observations, and interpret metrics within their context and time horizon.",
+    "use_when": "An experiment result conflicts with interviews or a product vision.",
+    "avoid_when": "Do not present a short-term A/B result as a complete long-term forecast or a number as interpretation-free.",
+    "source": {
+      "path": "transcripts/raw/Julie Zhuo 2.0.txt",
+      "sha256": "925f41074157eacf3e7c88b097329db13eed911c4129fbb53331b5372f968216",
+      "speaker": "Julie Zhuo",
+      "line_start": 193,
+      "line_end": 206
+    }
+  },
+  {
+    "id": "lenny-product-compose-for-needed-skills",
+    "archetypes": [
+      "product-leader",
+      "engineer",
+      "designer",
+      "strategist"
+    ],
+    "specialties": [
+      "agent-orchestration",
+      "team-design"
+    ],
+    "principle": "Compose the team around the skills the task needs, allow roles to overlap, and bring specialist review where capability is missing.",
+    "use_when": "Selecting a small persona panel or assigning a product-building task.",
+    "avoid_when": "Do not assume a broad role label proves specialist competence or that everyone can do every job.",
+    "source": {
+      "path": "transcripts/raw/Julie Zhuo 2.0.txt",
+      "sha256": "925f41074157eacf3e7c88b097329db13eed911c4129fbb53331b5372f968216",
+      "speaker": "Julie Zhuo",
+      "line_start": 124,
+      "line_end": 137
+    }
+  },
+  {
+    "id": "lenny-product-shared-solution-risks",
+    "archetypes": [
+      "product-leader",
+      "engineer",
+      "designer",
+      "founder"
+    ],
+    "specialties": [
+      "product-discovery",
+      "product-strategy"
+    ],
+    "principle": "Have product, design, and engineering jointly examine whether a solution is valuable, usable, feasible, and viable.",
+    "use_when": "Planning a product or reviewing a proposal whose risks cross team boundaries.",
+    "avoid_when": "Use these as overlapping prompts, not an exhaustive classification or a reason to confine each role to a silo.",
+    "source": {
+      "path": "transcripts/raw/Marty Cagan.txt",
+      "sha256": "d8d1f869b223ebec3a277e26209f97d5d029756d757874e19ccf875f834ba648",
+      "speaker": "Marty Cagan",
+      "line_start": 133,
+      "line_end": 137
+    }
+  },
+  {
+    "id": "lenny-product-test-reasons-to-reject",
+    "archetypes": [
+      "researcher",
+      "designer",
+      "product-leader"
+    ],
+    "specialties": [
+      "product-discovery",
+      "usability-testing"
+    ],
+    "principle": "Use prototype research to uncover reasons people would not use the product, with decision makers present to learn directly.",
+    "use_when": "A team is interpreting positive prototype reactions as readiness to build.",
+    "avoid_when": "Do not count polite approval as adoption evidence or require a large research ceremony for a trivial decision.",
+    "source": {
+      "path": "transcripts/raw/Marty Cagan.txt",
+      "sha256": "d8d1f869b223ebec3a277e26209f97d5d029756d757874e19ccf875f834ba648",
+      "speaker": "Marty Cagan",
+      "line_start": 142,
+      "line_end": 149
+    }
+  },
+  {
+    "id": "lenny-product-buyer-required-sales-motion",
+    "archetypes": [
+      "founder",
+      "sales-leader",
+      "marketer",
+      "investor"
+    ],
+    "specialties": [
+      "b2b-saas",
+      "go-to-market"
+    ],
+    "principle": "Choose the sales motion from what early unaffiliated customers need to buy and deploy, including security, onboarding, and technical questions.",
+    "use_when": "A B2B startup is choosing self-service versus assisted selling or reviewing commercial adoption risk.",
+    "avoid_when": "Do not apply the speakers early-customer heuristic as a universal law or infer a specific vertical investment thesis.",
+    "source": {
+      "path": "transcripts/raw/Jason M Lemkin.txt",
+      "sha256": "a57b2353eafe6947dcefd9f5c9f8066620106f6b0501af60ac9711f95930d183",
+      "speaker": "Jason Lemkin",
+      "line_start": 49,
+      "line_end": 71
+    }
+  },
+  {
+    "id": "lenny-product-hybrid-commercial-motion",
+    "archetypes": [
+      "sales-leader",
+      "founder",
+      "marketer",
+      "strategist"
+    ],
+    "specialties": [
+      "b2b-saas",
+      "go-to-market",
+      "product-led-growth"
+    ],
+    "principle": "Allow self-service and sales-assisted paths to coexist as customer needs and market segments differ.",
+    "use_when": "A SaaS go-to-market plan treats product-led and sales-led growth as mutually exclusive.",
+    "avoid_when": "Do not copy named-company revenue splits or historical sales timing as present-day benchmarks.",
+    "source": {
+      "path": "transcripts/raw/Jason M Lemkin.txt",
+      "sha256": "a57b2353eafe6947dcefd9f5c9f8066620106f6b0501af60ac9711f95930d183",
+      "speaker": "Jason Lemkin",
+      "line_start": 67,
+      "line_end": 83
+    }
+  },
+  {
+    "id": "lenny-product-hardware-software-usability",
+    "archetypes": [
+      "engineer",
+      "designer",
+      "product-leader"
+    ],
+    "specialties": [
+      "hardware",
+      "hardware-software-integration",
+      "usability-testing"
+    ],
+    "principle": "Test the integrated hardware and software experience on task speed, errors, and recovery, iterating across component boundaries.",
+    "use_when": "A device interaction depends on both physical input and software behavior.",
+    "avoid_when": "Do not infer chip-design, RF, manufacturing-yield, or networking expertise from this integration example.",
+    "source": {
+      "path": "transcripts/raw/Tony Fadell.txt",
+      "sha256": "d354342528d60589f7db48f40435db818e3e58063c4c368066b88c4c8bdfb178",
+      "speaker": "Tony Fadell",
+      "line_start": 52,
+      "line_end": 68
+    }
+  },
+  {
+    "id": "lenny-product-orchestrate-coupled-components",
+    "archetypes": [
+      "engineer",
+      "product-leader",
+      "designer"
+    ],
+    "specialties": [
+      "hardware",
+      "hardware-software-integration",
+      "agent-orchestration"
+    ],
+    "principle": "Coordinate tightly coupled component decisions around the few customer or system details that require them while delegating independent work.",
+    "use_when": "Hardware, software, filtering, and presentation must change together to achieve a usable outcome.",
+    "avoid_when": "Do not use system coordination as justification to control every implementation detail.",
+    "source": {
+      "path": "transcripts/raw/Tony Fadell.txt",
+      "sha256": "d354342528d60589f7db48f40435db818e3e58063c4c368066b88c4c8bdfb178",
+      "speaker": "Tony Fadell",
+      "line_start": 116,
+      "line_end": 125
+    }
+  },
+  {
+    "id": "lenny-product-deep-tech-change-thesis",
+    "archetypes": [
+      "investor",
+      "founder",
+      "strategist",
+      "product-leader"
+    ],
+    "specialties": [
+      "deep-tech-investing",
+      "hardware",
+      "commercialization"
+    ],
+    "principle": "Assess whether a technology changes the product or market enough to solve customer pain differently, and identify the product, operating, and marketing capabilities needed to commercialize it.",
+    "use_when": "Framing a deep-tech diligence question or planning how a technical invention becomes a product.",
+    "avoid_when": "This is a general deep-tech lens, not validated financial advice or a demonstrated semiconductor, healthcare, or vertical-SaaS underwriting model.",
+    "source": {
+      "path": "transcripts/raw/Tony Fadell.txt",
+      "sha256": "d354342528d60589f7db48f40435db818e3e58063c4c368066b88c4c8bdfb178",
+      "speaker": "Tony Fadell",
+      "line_start": 643,
+      "line_end": 653
+    }
+  }
+]

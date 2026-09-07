@@ -40,6 +40,8 @@ import {
   personaRecall, personaLifespan, permittedEncounters,
 } from "../lib/recall.mjs";
 import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversarial } from "../lib/roles.mjs";
+import { ARCHETYPE_CATALOG, composePersona, planConsultation } from "../lib/archetypes.mjs";
+import { ingestCorpus, scanCorpus, searchSources, verifyPrinciples, reviewedPrinciples, registeredCorpus } from "../lib/sources.mjs";
 import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
 
 // --- arg parsing -----------------------------------------------------------
@@ -86,6 +88,63 @@ const LEVELS = {
 };
 
 // --- commands --------------------------------------------------------------
+
+function cmdArchetypes(positional, flags) {
+  const catalog = ARCHETYPE_CATALOG;
+  const q = positional.join(' ').toLowerCase();
+  const principles = reviewedPrinciples();
+  const archetypes = catalog.archetypes.filter(a => (!flags.defaults || a.default) &&
+    (!q || JSON.stringify(a).toLowerCase().includes(q))).map(a => ({ ...a,
+      reviewed_principle_count: principles.filter(e => e.archetypes.includes(a.id)).length }));
+  if (flags.json) return out({ ...catalog, archetypes }, true);
+  process.stdout.write(`${catalog.policy}\n\n`);
+  for (const a of archetypes) process.stdout.write(`${a.id}${a.default ? ' (default)' : ''}: ${a.goal}\n  Reviewed principles: ${a.reviewed_principle_count}. Examples: ${a.specialty_examples.map(p => p.join('/')).join(', ')}\n`);
+}
+
+function cmdCompose(positional, flags) {
+  const result = composePersona({ archetypes: positional[0] || flags.archetypes,
+    specialties: flags.specialties || [], task: flags.task || '', name: flags.name });
+  if (flags.save) {
+    result.persona = savePersona(result.persona);
+    result.saved = true;
+  }
+  // JSON is the default so agents can persist result.persona without a parsing convention.
+  return out(result, true);
+}
+
+function cmdConsult(positional, flags) {
+  return out(planConsultation(positional.join(' '), {
+    specialties: flags.specialties || [], archetypes: flags.archetypes || [],
+    count: flags.count === undefined ? 5 : Number(flags.count), mode: flags.mode || 'consultant',
+    artifact: flags.artifact, project: flags.project,
+  }), true);
+}
+
+function cmdSources(positional, flags) {
+  const [sub, ...rest] = positional;
+  if (sub === 'ingest' || sub === 'scan') {
+    if (!flags.root || flags.root === true) die('usage: persona sources ingest|scan --root <corpus-root>');
+    const result = sub === 'ingest' ? ingestCorpus(flags.root) : scanCorpus(flags.root);
+    return out(result, true);
+  }
+  if (sub === 'verify') {
+    const root = flags.root || registeredCorpus()?.root;
+    if (!root) die('Provide --root <corpus-root> or ingest a corpus first');
+    const result = verifyPrinciples(root);
+    out(result, true);
+    if (!result.ok) process.exitCode = 1;
+    return;
+  }
+  if (sub === 'search') return out(searchSources(rest.join(' '), { root: flags.root }), true);
+  if (sub === 'principles') return out(reviewedPrinciples(), true);
+  if (!sub || sub === 'status') {
+    const index = registeredCorpus();
+    return out({ registered: Boolean(index), root: index?.root, fingerprint: index?.fingerprint,
+      episode_count: index?.episode_count, reviewed_principles: reviewedPrinciples().length,
+      status: 'Registry reflects last ingestion; use scan to recheck source and verify to check curated spans.' }, true);
+  }
+  die('usage: persona sources <status|scan|ingest|search|verify|principles>');
+}
 
 function cmdHome() {
   process.stdout.write(`${libraryHome()}\n`);
@@ -743,6 +802,10 @@ function usage() {
       "  persona run proven                 persona roster from-run <run_id> --name \"..\"",
       "  persona recall <persona_id> [--artifact <slug>] [--project <name>] [--limit N]",
       "  persona home",
+      "  persona archetypes [query] [--defaults] [--json]",
+      "  persona compose <archetype,archetype> [--specialties a/b,c/d] [--task ..] [--save]",
+      '  persona consult "<task>" [--mode ui-ux] [--archetypes a,b] [--specialties a/b,c/d]',
+      "  persona sources <status|scan|ingest|search|verify|principles> [--root <corpus-root>]",
       "",
       `Library: ${libraryHome()}`,
       "",
@@ -762,6 +825,10 @@ function main() {
   const { positional, flags } = options ? parsePlanningArgs(rest, options) : parseArgs(rest);
 
   switch (cmd) {
+    case "archetypes": return cmdArchetypes(positional, flags);
+    case "compose": return cmdCompose(positional, flags);
+    case "consult": return cmdConsult(positional, flags);
+    case "sources": return cmdSources(positional, flags);
     case "home": return cmdHome();
     case "brief": {
       const plan = createBriefPlan(positional, flags);
