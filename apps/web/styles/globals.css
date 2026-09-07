@@ -13,6 +13,7 @@
   --color-line-strong: #cbd5e1;
   --color-canvas: #f8fafc;
   --color-surface: #ffffff;
+  --color-brand: #0f766e;
   --color-accent: #0ea5e9;
   --color-accent-strong: #0284c7;
   --color-warn: #d97706;
@@ -95,4 +96,61 @@
     font-size: 0.875rem;
   }
   .review-field::placeholder { color: var(--color-muted); }
+}
+
+/* Color adds recognition to the existing layout without adding controls. */
+@layer components {
+  .workspace-intro {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: linear-gradient(115deg, #edf8f5, #f4f1fb 72%, #fbf5eb);
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 0.6rem;
+    background: #0f766e;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .brand-button { background: #0f766e; }
+  .brand-button:hover:not(:disabled) { background: #115e59; }
+  .workspace-intro .text-muted,
+  .template-card .text-muted { color: #556275; }
+  .library-count { background: #f3effb; border-color: #ddd3f3; color: #684299; }
+  [data-tone="handoff"] { --tone: #0f766e; --tone-wash: #edf8f5; --tone-line: #add5cb; }
+  [data-tone="interface"] { --tone: #7142a2; --tone-wash: #f5effc; --tone-line: #d4bfe9; }
+  [data-tone="decision"] { --tone: #9a5312; --tone-wash: #fdf4e7; --tone-line: #e9c99d; }
+  .template-card {
+    border-color: var(--tone-line);
+    background: var(--tone-wash);
+    color: var(--color-ink);
+    box-shadow: inset 0 3px 0 var(--tone-line);
+  }
+  .template-card:hover { border-color: var(--tone); }
+  .template-card[aria-pressed="true"] {
+    border-color: var(--tone);
+    box-shadow: inset 0 3px 0 var(--tone), 0 0 0 1px var(--tone);
+  }
+  .template-eyebrow { color: var(--tone); }
+  .template-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    color: white;
+  }
+  .template-card[aria-pressed="true"] .template-indicator { background: var(--tone); }
+  .review-panel { border-top: 3px solid var(--tone-line); }
+  .lens-number { color: var(--tone); background: var(--tone-wash); }
+  .persona-card { border-top: 3px solid #add5cb; }
+  .review-field:focus-visible { border-color: #0f766e; }
+  input[type="radio"], input[type="checkbox"] { accent-color: #0f766e; }
 }

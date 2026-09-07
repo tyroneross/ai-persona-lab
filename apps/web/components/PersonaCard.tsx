@@ -7,7 +7,7 @@ export default function PersonaCard({ persona }: { persona: PersonaSummary }) {
   return (
     <Link
       href={`/personas/${persona.id}`}
-      className="block h-full rounded-lg border border-line bg-surface p-4 hover:border-line-strong hover:shadow-sm transition"
+      className="persona-card block h-full rounded-lg border border-line bg-surface p-4 hover:border-line-strong hover:shadow-sm transition"
       aria-label={`Open ${persona.name} persona`}
     >
       <div className="flex items-baseline justify-between gap-2">

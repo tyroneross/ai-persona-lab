@@ -6,7 +6,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/" className="flex items-baseline gap-2 min-w-0">
+          <Link href="/" className="flex items-center gap-2 min-w-0">
+            <span aria-hidden="true" className="brand-mark">p</span>
             <span className="text-lg font-semibold text-ink truncate">
               Persona Lab
             </span>
@@ -28,7 +29,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <Link
               href="/personas/new"
-              className="inline-flex items-center rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft transition"
+              className="brand-button inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-white transition"
             >
               + New persona
             </Link>
