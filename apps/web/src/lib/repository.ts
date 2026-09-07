@@ -30,6 +30,9 @@ export function toPersonaSummary(p: Persona): PersonaSummary {
     confidence: p.confidence,
     tags: p.tags,
     updated_at: p.updated_at,
+    provenance: p.provenance,
+    lifespan: p.lifespan,
+    recall: p.recall,
   };
 }
 

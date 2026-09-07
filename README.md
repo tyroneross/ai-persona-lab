@@ -204,3 +204,7 @@ make the persona's basis and abandonment triggers explicit.
 Persona Lab is built by [RossLabs](https://rosslabs.ai). The npm package is
 published as `@tyroneross/persona-lab`, on the same scope as the rest of the
 family; RossLabs is the org behind it if you want the background.
+
+## Review workspace
+
+Run `npm run web:dev` and open the home page to prepare a bounded handoff, interface, or product-decision review. Search saved profiles, inspect evidence and recall labels, and copy a previewed brief. Preparing a brief does not run models. See [defaults, research and pilot limits](docs/review-workspace.md).

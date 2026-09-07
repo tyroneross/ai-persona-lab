@@ -57,6 +57,8 @@ export type Persona = {
   anti_goals?: string[];
   /** Basis for the persona; synthetic-* means hypothesis, not validated user research. */
   provenance?: Provenance;
+  lifespan?: "persistent" | "temporary";
+  recall?: "none" | "artifact" | "project" | "all";
   goals: string[];
   frustrations: string[];
   motivations: string[];
@@ -87,6 +89,9 @@ export type PersonaSummary = Pick<
   | "confidence"
   | "tags"
   | "updated_at"
+  | "provenance"
+  | "lifespan"
+  | "recall"
 >;
 
 export type PersonaFilters = {

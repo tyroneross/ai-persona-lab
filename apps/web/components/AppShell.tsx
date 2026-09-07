@@ -8,11 +8,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex items-baseline gap-2 min-w-0">
             <span className="text-lg font-semibold text-ink truncate">
-              AI User Personas
+              Persona Lab
             </span>
-            <span className="text-xs text-muted">v0.1</span>
+            <span className="text-xs text-muted">Review workspace</span>
           </Link>
           <nav aria-label="Primary" className="flex flex-wrap items-center gap-3">
+            <Link href="/" className="px-2 py-2 text-sm font-medium">Workspace</Link>
             <Link
               href="/councils"
               className="inline-flex items-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-line-strong transition"
@@ -39,8 +40,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </main>
       <footer className="border-t border-line bg-surface">
         <div className="mx-auto max-w-6xl px-6 py-3 text-xs text-muted">
-          Local-first workspace. Personas, rosters, and council runs persist to
-          local JSON.
+          Local library · Independent perspectives · Evidence before confidence
         </div>
       </footer>
     </div>

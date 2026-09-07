@@ -29,7 +29,7 @@ const DEFAULT_HARNESS_PATHS = [
 
 function harnessBin(): string {
   if (process.env.HARNESS_BIN) return process.env.HARNESS_BIN;
-  for (const p of DEFAULT_HARNESS_PATHS) if (existsSync(p)) return p;
+  for (const p of DEFAULT_HARNESS_PATHS) if (existsSync(/* turbopackIgnore: true */ p)) return p;
   return "harness"; // hope it's on PATH
 }
 

@@ -22,6 +22,11 @@ export default function PersonaCard({ persona }: { persona: PersonaSummary }) {
         <span className="not-italic font-medium text-ink-soft">Goal:</span>{" "}
         {persona.primary_goal}
       </p>
+      <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted">
+        <span>{persona.provenance ? persona.provenance.replaceAll("-", " ") : "Evidence basis unspecified"}</span>
+        <span>· Recall: {persona.recall || "unspecified"}</span>
+        <span>· {persona.lifespan || "Lifespan unspecified"}</span>
+      </div>
       <div className="mt-4 flex items-center justify-between gap-2">
         <ConfidenceMeter value={persona.confidence} size="sm" />
         {persona.tags.length > 0 && (

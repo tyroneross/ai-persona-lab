@@ -75,3 +75,24 @@
     border-radius: 9999px;
   }
 }
+
+@layer base {
+  :where(a, button, input, textarea, select):focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+}
+@layer components {
+  .review-field {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 0.5rem;
+    background: var(--color-surface);
+    padding: 0.7rem 0.8rem;
+    color: var(--color-ink);
+    font-weight: 400;
+    font-size: 0.875rem;
+  }
+  .review-field::placeholder { color: var(--color-muted); }
+}

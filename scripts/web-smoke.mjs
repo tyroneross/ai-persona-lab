@@ -59,12 +59,18 @@ try {
     assert.ok(response.ok, `${method} ${route}: ${response.status} ${JSON.stringify(data)}`);
     return data;
   }
-  assert.equal((await request('/api/personas')).personas.length, 8);
+  const summaries = (await request('/api/personas')).personas;
+  assert.equal(summaries.length, 8);
+  const summary = summaries.find(p => p.id === people[0].id);
+  for (const key of ['provenance', 'recall', 'lifespan', 'updated_at']) assert.equal(summary[key], people[0][key], key);
   const updated = await request(`/api/personas/${people[0].id}`, 'PUT', { ...people[0], name: 'Updated by web' });
   assert.equal(updated.persona.name, 'Updated by web');
   assert.equal(getPersona(people[0].id).name, 'Updated by web');
   assert.equal(getPersona(people[0].id).recall, people[0].recall);
   assert.equal(getPersona(people[0].id).lifespan, people[0].lifespan);
+  assert.deepEqual(getPersona(people[0].id).evidence, people[0].evidence);
+  assert.equal(getPersona(people[0].id).created_at, people[0].created_at);
+  assert.equal(getPersona(people[0].id).id, people[0].id);
   const created = await request('/api/personas', 'POST', { ...people[1], id: undefined, name: 'Created by web' });
   assert.equal(validatePersona(getPersona(created.persona.id)).ok, true);
   const { roster } = await request('/api/councils/rosters', 'POST', {

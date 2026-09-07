@@ -79,3 +79,14 @@ CI runs both the CLI suite and the web build/smoke checks.
 Before publishing, review the imported history and historical council reports
 for the intended repository audience. This local consolidation does not push,
 archive the GitHub app repository, deploy, or alter installed plugin caches.
+
+## Local consumer closeout
+
+The installed `persona` binary was discovered pointing into the retired
+`AI User Personas/plugins/persona-lab` checkout. The local CLI is relinked to
+this canonical repository as part of workspace closeout. Reproduce with
+`npm link --force` at the root, then verify `realpath "$(command -v persona)"`.
+This replaces the known old CLI link; it does not delete the source checkout
+or the persona library. Installed host plugin caches remain versioned host
+artifacts; loading this source directly uses `claude --plugin-dir <repo-root>`.
+Remote publication and subsequent marketplace updates remain separate.

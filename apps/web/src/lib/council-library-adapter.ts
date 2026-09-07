@@ -1,9 +1,8 @@
 /**
  * Bridge the shared persona library (~/.persona-lab) into the council model.
  *
- * Councils are the heavier, large-panel concept (a valid roster needs 8+
- * personas for the `high` level); the CLI `persona panel` covers the lighter
- * 3-6 lens critique. This adapter lets a council roster be built from personas
+ * Councils persist assignments and findings; roster sizes are derived from
+ * reviewLevelBounds below. The CLI also supports brief persona panels. This adapter lets a council roster be built from personas
  * that were generated/saved via the CLI or coding agents, without changing the
  * council domain model.
  */
