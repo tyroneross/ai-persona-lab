@@ -52,12 +52,16 @@ jobs:
       # action majors, the label has not.
       RELEASE_PR_LABEL: 'autorelease: pending'
       # The workflow whose conclusion on main gates the cut. "" disables the guard.
-      # This repo has no workflow that runs its tests on a push to main, so
-      # there is no main-green signal to gate on and Guard 1 is disabled.
-      # Its publish workflow runs the test suite itself before publishing,
-      # which is what actually stops a broken build reaching npm. Set this to
-      # a CI workflow filename the moment one exists.
-      CI_WORKFLOW_FILE: ""
+      # ci.yml runs this repo's test suite on every push to main, so its latest
+      # conclusion IS the main-green signal Guard 1 reads.
+      #
+      # This was "" until 2026-09-06, which meant the cut merged the release PR
+      # off any main, red or green. The comment that justified it claimed the
+      # publish workflow ran the tests first -- it does not.
+      # publish-github-packages.yml installs, builds, packs and publishes, and
+      # never calls npm test. Until ci.yml landed, nothing in CI ran this
+      # repo's tests at all.
+      CI_WORKFLOW_FILE: ci.yml
     steps:
       - name: Find the open release PR
         id: find
