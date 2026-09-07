@@ -21,7 +21,13 @@
     "!scripts/**/*.pyc",
     "schemas",
     "docs/archetypes.md",
-    "README.md"
+    "README.md",
+    "docs/installation.md",
+    "docs/cli.md",
+    "docs/LIMITATIONS.md",
+    "docs/persona-memory.md",
+    "docs/review-workspace.md",
+    "AGENTS.md"
   ],
   "engines": {
     "node": ">=18"

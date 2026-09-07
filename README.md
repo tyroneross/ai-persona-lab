@@ -1,232 +1,102 @@
-# Persona Lab
+# Persona Lab — AI persona reviews
 
-> **Read [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before relying on any of
-> this.** The docs are written declaratively so the method stays consistent, but
-> nearly all of it rests on one six-persona study, zero real runs have been
-> recorded through the current tooling, and nothing has been calibrated against
-> real human reactions. The enforcement is this project's opinion held steady —
-> not evidence that the opinion is right.
+Spot questions and objections in a product decision before you build around it.
+Persona Lab gives your coding agent distinct perspectives to review a feature,
+interface, README, or plan, then brings their findings and disagreements together.
+You get issues to investigate, changes to consider, and questions to take to real users.
 
-Persona Lab turns a request into a focused AI persona panel, and keeps the
-personas it generates in a recallable, global library. It ships three entry
-points over one engine:
+These are synthetic review hypotheses, not validated user research.
+See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.
 
-- **CLI** (`persona`) — generate, save, recall, and plan panels from any repo.
-- **Plugin** (Claude Code + Codex) — a skill, command, and agents so coding
-  agents can run persona reviews.
-- **App** — the Next.js UI in [`apps/web`](apps/web) reads and writes the same library.
+## Try a review
 
-It codifies this workflow:
-
-1. Capture the request.
-2. Recall an existing roster/personas, or select fresh perspectives.
-3. Generate personas (one distinct lens each), grounded in real evidence where
-   available and labelled as hypothesis where not.
-4. Run independent persona reviews, then synthesize while preserving conflicts.
-5. Save reusable personas and rosters for next time.
-
-Output is a **hypothesis for review, not validated user research**. Every panel
-requires at least one adversarial (red-team) lens, runs each persona
-independently to avoid groupthink, and lets personas abstain rather than
-fabricate.
-
-## Web app
-
-The app, CLI, and plugin now share this repository. From the repository root:
-
-```bash
-npm run web:install
-npm run web:dev       # http://localhost:3000
-npm run web:typecheck
-npm run web:build
-npm run web:smoke     # built app, disposable data, no model calls
-```
-
-The CLI remains dependency-free and installable on its own. Web dependencies
-and the app lockfile stay in `apps/web`; ordinary CLI installation does not
-install Next.js. `npm test` covers the CLI and repository integration contracts.
-
-Personas still use `~/.persona-lab` or `PERSONA_LAB_HOME`. Council state defaults
-to `apps/web/data`; use `PERSONA_COUNCIL_DATA_DIR` to select another directory.
-See [the consolidation record](docs/repository-consolidation.md) for source
-history, data migration, preserved behavior, and recovery.
-
-## Quick Start
-
-**As a Claude Code or Codex plugin**, type `/persona-lab:persona-review` and describe what you want
-reviewed. That is the entry point: it selects the lenses, recalls or generates the personas, runs
-each pass independently, and reports back. `/persona-lab:run` drives an existing council run in the
-AI User Personas app, and `/persona-lab:submit-feedback` files a bug or feature request.
-
-**As a CLI**, install it below.
-
-## Install the CLI
-
-From this plugin directory:
-
-```bash
-npm link          # exposes `persona` on your PATH
-# or: npm install -g .
-```
-
-The library lives at `~/.persona-lab/` by default (override with
-`PERSONA_LAB_HOME`). It is global: save a persona once, recall it from any repo.
+After [installing or loading the workflow](docs/installation.md), give your coding
+agent a request like this. Replace the example path with an existing artifact
+you want reviewed:
 
 ```text
-~/.persona-lab/
-  personas.json               { schema_version, personas[] }
-  rosters/<slug>.json          named lens/persona presets for a use-case
-  encounters/<persona_id>/*.json   what each persona has seen, append-only
-  runs/<run_id>/{run.json,report.md}  what happened in each panel
+Use Persona Lab to review docs/proposed-onboarding.md.
+The users are first-time workspace admins. We need to decide whether to require
+teammate invitations during setup. Review the current file with three independent
+perspectives: a first-time admin, an experienced admin, and a skeptical buyer.
+Use one pass each and no prior review history. Return the obstacles, disagreements,
+recommended changes, and questions we should check with real users.
 ```
 
-## CLI
+The host reads the artifact, executes the separate reviews, and synthesizes them.
+The CLI prepares plans and stores records; it does not call models. Saved personas,
+rosters, and encounters let you reuse a perspective or revisit a past review, with
+recall controlled by the review brief and the persona's permitted scope.
 
-```bash
-persona new "review the onboarding flow for enterprise admins" --count 4
-#   selects distinct lenses (>=1 adversarial), emits fill-in scaffolds + a
-#   generation prompt + a measurement plan. Add --json for the scaffolds.
+An **illustrative output**, not a measured result:
 
-persona save persona.json          # validate + persist to the library
-persona validate persona.json      # schema check only (exit 1 on failure)
+| Perspective | Possible finding | Next check |
+| --- | --- | --- |
+| First-time admin | “I want to see the workspace before inviting my team.” | Observe where new admins hesitate. |
+| Experienced admin | “Bulk invites matter more than a guided setup.” | Check whether larger teams need a separate path. |
+| Skeptical buyer | “Mandatory invites could expose an evaluation before approval.” | Ask buyers how trials get authorized. |
 
-persona list [--tag t] [--role r] [--status s]
-persona show <id>
-persona search "audit"
-persona archive <id>   |   persona rm <id>
+The synthesis keeps those differences visible and identifies what remains
+unverified. A proposed change might be to make invitations optional; actual user
+research would determine whether that helps.
 
-persona roster save "Enterprise rollout review" \
-  --lenses red-team,buyer,accessibility,novice \
-  --personas persona_dana-okoro_57144a1d \
-  --use-case "Reviewing a B2B feature before enterprise rollout"
-persona roster list | show <name> | rm <name> | lenses
+## Get started
 
-persona panel "review the settings redesign" --level medium
-persona panel --roster "Enterprise rollout review" --level high
-
-persona home        # print the library path
-
-# judge the panel after the fact, and reuse what worked
-persona run lesson <run_id> --verdict valuable --changed "..." --worked "a;b"
-persona run proven                 persona roster from-run <run_id> --name "..."
-
-# what a persona may bring with it (scoped by its role, not your mood)
-persona recall <persona_id> [--artifact <slug>] [--project <name>]
-
-# a panel as a durable object you can open months later
-persona run new "<question>" --artifact <slug> --version <v> --personas id1,id2
-persona run list | show <run_id> | report <run_id> | close <run_id> [--synthesis <file|->]
-
-# what a persona has SEEN — written by the persona before it returns
-persona encounter new <persona_id> --artifact <slug> --label ".." --version ".."
-persona encounter save <file|->   |  validate <file|->
-persona encounter list [<persona_id>] [--artifact <slug>]  |  show <encounter_id>
-```
-
-### Encounter memory
-
-`personas.json` holds who a persona is. Encounters hold what it has *seen*. A
-persona held in a running agent has a memory measured in seconds — a subagent
-becomes eviction-eligible about thirty seconds after it finishes — so continuity
-lives in files and a running agent is only a temporary reader of them.
-
-`verbatim` is authoritative and never summarised; `findings` are a lossy
-extraction kept beside it. `kind` separates a defect from a preference,
-`verified` allows `reclassified` (a reported defect is often a silent gate),
-`unanswered` carries what a session could not settle into the next dispatch, and
-`conditions.viewports` is required. Encounters are append-only.
-
-Contract: `docs/persona-memory.md`. Method assessment behind it:
-`docs/persona-method-assessment.html`.
-
-The CLI is the deterministic substrate: it owns the library, schema validation,
-lens selection, and review planning. Generating persona *content* and running
-the review are done by the LLM host (a coding agent, the skill, or Codex), which
-calls the CLI to persist and recall. No API key is needed by the CLI.
-
-### Review levels
-
-- `low` — 3-4 lenses, single independent pass. Cheap first look.
-- `medium` — 4-6 lenses incl. required red-team, independent passes + synthesis.
-- `high` — 6+ lenses, independent passes + adversarial verification of critical
-  findings + measurement rigor.
-
-## Plugin (Claude Code and Codex)
-
-The plugin content is host-neutral; both hosts load the same command, agents,
-skill, references, and CLI.
-
-```bash
-claude --plugin-dir .
-codex  --plugin-dir .
-```
-
-Slash command:
+Give your installing agent this handoff:
 
 ```text
-/persona-lab:persona-review Review the onboarding flow for a founder persona.
+Set up Persona Lab from https://github.com/tyroneross/persona-lab.
+Read README.md, AGENTS.md, and docs/installation.md. Use the existing checkout
+if present, preserving local changes. Install the CLI and run the documented
+model-free check with disposable state. Load the review workflow in my current
+host, or report the exact host setup gap. Report the source revision, checks run,
+state created, and whether a real review ran. Start the web app only if requested.
 ```
 
-## Structure
+[Installation and verification](docs/installation.md) covers prerequisites,
+commands, host setup, expected output, storage, and recovery.
+
+| Use | Entry point | What it does |
+| --- | --- | --- |
+| Ask an agent for feedback | Claude Code / Codex workflow | Executes persona reviews using the host's models. |
+| Manage reusable perspectives | `persona` CLI | Plans reviews and saves personas, rosters, encounters, and reports. |
+| Prepare a review visually | [Web workspace](docs/review-workspace.md) | Selects profiles and prepares a brief for an agent to execute. |
+
+The app, CLI, and plugin share this repository. CLI installation does not install
+web dependencies. The default persona library is `~/.persona-lab`; web council
+records use a separate store. [Storage and setup details](docs/installation.md).
+
+## Review a GitHub README
+
+Use the [GitHub README skill](skills/github-readme/SKILL.md) to assess whether a
+person can understand the benefit and an agent can install and verify the tool:
 
 ```text
-persona-lab/
-  package.json                     bin: persona -> bin/persona.mjs
-  bin/persona.mjs                  CLI
-  lib/library.mjs                  global library (personas + rosters) + validation
-  lib/roles.mjs                    lens catalog + selection (>=1 adversarial)
-  lib/encounters.mjs               encounter store + validation (global library)
-  lib/runs.mjs                     panel runs + generated reports
-  lib/recall.mjs                   lifespan + recall scope: what a persona brings
-  schemas/persona.schema.json      who a persona is
-  schemas/encounter.schema.json    what a persona has seen
-  schemas/run.schema.json          what happened in a panel
-  commands/persona-review.md
-  agents/persona-panel-orchestrator.md
-  agents/persona-perspective-reviewer.md
-  agents/persona-research-adjudicator.md
-  skills/persona-lab/SKILL.md
-  skills/persona-lab/references/persona-selection.md
-  scripts/persona-plan.mjs         legacy first-pass planner (superseded by `persona new`)
+Use the github-readme skill to review this repository's README with three
+independent perspectives: a new user, an installing agent, and a skeptical adopter.
+Recommend changes to the opening, example, and installation path. Keep the raw
+reviews separate from the synthesis and verify technical claims against source.
 ```
 
-## Schemas
+The skill checks problem, approach, useful output, setup, and proof of a first
+result. It supports review-only requests and authorized rewrites.
 
-Canonical contracts: `schemas/persona.schema.json` (v1.1.0) for identity,
-`schemas/encounter.schema.json` (v1.0.0) for what a persona has seen. Load-bearing
-fields are goals, behaviors, frustrations, motivations, needs, and
-`job_to_be_done`; demographics are optional decoration. `provenance`
-(`proto | qualitative | synthetic-grounded | synthetic-assumed`) and `anti_goals`
-make the persona's basis and abandonment triggers explicit.
+## Explore the capabilities
 
-## About
+- [CLI reference](docs/cli.md): generate, save, recall, and plan reviews.
+- [Professional archetypes](docs/archetypes.md): compose specialty perspectives
+  and inspect the source evidence informing consultation plans.
+- [Persona memory](docs/persona-memory.md): identity, recall, and encounter contracts.
+- [Review workspace](docs/review-workspace.md): prepare a bounded handoff,
+  interface, or product-decision review.
+- [Agent workflow](skills/persona-lab/SKILL.md): reviewer selection and execution.
 
-Persona Lab is built by [RossLabs](https://rosslabs.ai). The npm package is
-published as `@tyroneross/persona-lab`, on the same scope as the rest of the
-family; RossLabs is the org behind it if you want the background.
+## Contribute or get help
 
-## Review workspace
+[Open an issue](https://github.com/tyroneross/persona-lab/issues) with the command
+or workflow, source revision, expected result, and actual result. Remove private
+artifacts and credentials from reports. For code changes, read [AGENTS.md](AGENTS.md)
+and run the documented verification commands before opening a pull request.
 
-Run `npm run web:dev` and open the home page to prepare a bounded handoff, interface, or product-decision review. Search saved profiles, inspect evidence and recall labels, and copy a previewed brief. Preparing a brief does not run models. See [defaults, research and pilot limits](docs/review-workspace.md).
-
-## Professional archetypes and transcript evidence
-
-Browse 24 overlapping professional archetypes, combine open specialty paths,
-and let an agent plan which saved personas or new drafts a task needs:
-
-```bash
-persona archetypes --defaults
-persona compose marketer --specialties product-marketing,hardware/networking --save
-persona consult "Evaluate a healthcare vertical SaaS venture investment" --json
-persona consult "Plan an accessible onboarding flow" --mode ui-ux --json
-persona sources ingest --root /path/to/lenny-podcast-transcripts
-persona sources verify --root /path/to/lenny-podcast-transcripts
-```
-
-`consult` returns a plan; a host agent executes it through
-`/persona-lab:consult` or the task consultant instructions. The seed evidence
-contains 40 reviewed principles from 13 Lenny podcast interviews, with source
-hashes, line spans, applicability and limits. The full corpus index labels
-keyword matches as candidates. Specialty labels and synthetic personas do not
-establish expertise. See [the archetype guide](docs/archetypes.md) and
-[the reviewed source records](lib/data/lenny-leadership-evidence.json).
+Built by [RossLabs](https://rosslabs.ai). The [package metadata](package.json) declares Apache-2.0.
+The package is `@tyroneross/persona-lab`; the plugin identifier is `persona-lab`.

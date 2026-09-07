@@ -90,3 +90,20 @@ This replaces the known old CLI link; it does not delete the source checkout
 or the persona library. Installed host plugin caches remain versioned host
 artifacts; loading this source directly uses `claude --plugin-dir <repo-root>`.
 Remote publication and subsequent marketplace updates remain separate.
+
+
+## Retired repository and local recovery
+
+The former [AI User Personas repository](https://github.com/tyroneross/ai-user-personas)
+is archived on GitHub and its README directs readers to Persona Lab. Use this
+repository for the app, CLI, plugin, issues, and contributions.
+
+The original local checkout has moved to `archive/AI User Personas` alongside
+its former parent directory. The whole checkout, ignored runtime files, local
+retirement commit, and historical refs are retained. A verified all-ref bundle,
+`archive/AI User Personas-2026-09-07.bundle`, provides additional Git recovery.
+The `archive/pre-closeout-2026-09-07/retired-checkout` tag preserves its local tip.
+If using that checkout's council data, update `PERSONA_COUNCIL_DATA_DIR` to the
+archived location before starting the canonical app. The global persona library
+and canonical CLI link are unchanged. GitHub archival is separate from publishing
+new Persona Lab versions or deploying the app.
