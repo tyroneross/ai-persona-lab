@@ -10,7 +10,7 @@ The council writeback loop is agent-driven: the app emits a command packet + API
 and a host agent runs the passes and writes results back. Options for removing
 more of the human touch, cheapest to most hands-off:
 
-- **A. Skill-driven (DONE, 2026-07-07).** `/persona-lab:run` + the headless
+- **A. Skill-driven (DONE, 2026-07-07).** `/ai-persona-lab:run` + the headless
   council API (`/api/councils/rosters|runs|{id}|.../findings|.../synthesis|.../status`).
   You invoke it with a run id (or topic+roster); the host spawns one independent
   subagent per persona pass and drives the run to `complete`. Executor = host
@@ -38,9 +38,9 @@ CLI, or agents), never inside it — the app is the deterministic, no-key core.
 - **Budget as a hard server cap.** Promote the 20-pass warning to an absolute
   ceiling enforced in `createRun` / the run command (with an explicit override),
   so no path can silently spend thousands of LLM calls.
-- **Two-copies → one canonical.** `publish-sync.sh` keeps the dev copy and the
-  published `tyroneross/persona-lab` repo aligned; longer term, make the standalone
-  repo canonical and symlink it into the app (matches the toolkit convention).
+- **One canonical repository (completed).** The app lives under `apps/web` in
+  `tyroneross/ai-persona-lab`; the plugin is at the root. `publish-sync.sh` is
+  retired, and the former AI User Personas repository is archived.
 - **CLI `--runs` awareness.** Let `persona panel` reflect runs-per-persona and the
   token warning, mirroring the app.
 - **Roster reconciliation.** Decide whether the CLI's global `rosters/` and the

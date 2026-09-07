@@ -1,12 +1,12 @@
 ---
 name: submit-feedback
-description: Report a bug or request a feature for the persona-lab plugin. Drafts a GitHub issue and files it only after you approve the exact text.
+description: Report a bug or request a feature for the ai-persona-lab plugin. Drafts a GitHub issue and files it only after you approve the exact text.
 argument-hint: "[what broke, or what you wish it did]"
 ---
 
-# Submit persona-lab feedback
+# Submit AI Persona Lab feedback
 
-File the user's report as a GitHub issue on `tyroneross/persona-lab`. Issues are this plugin's
+File the user's report as a GitHub issue on `tyroneross/ai-persona-lab`. Issues are this plugin's
 support channel; the manifest carries no contact address by design.
 
 Two kinds of report land here and they need different bodies:
@@ -28,7 +28,7 @@ Two kinds of report land here and they need different bodies:
    - Bug only: which command or skill misbehaved, and what it did instead.
    - Feature only: the workflow the user was in when the gap showed up.
 
-3. **Check for a duplicate.** `gh issue list --repo tyroneross/persona-lab --search "<keywords>" --state all`.
+3. **Check for a duplicate.** `gh issue list --repo tyroneross/ai-persona-lab --search "<keywords>" --state all`.
    If an open issue already covers this, offer to add a comment instead of opening a second one.
 
 4. **Draft and show.** Write the exact title and body you intend to file, and show both to the user
@@ -42,14 +42,14 @@ Two kinds of report land here and they need different bodies:
 6. **Create it** (only after approval):
 
 ```bash
-gh issue create --repo tyroneross/persona-lab \
+gh issue create --repo tyroneross/ai-persona-lab \
   --title "<one line: what broke, or what is missing>" \
   --body "<bug: what happened / expected / steps / versions. request: the problem, the workaround, why now>" \
   --label bug   # use "enhancement" for a feature request; drop the flag if the repo has no such label
 ```
 
 7. **If `gh` is missing or unauthenticated, do not fail.** Print the drafted title and body for the
-   user to paste, plus the URL: https://github.com/tyroneross/persona-lab/issues/new
+   user to paste, plus the URL: https://github.com/tyroneross/ai-persona-lab/issues/new
 
 8. **Report the resulting issue URL** back to the user.
 

@@ -4,8 +4,8 @@ import AppShell from "@components/AppShell";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Persona Lab",
-  description: "Prepare focused reviews and maintain an evidence-labelled persona library.",
+  title: "AI Persona Lab",
+  description: "Launch synthetic personas to review your app UI/UX, architecture, and code base before you deploy",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

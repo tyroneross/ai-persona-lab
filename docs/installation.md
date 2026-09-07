@@ -1,6 +1,6 @@
-# Install and verify Persona Lab
+# Install and verify AI Persona Lab
 
-Use the canonical [Persona Lab repository](https://github.com/tyroneross/persona-lab).
+Use the canonical [AI Persona Lab repository](https://github.com/tyroneross/ai-persona-lab).
 The CLI and plugin are at its root; the optional web app is in `apps/web`.
 
 ## Prerequisites
@@ -15,8 +15,8 @@ The CLI and plugin are at its root; the optional web app is in `apps/web`.
 In a directory where you keep source checkouts:
 
 ```bash
-git clone https://github.com/tyroneross/persona-lab.git
-cd persona-lab
+git clone https://github.com/tyroneross/ai-persona-lab.git
+cd ai-persona-lab
 npm link
 persona --help
 ```
@@ -73,11 +73,11 @@ claude --plugin-dir .
 ```
 
 This loads the plugin for that launch. Check `claude --help` for support, then
-confirm `/persona-lab:persona-review` is available in the host before requesting
+confirm `/ai-persona-lab:persona-review` is available in the host before requesting
 a review. CLI smoke success alone does not establish this.
 
 For Codex, use its plugin installer and a configured marketplace containing
-Persona Lab. Inspect `codex plugin --help`, `codex plugin list`, and
+AI Persona Lab. Inspect `codex plugin --help`, `codex plugin list`, and
 `codex plugin add --help` for the installed host's syntax. Marketplace names
 depend on the installation. Do not assume Codex accepts Claude's `--plugin-dir`.
 Confirm the installed plugin exposes the `persona-lab` and `github-readme` skills;

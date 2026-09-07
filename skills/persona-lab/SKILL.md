@@ -1,9 +1,9 @@
 ---
 name: persona-lab
-description: Use when an agent or user needs professional expertise for planning, building, coaching, investing, marketing, engineering or UI/UX work, or asks to execute a Persona Lab workspace/CLI review brief or launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or an unrelated solo UI review.
+description: Use when an agent or user needs professional expertise for planning, building, coaching, investing, marketing, engineering or UI/UX work, or asks to execute an AI Persona Lab workspace/CLI review brief or launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or an unrelated solo UI review.
 ---
 
-# Persona Lab
+# AI Persona Lab
 
 > **Before you follow any of this: read `docs/LIMITATIONS.md`.**
 > This document is written in a declarative voice — "always run blind first",
@@ -44,7 +44,7 @@ Use `persona archetypes --defaults` for five starter perspectives, and
 marketer --specialties product-marketing,hardware/networking --save` creates a
 persistent draft. Specialty paths have no fixed depth or closed vocabulary;
 a label does not establish competence. The task consultant instructions live
-in `agents/persona-task-consultant.md`, and `/persona-lab:consult` exposes the
+in `agents/persona-task-consultant.md`, and `/ai-persona-lab:consult` exposes the
 workflow. Existing review panels, recall rules, encounters and council runs
 remain separate contracts.
 
@@ -532,7 +532,7 @@ The legacy planner `node scripts/persona-plan.mjs "<request>"` still exists but 
 
 When the AI User Personas app is running, you can drive a full council review to
 completion over its HTTP API instead of reporting inline. Use the
-`/persona-lab:run` command, or drive the API directly against
+`/ai-persona-lab:run` command, or drive the API directly against
 `${APP_URL:-http://localhost:3000}`:
 
 ```text

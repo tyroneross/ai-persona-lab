@@ -14,7 +14,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <Link href="/" className="choice-target flex items-center gap-2 min-w-0">
             <span aria-hidden="true" className="brand-mark">p</span>
             <span className="text-lg font-semibold text-ink truncate">
-              Persona Lab
+              AI Persona Lab
             </span>
             <span className="text-xs text-muted">Review workspace</span>
           </Link>

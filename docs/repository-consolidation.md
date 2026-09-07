@@ -1,6 +1,6 @@
-# Consolidate Persona Lab app and CLI/plugin
+# Consolidate AI Persona Lab app and CLI/plugin
 
-Decision: keep one product repository at `tyroneross/persona-lab`, with the
+Decision: keep one product repository at `tyroneross/ai-persona-lab`, with the
 publishable CLI/plugin at the root and the independently buildable Next.js app
 under `apps/web`. This reduces drift in the planner and schema without adding
 web dependencies to CLI installation. Separate app deployment and CLI package
@@ -8,7 +8,7 @@ release remain possible; this is a source consolidation, not a runtime merge.
 
 ## Source and recovery
 
-- Persona Lab pre-consolidation main: `6f9f30416b3fd5f3770cb8b869db3075e67a2c98`.
+- AI Persona Lab pre-consolidation main: `6f9f30416b3fd5f3770cb8b869db3075e67a2c98`.
 - AI User Personas imported main: `c6ee4cbe72d44b398fdb1b7f0c2c16f93d446d73`.
 - Both histories are parents of the consolidation merge; the app is imported
   under `apps/web` without squashing or rewriting source commits.
@@ -17,7 +17,7 @@ release remain possible; this is a source consolidation, not a runtime merge.
 - The original AI User Personas checkout, ignored runtime data, installed
   dependencies, and historical refs remain available. They are not removed by
   this change. Use this repository for subsequent development.
-- Existing CI branches and the open Persona Lab CI PR are separate work. This
+- Existing CI branches and the open AI Persona Lab CI PR are separate work. This
   change does not merge the pending release-guard branch or publish a release.
 
 ## Content disposition
@@ -95,7 +95,7 @@ Remote publication and subsequent marketplace updates remain separate.
 ## Retired repository and local recovery
 
 The former [AI User Personas repository](https://github.com/tyroneross/ai-user-personas)
-is archived on GitHub and its README directs readers to Persona Lab. Use this
+is archived on GitHub and its README directs readers to AI Persona Lab. Use this
 repository for the app, CLI, plugin, issues, and contributions.
 
 The original local checkout has moved to `archive/AI User Personas` alongside
@@ -106,4 +106,4 @@ The `archive/pre-closeout-2026-09-07/retired-checkout` tag preserves its local t
 If using that checkout's council data, update `PERSONA_COUNCIL_DATA_DIR` to the
 archived location before starting the canonical app. The global persona library
 and canonical CLI link are unchanged. GitHub archival is separate from publishing
-new Persona Lab versions or deploying the app.
+new AI Persona Lab versions or deploying the app.

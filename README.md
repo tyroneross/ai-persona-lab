@@ -1,7 +1,8 @@
-# Persona Lab — AI persona reviews
+# AI Persona Lab
 
-Spot questions and objections in a product decision before you build around it.
-Persona Lab gives your coding agent distinct perspectives to review a feature,
+Launch synthetic personas to review your app UI/UX, architecture, and code base before you deploy
+
+AI Persona Lab gives your coding agent distinct perspectives to review a feature,
 interface, README, or plan, then brings their findings and disagreements together.
 You get issues to investigate, changes to consider, and questions to take to real users.
 
@@ -15,7 +16,7 @@ agent a request like this. Replace the example path with an existing artifact
 you want reviewed:
 
 ```text
-Use Persona Lab to review docs/proposed-onboarding.md.
+Use AI Persona Lab to review docs/proposed-onboarding.md.
 The users are first-time workspace admins. We need to decide whether to require
 teammate invitations during setup. Review the current file with three independent
 perspectives: a first-time admin, an experienced admin, and a skeptical buyer.
@@ -45,7 +46,7 @@ research would determine whether that helps.
 Give your installing agent this handoff:
 
 ```text
-Set up Persona Lab from https://github.com/tyroneross/persona-lab.
+Set up AI Persona Lab from https://github.com/tyroneross/ai-persona-lab.
 Read README.md, AGENTS.md, and docs/installation.md. Use the existing checkout
 if present, preserving local changes. Install the CLI and run the documented
 model-free check with disposable state. Load the review workflow in my current
@@ -93,10 +94,10 @@ result. It supports review-only requests and authorized rewrites.
 
 ## Contribute or get help
 
-[Open an issue](https://github.com/tyroneross/persona-lab/issues) with the command
+[Open an issue](https://github.com/tyroneross/ai-persona-lab/issues) with the command
 or workflow, source revision, expected result, and actual result. Remove private
 artifacts and credentials from reports. For code changes, read [AGENTS.md](AGENTS.md)
 and run the documented verification commands before opening a pull request.
 
 Built by [RossLabs](https://rosslabs.ai). The [package metadata](package.json) declares Apache-2.0.
-The package is `@tyroneross/persona-lab`; the plugin identifier is `persona-lab`.
+The package is `@tyroneross/persona-lab`; the plugin identifier is `ai-persona-lab`.

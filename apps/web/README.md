@@ -1,6 +1,6 @@
-# Persona Lab web
+# AI Persona Lab web
 
-The Next.js application for the Persona Lab library and council API. The
+The Next.js application for the AI Persona Lab library and council API. The
 canonical CLI/plugin lives two directories above this one.
 
 From the repository root, run `npm run web:install` then `npm run web:dev`.

@@ -46,7 +46,7 @@ PLUGIN_AGENTS = {
 }
 # `persona` CLI, not the word persona in prose.
 CLI_RE = re.compile(r"(?:^|[;&|]\s*|\$\(\s*)persona\s+(new|save|validate|list|show|search|rm|archive|roster|panel|encounter|home)\b")
-SLASH_RE = re.compile(r"/persona-lab:(\w+)")
+SLASH_RE = re.compile(r"/(?:ai-)?persona-lab:([\w-]+)")
 APP_API_RE = re.compile(r"/api/councils\b")
 
 # Ad-hoc persona framing inside a subagent brief or inline prompt.
@@ -124,7 +124,7 @@ def classify_event(tool, inp, role, body):
     if role == "user":
         m = SLASH_RE.search(body or "")
         if m:
-            return "plugin", f"command:/persona-lab:{m.group(1)}"
+            return "plugin", f"command:{m.group(0)}"
 
     # --- ad-hoc lane -------------------------------------------------------
     if tool in ("Agent", "Task"):
@@ -268,7 +268,7 @@ def scan_codex_file(path, since):
                     if role == "user":
                         m = SLASH_RE.search(body)
                         if m:
-                            events.append(("plugin", f"command:/persona-lab:{m.group(1)}", ts))
+                            events.append(("plugin", f"command:{m.group(0)}", ts))
                         elif ADHOC_BRIEF_RE.search(body) and not META_RE.search(body):
                             events.append(("adhoc", "codex-user-asked-for-personas", ts))
                     elif body and mentions_persona(body) and re.search(

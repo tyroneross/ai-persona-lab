@@ -3,9 +3,9 @@
   "version": "0.7.2",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tyroneross/persona-lab.git"
+    "url": "git+https://github.com/tyroneross/ai-persona-lab.git"
   },
-  "description": "You ship UI and product decisions without knowing how different users will react, and real research is too slow to run on every change. Persona Lab assembles a task-specific panel of distinct AI personas, always including an adversarial lens, runs each pass independently to avoid groupthink, and saves the personas to a recallable library. You get structured, evidence-labelled reactions in minutes, as a hypothesis to review rather than validated user research. Start with /persona-lab:persona-review.",
+  "description": "Launch synthetic personas to review your app UI/UX, architecture, and code base before you deploy",
   "type": "module",
   "bin": {
     "persona": "bin/persona.mjs"

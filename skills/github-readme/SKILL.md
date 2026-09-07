@@ -79,7 +79,7 @@ For a solo audit, use these as a checklist without claiming three personas ran.
 Ask each reviewer what the project does, who benefits, what they would do next,
 and up to three obstacles with exact source quotes. Separate factual omissions
 from preferences. Synthetic reactions are hypotheses, not user validation.
-Use Persona Lab's review workflow when available, respecting explicit recall,
+Use AI Persona Lab's review workflow when available, respecting explicit recall,
 storage, and budget constraints; this skill also works without its CLI.
 
 ## Return and verify

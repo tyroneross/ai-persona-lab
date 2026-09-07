@@ -74,5 +74,5 @@ Execution rules:
 
 ## Plugin bugs and feature requests
 
-For a bug or a feature request about the plugin itself, use `/persona-lab:submit-feedback`. It
+For a bug or a feature request about the plugin itself, use `/ai-persona-lab:submit-feedback`. It
 drafts the GitHub issue and files it only after the user approves the exact text.
