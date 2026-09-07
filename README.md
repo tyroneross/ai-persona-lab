@@ -6,9 +6,6 @@ AI Persona Lab gives your coding agent distinct perspectives to review a feature
 interface, README, or plan, then brings their findings and disagreements together.
 You get issues to investigate, changes to consider, and questions to take to real users.
 
-These are synthetic review hypotheses, not validated user research.
-See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.
-
 ## Try a review
 
 After [installing or loading the workflow](docs/installation.md), give your coding
@@ -101,3 +98,8 @@ and run the documented verification commands before opening a pull request.
 
 Built by [RossLabs](https://rosslabs.ai). The [package metadata](package.json) declares Apache-2.0.
 The package is `@tyroneross/persona-lab`; the plugin identifier is `ai-persona-lab`.
+
+## Method notes
+
+These are synthetic review hypotheses, not validated user research.
+See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.

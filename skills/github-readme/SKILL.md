@@ -34,8 +34,10 @@ Remove ceremonial openings, commentary about the prose, generic capability
 claims, repeated definitions, and internal project history from the opening.
 A direct declarative sentence is useful when it conveys the problem, mechanism,
 or benefit. Do not ban declarative statements as a grammatical category.
-Keep limitations that materially affect adoption near the relevant claim; link
-methodological detail. Never replace an honest boundary with a promised outcome.
+Lead with what the product is used for and the outcome it provides. Avoid opening
+with limitations or statements about what it is not used for. Put general method
+limitations at the end and link supporting detail. Keep examples accurately
+labelled and never turn an uncertain outcome into a promise.
 
 Keep the README readable without running anything. Let a person copy a short
 agent handoff that names the canonical repo, installation guide, desired entry
