@@ -1,12 +1,24 @@
 node_modules/
 .DS_Store
 *.log
+__pycache__/
+*.pyc
 
 # Study internals belonging to other projects. Archived to build-loop-memory
 # (atomize-ai + ross-labs-astro lanes). This repo is public; they are not.
 encounters/**/engine/
 encounters/**/rosslabs-integration-plan.md
 .build-loop/
+.procedural/*.lock
+
+# Internal working documents are archived before removal; current product docs stay public.
+docs/research/*-audit.md
+docs/research/*-mining.md
+docs/research/*-result.md
+docs/PROPOSAL-*.md
+apps/web/docs/plans/
+apps/web/docs/rally-dogfood-plan.md
+apps/web/src/UI_PLAN.md
 
 # Rally runtime state — only manifest.json ships (mirrors agent-rally-point convention)
 .rally/*

@@ -24,7 +24,7 @@ CLAUDE_SESSION="claude-smoke-$RUN_ID"
 "$RALLY" start codex \
   --session-id "$CODEX_SESSION" \
   --intent "smoke test architecture/data coordination" \
-  --path docs/rally-dogfood-plan.md \
+  --path docs/architecture.md \
   --json >/tmp/rally-codex-smoke-start.json
 
 "$RALLY" start claude_code \
