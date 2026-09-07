@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-user-personas.local/schemas/persona-roster.schema.json",
+  "title": "AI User Personas Repo Roster",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "repo_path",
+    "repo_slug",
+    "source_summary",
+    "personas",
+    "default_levels",
+    "generated_from",
+    "user_overrides",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^roster_[a-z0-9][a-z0-9-]*_[a-f0-9]{8}$|^roster_[a-z0-9][a-z0-9-]*_[0-9]{8}$"
+    },
+    "repo_path": {
+      "$ref": "#/$defs/non_empty_string"
+    },
+    "repo_slug": {
+      "$ref": "#/$defs/non_empty_string"
+    },
+    "source_summary": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 1000
+    },
+    "personas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/roster_persona"
+      }
+    },
+    "default_levels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["low", "medium", "high"],
+      "properties": {
+        "low": {
+          "$ref": "#/$defs/persona_id_list"
+        },
+        "medium": {
+          "$ref": "#/$defs/persona_id_list"
+        },
+        "high": {
+          "$ref": "#/$defs/persona_id_list"
+        }
+      }
+    },
+    "generated_from": {
+      "$ref": "#/$defs/non_empty_string_list"
+    },
+    "user_overrides": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/non_empty_string"
+      },
+      "default": []
+    },
+    "created_at": {
+      "$ref": "#/$defs/iso_datetime"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/iso_datetime"
+    }
+  },
+  "$defs": {
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "non_empty_string_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_empty_string"
+      }
+    },
+    "persona_id_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "iso_datetime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "roster_persona": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "lens",
+        "role",
+        "job_to_be_done",
+        "decision_power",
+        "failure_modes",
+        "evidence_expectations",
+        "default_use_cases"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "name": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "lens": {
+          "type": "string",
+          "enum": [
+            "user",
+            "buyer",
+            "operator",
+            "product",
+            "design",
+            "engineering",
+            "data",
+            "revenue",
+            "risk",
+            "support",
+            "executive",
+            "domain"
+          ]
+        },
+        "role": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "job_to_be_done": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "decision_power": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "failure_modes": {
+          "$ref": "#/$defs/non_empty_string_list"
+        },
+        "evidence_expectations": {
+          "$ref": "#/$defs/non_empty_string_list"
+        },
+        "default_use_cases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["ui_test", "decision", "strategy", "prompt", "research", "architecture", "competitive"]
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

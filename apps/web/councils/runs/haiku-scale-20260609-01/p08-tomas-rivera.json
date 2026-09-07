@@ -1,0 +1,62 @@
+{
+  "task": "p08",
+  "persona": "Tomás Rivera — Privacy & compliance officer",
+  "top_concern": "Synthetic persona data allowed without explicit disclosure mechanism to consumers; PII exposure risk from direct name storage; missing consent audit trail for behavior-informed personas",
+  "findings": [
+    {
+      "severity": "high",
+      "evidence": "schemas/persona.schema.json:176-187 — source_type enum permits 'synthetic' but provides no disclosure_required flag or consumer_notification field",
+      "why_it_matters": "When synthetic feedback is mixed with real evidence (e.g., fixtures.ts Morgan Lee: 0.45 confidence synthetic + real product thesis), consumers cannot distinguish what is synthesized vs. observational. GDPR Article 13 requires transparency about data origins.",
+      "suggested_change": "Add to evidence_item schema: 'is_synthetic_disclosed': boolean, 'disclosure_statement': string (required if source_type='synthetic'). Require: 'This evidence is synthetically generated and does not reflect real user behavior.'",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:10-58 — Morgan Lee persona stores name, role, and behaviors directly without pseudonymization; no data minimization for synthetic personas",
+      "why_it_matters": "If these personas are ever shared beyond the design team (Slack, API export, analytics), direct names + role descriptions could re-identify actual employees whose behavior informed the synthesis. GDPR Article 32 requires pseudonymization of personal data.",
+      "suggested_change": "For synthetic personas: hash or alias names (e.g., 'Persona_RevOps_A'), store actual name only in a separate consent registry. Add persona.data_classification field: 'real', 'pseudonymized_synthetic', 'fully_synthetic'. Filter exports by classification.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "schemas/persona.schema.json:150-213 — evidence_item has no consent_obtained, consent_source, or behavior_sampled fields; no provenance chain linking synthetic personas to data sources",
+      "why_it_matters": "When a persona is described as 'built from product thesis' (Morgan Lee: summary at fixtures.ts:15-16) with confidence 0.45, there is no audit trail showing: (a) whose behavior was observed, (b) did they consent to be modeled, (c) was that data anonymized. TAG:ASSUMED that Morgan Lee is fully fictional.",
+      "suggested_change": "Add evidence_item fields: 'behavior_source': ['real_users'|'synthesized'|'expert_opinion'|'mixed'], 'sample_size': int, 'consent_obtained': boolean, 'data_controller': string (contact for subject-access requests). If synthesized, require summary of generative prompts or synthesis rules used.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:39-58 — Morgan Lee evidence has confidence 0.45 paired with source_type='synthetic', but confidence scale is undefined; users cannot interpret trustworthiness relative to data origin",
+      "why_it_matters": "A confidence score of 0.45 for 'initial product hypothesis' signals low certainty, but without methodology transparency, consumers may treat it as a statistical confidence interval (implying real-user validation). This is a form of unintentional misrepresentation.",
+      "suggested_change": "Define confidence semantics explicitly: 0.0-0.3 = speculative/hypothesis-only, 0.3-0.6 = draft/mixed-evidence, 0.6-0.8 = validated, 0.8-1.0 = high-fidelity. Require annotation on evidence: 'confidence_basis': ['sample_size', 'expert_consensus', 'consistency_with_survey', 'generative_synthesis']. Display confidence with basis, not as raw number.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/repository.ts:58-61 — sourceType filter in PersonaFilters allows filtering by evidence source, but no audit logging of who queried for 'synthetic' personas or how they were used downstream",
+      "why_it_matters": "If a team exports synthetic personas (fixtures.ts does not show export restrictions), and those personas appear in product decisions or customer-facing analytics, there is no way to audit compliance. No trail of who accessed synthetic data or for what purpose.",
+      "suggested_change": "Instrument repository.ts: log all listPersonas(), getPersona(), exportPersonas() calls with user_id, filters_applied, timestamp. Add 'restricted_to_internal' flag on synthetic personas; block export unless destination_purpose='internal_design_research'.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "low",
+      "evidence": "src/lib/fixtures.ts:9 comment states 'Static fixture personas for the first UI build' but notes field in Morgan Lee (line 55) says 'Replace synthetic evidence with interview data when available' — no deadline or compliance owner assigned",
+      "why_it_matters": "Synthetic data is recognized as temporary, but there is no SLA, responsible party, or automatic deprecation date. Risk: synthetic personas shipped as permanent and never updated, inadvertently becoming the source of truth for user research.",
+      "suggested_change": "Add to persona schema: 'sunset_date' (required if status='draft' and confidence < 0.7), 'review_owner': email, 'replacement_plan': string. Implement automated warnings 30 days before sunset. Block new personas from referencing archived synthetic-only parents.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Implement a synthetic-data disclosure template embedded in persona views: 'This persona contains synthetic evidence. See evidence chain for real-user data sources. Synthesized on [date] using [methodology].'",
+    "Separate real personas from synthetic in the repository contract: add PersonaRepository.listSyntheticPersonas() with audit logging and export restrictions; UI should warn users when viewing synthetic-only insights.",
+    "Establish a Data Provenance Registry: map each persona back to the consent decree, interview recordings, survey IDs, or generative synthesis rules that created it. Make registry queryable for compliance audits (GDPR subject-access requests).",
+    "Require evidence_item.methodology_uri: a link to the generative prompt, experiment design, or sampling plan used. Methodology becomes searchable/auditable; users see exactly what reasoning produced each piece of evidence.",
+    "Add a 'Confidence Audit' dashboard: show distribution of confidence scores by source_type; flag personas where synthetic sources outnumber real ones and confidence is >0.5 (indicator of misalignment between certainty and evidence quality)."
+  ],
+  "access_gaps": [
+    "No visibility into whether synthetic personas are ever exported or shared outside the internal design team; missing audit trail for downstream usage.",
+    "Methodology and generative prompts used to synthesize personas are not stored or retrievable; impossible to reproduce or critique synthesis decisions later.",
+    "No mechanism to link personas to consent records, interview transcripts, or data-processing agreements; compliance officers cannot verify that underlying behavior data was lawfully obtained.",
+    "Confidence levels are interpretable as statistical measures but lack semantic meaning; users cannot distinguish 'speculative' from 'validated' without reading notes fields (not machine-readable)."
+  ]
+}

@@ -12,7 +12,7 @@ $ARGUMENTS
 (e.g. `--topic "review the settings page" --level medium --runs 3`).
 
 App base URL: `${APP_URL:-http://localhost:3000}` (the AI User Personas app must
-be running: `npm run dev` in that repo). All state lives in the app; you drive it
+be running: `npm run web:dev` from the persona-lab repository root). All state lives in the app; you drive it
 over the council API.
 
 ## Steps

@@ -1,0 +1,61 @@
+{
+  "task": "p09",
+  "persona": "Jamie Park — Junior PM (novice)",
+  "top_concern": "Evidence sourcing is incomplete and too permissive of synthetic claims without backing, risking personas that feel authoritative but lack grounding",
+  "findings": [
+    {
+      "severity": "high",
+      "evidence": "PersonaForm.tsx:42-62 initialFor() extracts only the FIRST evidence item; schema/persona.schema.json:80-85 defines evidence as array minItems:1, allowing N items",
+      "why_it_matters": "The form UI enforces single-evidence capture, but the data model supports multiple sources. Once saved, users cannot add corroborating evidence later—blocking iterative research and breaking the core value of persona confidence over time. A novice PM would assume 'one evidence item' is intentional and may abandon a persona if they later find a second study supporting it.",
+      "suggested_change": "Either (a) expand PersonaForm to support adding multiple evidence items with + button and list, or (b) document that v1 is single-evidence only and list it as a known limitation. If (a), surface per-evidence confidence per schema definition.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaForm.tsx:272-276 warns 'Synthetic evidence will be visually flagged' AFTER the user selects synthetic; no upfront warning or education before evidence entry begins",
+      "why_it_matters": "A junior PM with no research background may not understand that 'synthetic' means 'not grounded in real user data' and could treat it as just another source type. The warning comes too late to course-correct. As Jamie on day one, I'd pick 'synthetic' without grasping the credibility hit, then deliver a persona to stakeholders marked with a warning I didn't read during creation.",
+      "suggested_change": "Add a pre-evidence fieldset header or alert explaining the synthetic/real evidence distinction before the source_type dropdown. Consider a confirmation step: 'This persona will be marked as synthetic. Continue?' when synthetic is selected, with a link to what that means.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaForm.tsx collects evidence_summary (20+ chars) + evidence_source only; schema/persona.schema.json:168-212 defines quote, source_uri, and observed_at as optional but present",
+      "why_it_matters": "Without a quote or source_uri, synthetic evidence is pure assertion. A quote grounds the claim in a real source; a URI lets someone verify. As a novice, I'd write 'Junior PMs want to ship fast' as evidence_summary and hit submit, unaware I'm missing evidence that would make the claim credible. Personas look polished but are hollow.",
+      "suggested_change": "Make quote or source_uri conditionally required if source_type is NOT 'synthetic'. For synthetic, ask: 'What real-world pattern or assumption backs this?' If source is 'interview'/'survey'/'desk_research', ask for a quote or summary quote. Observed_at (date) should default to today but be editable.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaForm.tsx:286-294 has one persona-level confidence slider; schema/persona.schema.json:206-207 allows per-evidence-item confidence (0-1), but form doesn't capture it",
+      "why_it_matters": "If a persona mixes interview data (confidence 0.9) with a desk-research guess (confidence 0.4), the single persona-level confidence is a lossy average. A junior PM won't know to weight them differently or to flag that one pillar is shaky. The schema supports nuance but the form erases it.",
+      "suggested_change": "If expanding to multi-evidence (finding #1), collect confidence per evidence item as part of the evidence block. Show in the detail view how confidence varies across sources and compute the overall confidence as a visual summary (e.g., 'Grounded: 70%, Estimated: 30%').",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaForm.tsx has no inline guidance on quality; SKILL.md:45-52 in plugins/persona-lab/ outlines selection rules (avoid stereotypes, base on goals/constraints/incentives) but form has no link or tooltip to these",
+      "why_it_matters": "A novice PM can fill every field with vague, stereotype-driven claims and pass validation. Example: archetype='Gen Z user', frustrations=['too complicated'], motivations=['wants to be cool']. Validation doesn't reject it; it's syntactically valid. But it won't produce useful feedback in a persona review. The form teaches no standards.",
+      "suggested_change": "Add contextual hints below each field set: 'Goals should express a desired outcome, not a feature' (examples: 'reduce weekly overhead' vs 'wants a dashboard'). For frustrations: 'Specific to a workflow, not general sentiment' (examples: 'manually auditing forecast accuracy takes 4 hours' vs 'system is slow'). Link SKILL.md quality rules or embed a simplified version.",
+      "confidence": "high"
+    },
+    {
+      "severity": "low",
+      "evidence": "PersonaForm.tsx:309-315 collects tags (comma-separated); no guidance on what tags to use or whether they align with a tag taxonomy for filtering/discovery",
+      "why_it_matters": "As a junior PM, I'd use tags inconsistently ('finance' vs 'financial', 'mid-market' vs 'midmarket'). Over time, personas are hard to find. Not a trust issue but an usability one that erodes adoption.",
+      "suggested_change": "Document a tag taxonomy (e.g., 'operations', 'finance', 'engineering', 'buyer', 'adopter', 'supporter', 'skeptic') and show it as a picker or combobox instead of free text. Allows filtering on /personas list view.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Add a 'Created for' or 'Request context' field to tie personas to the decision/artifact they support—SKILL.md calls this 'capture the request' but the form doesn't. A persona without context is just data.",
+    "Create a persona detail/read view that shows trustworthiness signals: evidence count, evidence types, confidence breakdown, age of persona, last updated, tags. Let users see at a glance if this persona is solid or shaky.",
+    "Add a 'Draft checklist' or 'Quality gate' mode: before marking persona as 'active', check that (a) all 3+ evidence pieces are present, (b) no field is filler, (c) scenarios are concrete. A form validation alone won't teach quality.",
+    "Wire the form to a reference library or examples of good vs bad personas. As a first-timer, I'd learn faster from 'here's a strong persona' than from rules alone.",
+    "Consider a guided workflow: start with request capture (decision, target user, artifact) → suggest role selection from a catalog → then fill out the persona form pre-populated with relevant fields. Linear flow reduces ambiguity."
+  ],
+  "access_gaps": [
+    "No access to running app—could not verify form validation fire/clear as user corrects errors, or visual state of 'synthetic' flagging",
+    "No personas in the DB—could not see how multiple personas are displayed, filtered, or compared; assumed from schema + UI_PLAN",
+    "No persona-lab skill documentation on how this form integrates with the 'create personas from a request' workflow; only read first 80 lines"
+  ]
+}

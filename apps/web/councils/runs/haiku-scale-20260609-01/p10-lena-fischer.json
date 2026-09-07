@@ -1,0 +1,63 @@
+{
+  "task": "p10",
+  "persona": "Dr. Lena Fischer — Research methodologist",
+  "top_concern": "Confidence values mask evidence synthesis quality: personas blending synthetic hypothesis with real data (interviews, support, sales) without distinguishing confidence in the persona itself from confidence in the supporting evidence, creating false credibility when feeding decision councils.",
+  "findings": [
+    {
+      "severity": "high",
+      "evidence": "schemas/persona.schema.json:179-187 defines source_type enum including 'synthetic'; fixtures.ts:39-47 (Morgan Lee) has confidence 0.45 with ALL evidence source_type:synthetic (product hypothesis only), yet confidence field reads as persona validity",
+      "why_it_matters": "Morgan is a decision-maker in the Council (decision-council-2026-06-08.md:14) with veto power on priority E. Her confidence 0.45 reflects 'initial product thesis' sourcing, NOT ground truth about her goals/frustrations/behaviors. Decision Council participants don't know confidence is ABOUT HYPOTHESIS VALIDATION, not user-pattern strength. This conflates 'research immaturity' with 'user insight credibility.' When confidence is low and evidence is ALL synthetic, the persona is proto-persona—a starting point for validation, not decision input.",
+      "suggested_change": "Split confidence into two fields: evidence_synthesis_confidence (0.0-1.0, current field, reflects data quality/timeliness) and persona_validity_confidence (0.0-1.0, reflects ground-truthing against real users). If evidence_synthesis is 100% synthetic, set persona_validity to 0.0 regardless of internal coherence. Personas with validity < 0.5 are ineligible for decision councils until evidence_synthesis improves. Update SKILL.md step 4 measurement plan to SEPARATE 'confidence in evidence quality' from 'confidence in persona as predictor of real user behavior.'",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "fixtures.ts: Dee Carter (lines 134-141) confidence 0.75 with evidence_type:support, but summary is 'Sampled forty-two escalations and found three recurring user patterns not covered by current personas' — NO quote, NO ticket IDs, NO link to actual sample. Contrast: Priya Shah (line 90-95) evidence.quote present ('Eleven of fourteen designers said...').",
+      "why_it_matters": "Dee is also a Council member (decision-council-2026-06-08.md:15) with veto power. The support evidence CLAIMS a sample ('forty-two escalations') but provides zero verifiability. The confidence 0.8 attached to this evidence is ASSUMED from the claim, not backed by source_uri or sampled ticket IDs. A decision-maker cannot audit or retrain on the evidence. Without citable evidence, the persona becomes a narrative, not a research artifact.",
+      "suggested_change": "Require evidence_item.source_uri to be present for source_type IN ['interview','survey','support','sales','analytics']. For support/sales, if claiming a sample, mandate either (a) sample size + confidence interval in summary, OR (b) link to source system + query that reproduces the set. If verifiability is not possible, downgrade confidence to 0.0 and mark as UNVERIFIED. Update SKILL.md measurement section (step 4) to include 'Can the evidence be reproduced by another researcher?'",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "SKILL.md lines 115-118 defines measurement 'For each persona, define: Primary question. Success signal. Failure signal. Evidence to inspect.' But fixtures.ts personas have NO linked measurement plan; Council decision (decision-council-2026-06-08.md) doesn't show how personas answered specific primary questions before the tally.",
+      "why_it_matters": "Personas were selected and invoked for decision-making (Council), but the SKILL.md workflow was NOT executed: no written measurement upfront, no explicit success/failure signals defined before Council convened. This means Council members (personas) answered the priority question (A-E ranking) from their archetype + narrative, NOT from explicit measurement criteria. The decision is persona-driven without a test plan to verify whether personas predict real user preferences. This creates risk of cargo-cult research: the form (persona + decision) without the discipline (measurement-first).",
+      "suggested_change": "Before ANY decision council is convened, write a separate `<council-id>-measurement-plan.json` listing: council question, per-persona primary question, success/failure signals, evidence types required. During Council, each persona persona's position must cite the evidence collected against their measurement plan. Post-Council, validate Council decision against real user behavior (survey/interview/analytics) and adjust persona confidence based on HOW WELL the persona's position predicted real-world outcome. Add this to SKILL.md step 4 and 5.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "fixtures.ts:86 (Priya Shah) has note 'Replace synthetic evidence with interview data when available' — explicit documentation of intent to replace. Yet fixtures.ts:55 (Morgan Lee) ALSO has same note. Both remain in 'active' or 'draft' status with synthetic evidence still present and no evidence_refresh_date or invalidation_timestamp.",
+      "why_it_matters": "Personas are being used in decision councils (decision-council-2026-06-08.md) in their current state. If evidence is stale or marked for replacement, there is no system blocking their use in high-stakes decisions. A persona with a note 'replace when real data arrives' but NO deadline is a planning debt that compounds: each reuse creates a new stakeholder dependency on the outdated persona.",
+      "suggested_change": "Add optional fields: evidence_invalidation_date (ISO 8601, date after which persona is ineligible for decision councils until re-evidence), evidence_refresh_status (enum: 'stable','pending_replacement','awaiting_validation','stale'). If status is not 'stable' or if today > invalidation_date, block the persona from decision councils (SKILL.md step 5 gating). Add a sync mechanism to detect when new evidence arrives and auto-promote status from 'pending_replacement' to 'stable' with confidence recalculation.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "decision-council-2026-06-08.md:20 shows tally '3/2/1' scoring but does NOT show HOW each persona weighted the options. Only shows final ranks (1/2/3) per persona. No persona explanation text is present, so no record of reasoning. The Council report says 'independently validates the lane Codex is already executing' but provides NO post-hoc evidence that persona preferences actually matched Codex's committed work.",
+      "why_it_matters": "The Council claim 'independently validates' is unverifiable. We cannot assess whether personas predicted Codex's roadmap, or Codex's roadmap was retrospectively justified by persona positions. Absence of persona reasoning blocks learning: we don't know what each persona SAW in the decision space that drove their ranking, only the final order.",
+      "suggested_change": "Require Council reports to include per-persona brief narrative (1-2 sentences): 'Why did this persona rank option E first?' plus the measurement evidence they cited (which evidence item from their persona schema supported this ranking). This enables post-Council audit: did the persona's prediction hold, and if not, was the fault in the persona (invalidate) or in the decision-maker's interpretation of the persona (retrain).",
+      "confidence": "medium"
+    },
+    {
+      "severity": "low",
+      "evidence": "SKILL.md lines 99-100 says 'For UI work, inspect actual files and use browser/screenshot verification when the app is available.' But decision-council-2026-06-08.md is a strategic (not UI) decision council, and there is no indication that personas examined source artifacts before their positions. Morgan, Dee, Nadia reviewed NO files or logs listed in the Council doc.",
+      "why_it_matters": "The Council served as a litmus test for persona validity (they formed consensus on E with zero vetoes), but personas were not exercised against actual artifacts (code, logs, metrics, customer data). A persona-driven consensus on a strategic question is weaker than a persona-driven consensus on a product review where they've inspected actual UI. This is appropriate for roadmap strategy, but the evidence weight should reflect lack of artifact inspection.",
+      "suggested_change": "TAG:ASSUMED — personas were invoked on archetype + narrative alone, not on evidence-gathering from customer data / logs / metrics. Update Council report to note which decision domains (strategic vs. UX vs. support escalation) personas were applied to, and surface the evidence-inspection scope alongside the decision. This helps flag when personas are being used for high-certainty decisions without proportional evidence depth.",
+      "confidence": "low"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Implement a pre-Council validation gate: (1) every evidence_item must have source_uri or (marked unverifiable); (2) confidence field must be split into evidence_synthesis_confidence + persona_validity_confidence; (3) personas with persona_validity < 0.5 are marked UNVERIFIED and excluded from decision councils until grounded in real research",
+    "Instrument a persona-audit loop: after each decision council, track the Council's decision + each persona's position, then compare against real-world outcome (sales win-loss, support escalation resolution, customer survey). Use this to update confidence scores retroactively and identify which personas are predictive.",
+    "Require written measurement plan BEFORE convening a Council, not after. Each persona's primary question and success signals should be explicit. During Council, personas must cite evidence collected against their measurement criteria. Post-Council, surfaces a validation report: 'Persona X predicted outcome A; real outcome was B; confidence adjustment: down to 0.5.'",
+    "Add evidence_refresh lifecycle: mandatory evidence_invalidation_date on all evidence items. If no refresh source is provided or date is passed, persona is demoted from 'active' to 'stale' and blocked from decision councils. Sync with real research intake: when interview/survey data arrives, auto-promote matching personas from draft/pending to active with updated confidence.",
+    "Separate decision councils by evidence depth: (1) strategic/roadmap councils can use synthesis_confidence alone; (2) feature/UX councils must use persona_validity_confidence and require artifact inspection (screenshots, logs, customer notes). Tag Council reports with depth level so stakeholders know how much ground truth supports the decision."
+  ],
+  "access_gaps": [
+    "No access to real customer support tickets, interview recordings, or sales call transcripts that would ground the evidence items (e.g., the 'forty-two escalations' Dee Carter cites are not linked)",
+    "No access to decision council pre-meeting reasoning (personas' written justifications for their rankings). Only post-hoc tally visible.",
+    "No access to post-council validation: did the Council's decision on priority E (reliability/lifecycle) actually hold against roadmap execution? Did Codex deliver E first?",
+    "No access to evidence-refresh mechanisms or triggers: don't know if personas are still valid 6 months post-creation, or how new research would update them",
+    "No access to customer survey/interview data that would provide real-user preferences on the same decision axis (A-E priorities), to cross-check against persona positions"
+  ]
+}

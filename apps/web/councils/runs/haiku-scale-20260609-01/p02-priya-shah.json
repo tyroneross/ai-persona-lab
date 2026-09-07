@@ -1,0 +1,55 @@
+{
+  "task": "p02",
+  "persona": "Priya Shah — Design systems lead",
+  "top_concern": "Evidence chain is missing the critical link between data source and persona synthesis—no traceability or flagging of synthetic claims that should be marked untrusted",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "PersonaForm.tsx:72-90, PersonaDetail.tsx:25-54, persona.schema.json:168-213",
+      "why_it_matters": "The evidence system allows up to 7 source types (interview, survey, analytics, support, sales, desk_research, synthetic), but the Form visually flags only synthetic evidence on save (line 273-276), while Detail view marks it in the evidence row (lines 29-31). This creates asymmetric trust signaling: a user creating a persona sees the warning, but reviewers reading the published detail page see synthetic evidence distinguished only by color/badge, not by dominant visual hierarchy that enforces skepticism. This is a confidence-meter problem masquerading as a source-type problem.",
+      "suggested_change": "Synthetic evidence requires a distinct visual treatment—not just a badge but a structured warning box (border-left accent + icon + mandatory inline label like 'Unverified synthesis') positioned BEFORE the confidence meter in EvidenceRow. Separate real-evidence list from synthetic via a visual divider or section break in PersonaDetail, so reviewers can't miss the boundary. Add a 'synthetic_rationale' field to evidence_item schema—require brief explanation of why synthetic was chosen (e.g., 'filling gaps in interview data' vs 'speculative extrapolation'). Form must warn at save if >50% of confidence derives from synthetic."
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaForm.tsx:109, PersonaDetail.tsx:93-96, persona.schema.json:144-148",
+      "why_it_matters": "Confidence is a scalar 0–1 aggregated at the persona level, but the schema has NO mechanism to weight evidence confidence by source type. A persona marked 0.7 confidence could be 0.9 on interview data but 0.3 on synthetic—the scalar hides this. When Priya reviews a persona to decide if it's usable, she can't distinguish 'well-evidenced but low urgency' (high confidence, narrow scenario set) from 'fragmented data across many scenarios' (same confidence, high variance). This breaks trustworthiness for synthesis decisions.",
+      "suggested_change": "Add 'confidence_breakdown' object to persona root: {interview: 0.9, synthetic: 0.2, overall: 0.7}. Compute automatically from evidence array. Expose in PersonaDetail as a small stacked bar or table (Real 90% | Synthetic 20%) so reviewers assess quality by source type. Update PersonaForm to reject save if synthetic-weighted confidence falls below 0.4 AND primary_goal relies on synthetic reasoning."
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaForm.tsx:42-63, persona.schema.json:153-166",
+      "why_it_matters": "Scenarios are stored as title + description pairs (minLength: 20 for description) with NO evidence cross-reference. A scenario like 'Weekly forecast review' sits disconnected from the evidence that supports it—you can't trace back to which interview(s) or data point spawned it. This means Priya can't audit whether a scenario is rooted in user research or is an inference, and she has no way to flag high-confidence scenarios built entirely on synthetic data for deeper scrutiny.",
+      "suggested_change": "Add optional 'evidence_ids' array to scenario object in schema. Modify ScenarioRow in Detail (if created) to show inline evidence badges (small pills listing source types: 'interview, survey'). In PersonaForm, add a picker below scenario textarea: 'Sources for this scenario:' with checkboxes bound to evidence array. Enforce at schema level: if evidence array contains only synthetic items, scenario requires explicit 'synthetic_scenario: true' flag in form with a warning dialog."
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaForm.tsx:272-276, PersonaDetail.tsx:26-41",
+      "why_it_matters": "The synthetic flag is a binary source_type enum, but there's no metadata distinguishing high-quality synthetic (e.g., interpolation between two interview clusters) from low-confidence synthetic (pure speculation or LLM generation). A reviewer can't tell if synthetic evidence was created by a senior researcher triangulating patterns or auto-generated. This collapses trust into a single color/badge—not sufficient for trustworthiness claims.",
+      "suggested_change": "Add 'synthesis_method' enum to evidence_item (e.g., 'interpolation', 'extrapolation', 'ai_generated', 'expert_judgment'). Add 'synthesized_from' array linking back to other evidence IDs if applicable. In EvidenceRow, expose synthesis_method as a subheading: 'Synthetic (interpolation from 2 interviews)' instead of just 'synthetic'. This creates an audit trail and lets Priya evaluate the rigor of synthesis."
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaCard.tsx:25-31, PersonaList.tsx:15-24",
+      "why_it_matters": "List view shows a 3-tag truncation (line 29 in Card) and confidence meter, but NO visibility into whether the persona is heavily synthetic or interview-backed. A user browsing the list sees 'Confidence: 0.7' without context for whether that's anchored in interviews or built on synthetic filling. They may select a low-confidence synthetic persona for product decisions without realizing it's high-risk.",
+      "suggested_change": "Add a subtle 'Source mix' indicator to PersonaCard (text-xs, muted): 'Mostly interviews + 2 synthetic' or 'Heavy synthetic (30%)'. Position it near confidence meter. Use data from confidence_breakdown (above) to compute. When hovering/clicking, show a tooltip: 'This persona draws X% from real research and Y% from synthesis. Verify assumptions before using for high-stakes decisions.'"
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaForm.tsx:120-131, PersonaDetail.tsx:56-162",
+      "why_it_matters": "The form currently shows a placeholder message ('Persistence is not wired yet') on submit (line 128-130), but there's NO interface for version history, change audit, or evidence editing after creation. If a persona was created with synthetic data and later real data arrives, Priya can't version the persona or mark which claims shifted from synthetic to real. This means synthetic personas that mature into research-backed ones can't be re-certified.",
+      "suggested_change": "Add a 'History' tab or expandable section to PersonaDetail (post-persistence) showing timestamp, prior confidence, prior evidence mix, changed_fields array. When editing, highlight which fields shifted from synthetic backing. Require confirmation message if removing interview evidence in favor of synthetic. This audit trail is essential for trustworthiness—allows Priya to see 'p02 was 40% synthetic in v1, now 15% synthetic in v3'."
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Create a 'Synthetic Data Manifesto' embedded in the UI: a static section or tooltip explaining why synthetic evidence exists (filling research gaps, scenario ideation) and when it should NOT be used (safety-critical, high-stakes product decisions). Link from PersonaDetail header and Form instructions.",
+    "Add a 'Trustworthiness scorecard' to PersonaDetail footer: a grid showing 4 dimensions: (1) Research density (% real interviews/surveys), (2) Scenario coverage (# scenarios × # evidence per scenario), (3) Confidence stability (std dev across evidence items), (4) Synthesis rigor (% of synthetic with explicit method). Provide a 1-sentence interpretation: 'Well-grounded' (all greens), 'Fragmented' (mixed), 'Exploratory' (mostly synthetic).",
+    "Implement a 'Flag for review' button in PersonaDetail available to all users, routing to a shared review queue visible only to Priya's team. Include a comment field: 'Why I flagged this: …'. Use this as feedback loop for synthetic persona maturation and trustworthiness refinement.",
+    "Wire persona creation to a required 'research plan' step before form appears: brief markdown field explaining 'What research supports this persona?' and 'What gaps is this synthetic?'. Store as part of evidence_summary. This shifts the burden left—forces synthesis reasoning into the creation workflow, not after."
+  ],
+  "access_gaps": [
+    "No way for reviewers to see correlation between evidence confidence and scenario applicability—can't assess 'is this high-confidence persona applicable to low-confidence scenarios?' without manual cross-referencing.",
+    "No bulk report or export showing synthetic-evidence distribution across all personas in a workspace—Priya can't audit overall trustworthiness or identify which areas of the user model are underresearched.",
+    "No integration between persona evidence and product decision records—no link back from 'we shipped feature X' to 'this was driven by persona p02 scenario Y', so there's no feedback loop validating synthetic claims against real usage.",
+    "No time-decay or freshness signal on evidence—older interviews are weighted equally to recent ones, and synthetic extrapolations from 2-year-old interviews are never flagged as stale."
+  ]
+}

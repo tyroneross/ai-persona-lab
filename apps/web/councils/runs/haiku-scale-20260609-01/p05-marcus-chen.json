@@ -1,0 +1,62 @@
+{
+  "task": "p05",
+  "persona": "Marcus Chen — Product marketing lead",
+  "top_concern": "Evidence for switching-narrative claims lacks the specificity, recency, and competitive context needed to pressure-test positioning against actual buyer objections.",
+  "findings": [
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:244-250 — Marcus Chen evidence: source_type='sales', title='Win-loss switching notes', summary lacks detail about which competitors, deal stages, buyer personas, or time frame.",
+      "why_it_matters": "Switching narratives require hyperspecific objection patterns (e.g., 'buyers choosing Competitor X over us cite implementation risk, not price'). The evidence summary says 'implementation risk more often than price' but provides no cite to actual deal records, no competitor names, no segment breakdown. Marcus cannot pressure-test this claim or build a narrative without knowing the deal context.",
+      "suggested_change": "Evidence must include: competitor name(s), deal stage (early/mid/late), buyer segment/profile, objection quote(s), win/loss outcome, and observation date. Current summary is too thin to support a switching narrative build.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:211-261 — Marcus Chen persona summary and scenarios lack a concrete definition of 'switching trigger' or 'switching fear'. Scenario reads: 'Marcus checks whether the new campaign answers the top switching concern.' But no prior artifact or workflow shows HOW Marcus identifies or validates that concern.",
+      "why_it_matters": "Marcus's primary role is to isolate which buyer anxiety or proof gap actually drives switchers to a competitor. Without a mechanism to extract triggers from evidence (e.g., a structured win-loss intake form, or a competitive objection taxonomy), the persona remains abstract. Marcus cannot operate on unstructured evidence; he needs a signal pathway to say 'This objection, not that one, moves the needle.'",
+      "suggested_change": "Add to scenarios: 'Marcus extracts switching triggers from 5+ deal records using a standardized objection taxonomy (e.g., proof-gap, urgency mismatch, implementation risk, cost/ROI). He clusters them by competitor and buyer segment.' Define the intake format or lookup reference.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:216-219 — Marcus's goals list 'Identify why buyers choose a competitor despite weaker fit' and 'Shape landing-page claims around real switching triggers,' but schema/persona.schema.json does not include a 'decision_style' value that captures how Marcus handles uncertain or conflicting evidence.",
+      "why_it_matters": "In competitive positioning, Marcus will face conflicting signals: one win-loss note cites risk, another cites price. Without a clear decision rule (consensus among peers, highest confidence signals, largest deal impact), Marcus cannot make a defensible claim for a campaign. A consensus-seeking Marcus who defers to sales input may ship weaker narratives; a deliberate Marcus who demands data rigor may move slower but ship stronger ones.",
+      "suggested_change": "Assign decision_style = 'deliberate' (not 'consensus') based on the quote 'The comparison table is not the story. The switching fear is the story.' This signals Marcus prioritizes signal clarity over consensus. Update behaviors to reflect willingness to push back on under-evidenced claims.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:255-257 — Marcus has 'medium' tech_comfort but his channels are 'win-loss notes, campaign briefs, sales calls' — all narrative/qualitative inputs requiring synthesis and skeptical interpretation. For Marcus to pressure-test narratives against analytics, he needs access to deal-stage data, win/loss outcome codes, and buyer segment filters.",
+      "why_it_matters": "Medium tech comfort suggests Marcus may not self-serve analytics or data systems. If win-loss data lives in a CRM or BI platform, Marcus needs a pre-built query or dashboard to access it. Without direct access, he depends on sales to pull accurate data — a common source of bias in competitive narratives. Trustworthy feedback requires Marcus to validate the signal himself.",
+      "suggested_change": "Add channel: 'CRM/BI dashboards (with data analyst bridge if needed).' Add need: 'Query access to deal-stage objection data, segmented by buyer profile and competitor.' This clarifies the access gap and signals Marcus cannot operate on rumor alone.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:242-251 — Evidence entry includes observed_at='2026-06-04T17:30:00Z' (from 5 days before review). Confidence=0.72 but no freshness indicator; unclear if '0.72' reflects sample size, sales bias, or how recently the objection was observed. No link to the underlying deal records.",
+      "why_it_matters": "Switching objections shift with market conditions, feature releases, and competitive launches. An 'implementation risk' objection observed 5 days ago may no longer be the top concern if a competitor just announced a migration service. Marcus needs to know the observation window and trigger a refresh rule (e.g., 'refresh when new competitor launch detected').",
+      "suggested_change": "Add field to evidence: 'sample_size' (how many deals) and 'refresh_trigger' (e.g., 'new competitor feature launch'). Define a refresh cadence (monthly/quarterly) or signal that re-triggers the win-loss analysis.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:222-223 — Marcus's frustration: 'Interview notes that bury the decisive switching moment.' But the schema and evidence structure do not enforce extraction of a 'decisive moment quote' or 'objection quote' from raw interview or deal notes.",
+      "why_it_matters": "Raw win-loss notes are often scattered across CRM fields, email threads, and Slack. Without a structured intake (e.g., 'What competitor were they considering?' 'What was their stated reason for choosing them?'), Marcus extracts switching moments by hand — slow, error-prone, and easy to bias toward memorable quotes over representative ones.",
+      "suggested_change": "Define an intake schema for win-loss notes: {competitor_name, buyer_title, deal_stage, stated_reason, proof_gap, urgency_fit_mismatch, quote}. Assign Marcus a data intake role or a pre-built report that populates this schema so he can cluster and pressure-test at scale.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Link evidence to specific deal records (CRM IDs, names redacted) so Marcus can audit confidence and spot bias in sales reporting.",
+    "Add a win-loss intake workflow that captures switching objections in a structured format, with buyer persona and competitor filters baked in.",
+    "Create a dashboard or reporting view that clusters win-loss objections by competitor, buyer segment, and deal stage, with recency/freshness indicators.",
+    "Define refresh triggers for competitive evidence (new competitor launch, pricing change, feature announcement) so narratives don't stale.",
+    "Explicitly model how Marcus handles conflicting evidence — which signals move a narrative, when to escalate for more data, what confidence threshold unblocks campaign launch."
+  ],
+  "access_gaps": [
+    "Win-loss data intake and query access: Marcus needs structured, filterable access to deal-stage objections; currently only has channel list without schema.",
+    "Competitor monitoring feed: No signal feed showing when competitor positioning or features shift, which triggers narrative refresh.",
+    "Real deal records for audit: Evidence cites win-loss summary but no link to underlying CRM records, quotes, or buyer personas for verification.",
+    "Sales bias detection mechanism: No workflow to spot when sales is overstating a single objection or conflating price resistance with implementation risk."
+  ]
+}

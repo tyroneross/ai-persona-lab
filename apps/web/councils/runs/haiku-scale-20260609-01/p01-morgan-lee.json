@@ -1,0 +1,61 @@
+{
+  "task": "p01",
+  "persona": "Morgan Lee — Operations skeptic",
+  "top_concern": "Evidence provenance is invisible to users — no source URIs, no drill-down to original records, no audit trail showing how a persona claim traces back to a named data source.",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "components/PersonaDetail.tsx:44-46 shows evidence quotes rendered but EvidenceRow has no clickable link or source_uri field rendered; schemas/persona.schema.json:194 defines source_uri as optional, and src/lib/fixtures.ts contains zero source_uri values across all evidence items.",
+      "why_it_matters": "Without URIs, leadership cannot verify that a persona's confidence score (e.g. 0.45 for Morgan Lee) traces to a real record. A 45% confidence claim backed by 'Initial product hypothesis' reads as unauditable and creates false precision — I cannot cite it in a weekly forecast review if I cannot show the row or document it came from.",
+      "suggested_change": "Make source_uri required (not optional) in the schema, and render it in PersonaDetail as a clickable link with icon (opens the source document or ticket). Populate every evidence item with a concrete reference: Slack thread #link, Salesforce record ID, support ticket #, or survey results URL. Surface 'source_uri missing' as a validation error in the UI.",
+      "confidence": "high"
+    },
+    {
+      "severity": "critical",
+      "evidence": "src/lib/fixtures.ts:42-46 and 55: Morgan Lee has confidence 0.45 with one evidence item marked source_type:'synthetic' and summary 'Persona seeded from the product thesis.' No observed_at date, no quote from an actual user, no indication what 'product thesis' is or who wrote it.",
+      "why_it_matters": "A 45% confidence synthetic persona in active status suggests the system treats unverified hypotheses the same as field-sampled data. When I (RevOps lead) cite Morgan to leadership, I need to immediately signal: this persona is a draft assumption, not backed by interviews or tickets yet. The notes field says 'Replace synthetic evidence with interview data when available' — but nothing in the UI forces that replacement or warns users that the evidence is stale.",
+      "suggested_change": "Downgrade personas with ≥50% synthetic evidence to draft status automatically. Add a dismissable warning banner in PersonaDetail when confidence < 0.6 or synthetic evidence is present: 'This persona includes synthetic (unverified) evidence. Do not cite in external communications until real research is collected.' Require evidence_type visibility per item (not just source_type).",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaDetail.tsx:56-93 displays confidence as a single ConfidenceMeter and label, but does not show confidence _per evidence item_. EvidenceRow renders e.confidence (line 50) but it is visually de-emphasized (smaller meter, no comparison to persona-level score).",
+      "why_it_matters": "As a RevOps operator, I need to know: is the 45% confidence score an average? A min? A subjective judgment? And which evidence is driving it down? If I see three evidence items with 0.7, 0.8, and 0.3 confidence, the persona-level 0.45 is misleading — it obscures the outlier that should trigger a recount or a documented disagreement.",
+      "suggested_change": "In PersonaDetail, add a small table or breakdown showing: evidence title, source_type, confidence, and a one-sentence summary of why that confidence was assigned. Surface the logic used to roll up evidence confidence to persona confidence (e.g. 'median of evidence', 'min', 'user override'). Make the logic explicit and auditable.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "components/PersonaDetail.tsx:87-96: The persona quote is displayed but the 'quote' field in the schema (schemas/persona.schema.json:100-104) has no link to an evidence item; it is a free-text field. In fixtures, Morgan Lee's quote is 'Show me the row this came from.' — but PersonaDetail does not show which evidence item this quote references or when it was said.",
+      "why_it_matters": "A quote without attribution looks like a summary the product team wrote, not something a real user said. As an auditor, I need to know: is this Morgan's exact words from an interview? A paraphrase? A fictional statement to represent the archetype? The UI does not disambiguate, so users will assume quotes are real testimonials even if they are synthetic.",
+      "suggested_change": "Add an optional evidence_ref field to the quote (or require quotes to come from an evidence item with source_type:interview). In PersonaDetail, render the quote with a footnote linking to the evidence item it came from (e.g. 'Show me the row this came from. [Ref: evidence_forecast-review_a1b2c3d4]'). If a quote has no evidence reference, display a warning badge.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts: Morgan Lee (active status, 0.45 confidence) and Priya Shah (draft status, 0.6 confidence) coexist in the fixture set. Morgan is active despite lower confidence and synthetic evidence; Priya is draft despite higher confidence. No documented rule explains which status should apply to personas below 0.6 confidence.",
+      "why_it_matters": "If I run a persona review workflow, I need to know: should I trust Morgan's output in production dashboards? The status=active signal says yes, but 45% synthetic confidence says no. This is a recipe for silent disagreement between teams — some will cite Morgan as fact, others will say 'that's just a draft assumption.'",
+      "suggested_change": "Define and document a status assignment rule: e.g. 'confidence ≥ 0.7 and no synthetic evidence → active; 0.6–0.69 confidence or <20% synthetic → draft; <0.6 confidence or >50% synthetic → archived.' Display the rule in a help article. Surface status as a decision (with justification) in the persona detail view, not just a label.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts shows evidence with observed_at dates (e.g. Dee Carter evidence_support-tickets_c3d4e5f6 has no observed_at; Elena Martinez evidence_battlecard-review_d4e5f6a7 has observed_at:'2026-06-03T15:00:00Z'), but the schema makes observed_at optional. PersonaDetail.tsx does not render observed_at anywhere.",
+      "why_it_matters": "For operational trust, I need to know how fresh the evidence is. A support ticket pattern from March 2025 is stale; one from last week is actionable. Without visible observed_at dates, I cannot assess whether a persona's confidence is still valid or whether a refresh is overdue.",
+      "suggested_change": "Render observed_at in EvidenceRow (e.g. 'Observed: Jun 3, 2026' below the summary). Sort evidence by recency (most recent first). Add a persona staleness indicator: if the most recent evidence is >3 months old, show a warning badge ('Evidence needs refresh').",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Build a public audit log: every persona creation, update, and evidence addition should be logged with timestamp, editor, and reason. Surface a link to this log in the persona detail view so any user can see the full history of changes and who made them.",
+    "Require a pre-publish review gate: before a persona moves from draft → active or before evidence is added to an active persona, route it to a designated reviewer (e.g. the user who created the persona or a research lead). The UI should enforce this workflow, not rely on team discipline.",
+    "Add a 'cite this persona' export: generate a formatted block (APA, Slack, email) that includes persona name, confidence, evidence summary, and source URIs, so users can cite personas in documents without losing the evidence trail.",
+    "Create a feedback loop: if a persona-derived decision is wrong (e.g. a persona said Morgan would reject a feature, but a user bought it anyway), capture that signal and adjust the persona's confidence or add contrary evidence. Route this feedback to the research team."
+  ],
+  "access_gaps": [
+    "No view of raw evidence sources (Salesforce, Slack, survey platform, support ticket system) — cannot drill down from a persona to the actual customer record.",
+    "No way to filter or search personas by evidence type, source_type, or confidence range — hard to find personas backed by real interviews vs. synthetic hypotheses.",
+    "No API or export for programmatic access — product teams cannot build persona-aware features (e.g. 'show me feature feedback from personas matching this segment') without manual copying.",
+    "No integration with design tools (Figma, Pendo) — cannot reference personas from within a design file or surface persona feedback alongside a design spec."
+  ]
+}

@@ -14,7 +14,7 @@ points over one engine:
 - **CLI** (`persona`) — generate, save, recall, and plan panels from any repo.
 - **Plugin** (Claude Code + Codex) — a skill, command, and agents so coding
   agents can run persona reviews.
-- **App** — the `AI User Personas` Next.js UI reads and writes the same library.
+- **App** — the Next.js UI in [`apps/web`](apps/web) reads and writes the same library.
 
 It codifies this workflow:
 
@@ -29,6 +29,27 @@ Output is a **hypothesis for review, not validated user research**. Every panel
 requires at least one adversarial (red-team) lens, runs each persona
 independently to avoid groupthink, and lets personas abstain rather than
 fabricate.
+
+## Web app
+
+The app, CLI, and plugin now share this repository. From the repository root:
+
+```bash
+npm run web:install
+npm run web:dev       # http://localhost:3000
+npm run web:typecheck
+npm run web:build
+npm run web:smoke     # built app, disposable data, no model calls
+```
+
+The CLI remains dependency-free and installable on its own. Web dependencies
+and the app lockfile stay in `apps/web`; ordinary CLI installation does not
+install Next.js. `npm test` covers the CLI and repository integration contracts.
+
+Personas still use `~/.persona-lab` or `PERSONA_LAB_HOME`. Council state defaults
+to `apps/web/data`; use `PERSONA_COUNCIL_DATA_DIR` to select another directory.
+See [the consolidation record](docs/repository-consolidation.md) for source
+history, data migration, preserved behavior, and recovery.
 
 ## Quick Start
 
@@ -136,8 +157,8 @@ The plugin content is host-neutral; both hosts load the same command, agents,
 skill, references, and CLI.
 
 ```bash
-claude --plugin-dir ./plugins/persona-lab
-codex  --plugin-dir ./plugins/persona-lab
+claude --plugin-dir .
+codex  --plugin-dir .
 ```
 
 Slash command:

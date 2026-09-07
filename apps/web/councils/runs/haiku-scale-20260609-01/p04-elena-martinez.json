@@ -1,0 +1,63 @@
+{
+  "task": "p04",
+  "persona": "Elena Martinez — Competitive intelligence lead",
+  "top_concern": "Evidence provenance and freshness tracking are superficial for competitive research—personas need source-grade confidence tiering and explicit stale-after dates to prevent battlecard claims from becoming cargo-cult repetition.",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "src/lib/fixtures.ts:185-195 — Elena's evidence entry shows only one 'desk_research' item with a single confidence score (0.68) tied to the whole persona, plus observed_at timestamp. Schema allows multiple evidence items but fixture shows no mechanism to track which persona claims source from which evidence piece, and no way to expire or refresh stale desk research.",
+      "why_it_matters": "Elena's primary workflow (battlecard refresh) requires knowing which competitor claims are fresh vs. which ones derived from a Q1 announcement that's now three months old. Without per-claim source traceability, she'll rely on memory or spot-check, not provenance. This breaks her core need: 'Clear confidence labels before sharing claims.'",
+      "suggested_change": "Add claim-to-evidence linking: (a) each goal/frustration/need/motivation in the persona should carry an optional evidence_id that traces back to the source; (b) evidence_item should include a 'refresh_by' or 'stale_after' date; (c) UI should surface claims sourced from expired evidence with a visual stale indicator so Elena spots drift before battlecard shipping.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:175-195 — Elena's persona evidence includes only desk_research source type. Schema supports 'interview', 'survey', 'analytics', 'support', 'sales', and 'synthetic', but Elena's 'Competitor launch and pricing review' makes no distinction between a public press release (desk_research, low confidence) vs. a win-loss interview from a switcher (sales source, higher confidence). No UI affordance shown for enriching evidence type over time.",
+      "why_it_matters": "Elena explicitly needs 'Evidence freshness by competitor' and 'Persona-linked objection patterns.' Without evidence-type signals, she can't distinguish high-signal win-loss patterns (sales source, high confidence) from public claims (desk_research, lower confidence). This leads to over-weighting competitor marketing in battlecards.",
+      "suggested_change": "UI should: (a) in the evidence editor, allow Elena to specify evidence type and add a 'who observed this' field (e.g., 'AE from Acme deal', 'analyst report'); (b) filter/sort evidence by source type so Elena can see 'desk_research-only claims' separately from 'backed by sales data'; (c) suggest evidence cross-checks ('This claim appears 3× in desk research but 0× in win-loss—investigate before shipping').",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:150-206 — Elena's scenario (Battlecard refresh) describes her reviewing 'recent competitor mentions and updates the segment-specific talk track' but the Persona schema provides no link between scenarios and evidence. Elena's needs include 'Persona-linked objection patterns' but there is no data model for 'objection X is seen in scenario Y and sourced by evidence Z.'",
+      "why_it_matters": "Elena's workflow is: spot competitor mention → check if it maps to known objection pattern → pull sourced talk track. Without scenario-to-evidence linking, the persona becomes a static profile rather than a playbook. She'll recreate the mapping manually each refresh cycle.",
+      "suggested_change": "Add an optional 'objection_map' or 'scenario_evidence' field: each scenario can list 1–N evidence IDs that directly feed that scenario's handling logic. Example: 'Battlecard refresh' scenario links to evidence_battlecard-review plus any win-loss evidence showing 'faster onboarding' mentions. UI shows evidence and suggested handling language inline in the scenario.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:168-172 — Elena's motivations ('Protect differentiation', 'Make competitive updates easy to audit') and her quote ('If we cannot trace the claim, it should not go into the battlecard') suggest she audits claim provenance before sharing. But PersonaForm.tsx (lines 92–100) shows no specific audit/review workflow in the UI. The confidence field is a single float, not a confidence breakdown by source type.",
+      "why_it_matters": "Elena needs to surface 'approved language for uncertain claims' (per her frustration with 'claims that sound confident but lack source context'). A single confidence number doesn't help her defend a claim to legal or ethics review.",
+      "suggested_change": "Add a 'confidence_rationale' field (optional, ≤500 chars) that Elena fills when she edits confidence. Example: '0.68 because three public launches + one win-loss mention; competitor has not shipped the feature yet in production.' UI shows this rationale when confidence is below 0.75, triggering a review gate before the claim goes into any export/battlecard.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:196 — Elena's persona has a single overall confidence (0.68) but covers three distinct claims: (a) competitors emphasize faster onboarding, (b) only one published proof for enterprise governance, (c) implicit insight that proof gaps predict future positioning. One confidence score cannot capture that (a) is high-confidence desk_research but (b) is speculative.",
+      "why_it_matters": "When Elena exports this persona to a battlecard template or shared doc, a reader may assume all claims share the 0.68 confidence. This violates her core need to provide 'clear confidence labels before sharing claims.' Mixed-confidence personas are a silent source of battlecard errors.",
+      "suggested_change": "Restructure confidence at the claim level: goals/frustrations/needs can each carry an optional confidence field. Alternatively, remove the top-level confidence rollup and require Elena to set per-evidence confidence, surfacing the distribution in the UI (e.g., '60% high-confidence claims, 40% medium, 0% low'). Export warns if exporting low-confidence personas.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:152-206 — Elena's persona structure has no explicit competitor-name or segment field. Her archetype is 'Competitive intelligence lead' but she operates within a single company selling to a segment. Her evidence mentions competitors by name ('three recent competitor launches') but the persona schema has no way to link evidence to a specific competitor (e.g., 'evidence_battlecard-review applies to Competitor A, B, C').",
+      "why_it_matters": "Elena's workflow tags 'every research claim by source quality and freshness' per her behaviors. Without per-competitor evidence tracking, she cannot answer 'which claims in this persona are about Competitor A vs. Competitor B' when she's refreshing battlecards for different sales plays.",
+      "suggested_change": "Add an optional 'competitor_scope' field to evidence_item or to the persona itself (e.g., 'This evidence set applies to: Competitor-X, Competitor-Y'). UI allows Elena to filter evidence by competitor when editing. Scenario can also declare scope: 'Battlecard refresh [Competitor-A, Competitor-B]'.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Add evidence-linking to claims: each persona statement (goal, frustration, need, behavior) should carry an optional evidence_id so Elena can click through to the source and see when it was last refreshed.",
+    "Introduce a 'source quality' tier system (T1:direct-win-loss, T2:sales-notes, T3:desk-research-with-date, T4:competitor-marketing) and surface it in UI filters and exports so Elena's battlecard readers understand confidence by source type, not just a single number.",
+    "Add competitor-scope tracking so Elena can segment her evidence by competitor (Competitor A vs. B) and prevent cross-competitor claim contamination in battlecards.",
+    "Implement a stale-evidence alerting system: mark evidence with 'stale_after' date; UI shows a warning when exporting personas that contain claims older than 60 days, requiring Elena to re-verify or archive.",
+    "Create a review gate for exporting personas: if any claim has confidence <0.75 or sources only from desk_research (no sales validation), require Elena to add a rationale before the persona leaves the tool."
+  ],
+  "access_gaps": [
+    "No way to see which specific claims (goals, frustrations, needs) map to which evidence items—forcing Elena to memorize or maintain a separate mapping doc.",
+    "No competitor-scope field in the schema or UI—Elena cannot separate 'claims about Competitor A' from 'claims about Competitor B' within a single persona, limiting reusability.",
+    "No per-evidence 'observed_at' filtering or export warnings—Elena cannot easily find personas that contain only old desk research vs. those backed by recent win-loss data.",
+    "No 'confidence_rationale' or audit trail—Elena cannot document WHY a confidence score is 0.68 vs. 0.45, making it hard for downstream readers (product, sales) to defend the claim.",
+    "No scenario-to-evidence linking—Elena's 'Battlecard refresh' scenario has no explicit reference to which evidence items inform it, turning the scenario into flavor text rather than an actionable playbook."
+  ]
+}

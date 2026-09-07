@@ -1,0 +1,677 @@
+{
+  "source_commit": "c6ee4cbe72d44b398fdb1b7f0c2c16f93d446d73",
+  "files": [
+    {
+      "source": ".gitignore",
+      "source_sha256": "6d5eff0fc0d92e20c05e97eaac30d1f68594330ea07b67c82c819c712dc3c7b2",
+      "target": "apps/web/.gitignore",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "AGENTS.md",
+      "source_sha256": "b69ecbeb4b69cc013d41f07a29c3eb191162205145c3a493ef170158d4f21cca",
+      "target": "apps/web/AGENTS.md",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "CLAUDE.md",
+      "source_sha256": "f96efdcf643df7d011ccaf70435cdb5267291b39f28aad99f5b50460137cc741",
+      "target": "apps/web/CLAUDE.md",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "app/api/councils/[runId]/findings/route.ts",
+      "source_sha256": "a48104e33fef60d339c0a7261cc4464ebbc38ff4c56d38fa4ded0f51cb6c1e65",
+      "target": "apps/web/app/api/councils/[runId]/findings/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/councils/[runId]/route.ts",
+      "source_sha256": "e5f4543695839ac678c5dde7cfde609ada058a963410d3b0594b1f6e84864b26",
+      "target": "apps/web/app/api/councils/[runId]/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/councils/[runId]/status/route.ts",
+      "source_sha256": "589ffbe722e7d29a729d3c806383074c28e6e32b0b9456d9b5e9c7fcbf2b8b3c",
+      "target": "apps/web/app/api/councils/[runId]/status/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/councils/[runId]/synthesis/route.ts",
+      "source_sha256": "676c02a79fc10a1dce9510380b78fc67a2c290455bab496e944d961d7169b632",
+      "target": "apps/web/app/api/councils/[runId]/synthesis/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/councils/rosters/route.ts",
+      "source_sha256": "2b43323a423d4a024ee70536a80cb23d0dada719fa429dcb5d1c975df1028e28",
+      "target": "apps/web/app/api/councils/rosters/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/councils/runs/route.ts",
+      "source_sha256": "1a775ef8a4ec1cf80a3ae1f250b1858294e67b7146f9186e4b027806b24ec113",
+      "target": "apps/web/app/api/councils/runs/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/personas/[id]/route.ts",
+      "source_sha256": "d20fadf6c9e07c1a72487b6977f9710b3497bc9e8bf569bd6f0e7132c6865bac",
+      "target": "apps/web/app/api/personas/[id]/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/personas/generate/route.ts",
+      "source_sha256": "af5fc9a7ad9490dfc7f2b698083e241df8900bec920d745f1e39589c1c9ed377",
+      "target": "apps/web/app/api/personas/generate/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/api/personas/route.ts",
+      "source_sha256": "ae9163f656e7c9f011c102d526cccadd05649391f9f215a67f10e70625547687",
+      "target": "apps/web/app/api/personas/route.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/competitive-research/page.tsx",
+      "source_sha256": "2a176f25720cd19d7ef0ca7e0dc5280b3c3157429f3a8bd76b43279a4bb238ec",
+      "target": "apps/web/app/competitive-research/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/councils/[runId]/page.tsx",
+      "source_sha256": "313046f364faed8264b483ca3b33983a3aa7c97b150be999984b9c5a13d60408",
+      "target": "apps/web/app/councils/[runId]/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/councils/actions.ts",
+      "source_sha256": "93eb164001e40020736a4f95c176e7d0f6c15f47de3a04c0b6023997a02ebcdd",
+      "target": "apps/web/app/councils/actions.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/councils/new/page.tsx",
+      "source_sha256": "d42ccfd95bb1581156ef39a0b318443e057223c44929735285dc94551192526a",
+      "target": "apps/web/app/councils/new/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/councils/page.tsx",
+      "source_sha256": "3b4ba0af7760ccbe794ed32087bed46b9478b844108a3ad631b1d1a2b5e44bb0",
+      "target": "apps/web/app/councils/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/layout.tsx",
+      "source_sha256": "091981b2d49cce7dc1a1ac932c7ee631d34f306333041c42b09b8d7e1211a080",
+      "target": "apps/web/app/layout.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/page.tsx",
+      "source_sha256": "15905f2abe282316d253d72b480d5ebc1c969a5ed58efa303d8d4e647d81d58b",
+      "target": "apps/web/app/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/personas/[id]/edit/page.tsx",
+      "source_sha256": "5c9a494a7503d343122aeacd039f781d32e4abef1687f25ced5e34407118bda1",
+      "target": "apps/web/app/personas/[id]/edit/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/personas/[id]/page.tsx",
+      "source_sha256": "cc3038198f1ec4accbe14e6083689aab74fc619aecdccd703eb3296960946235",
+      "target": "apps/web/app/personas/[id]/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "app/personas/new/page.tsx",
+      "source_sha256": "55257842a33867bb29cd2137f2f4e01456b089c245aef288393ccefa719bf4c5",
+      "target": "apps/web/app/personas/new/page.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/AppShell.tsx",
+      "source_sha256": "5996f455a07874cf35233435500c8728413863de81919557ea80b0aa61e40606",
+      "target": "apps/web/components/AppShell.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/ConfidenceMeter.tsx",
+      "source_sha256": "bcfcae8d1616ba43c5c862624c7881d5f3705cde40e9743120a79cfd6052da90",
+      "target": "apps/web/components/ConfidenceMeter.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/CouncilRunDetail.tsx",
+      "source_sha256": "d0a922cbeb4922273d7d7a47336938244e675e9e6bf36fe80d405f8659971678",
+      "target": "apps/web/components/CouncilRunDetail.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/CouncilRunForm.tsx",
+      "source_sha256": "6c6582af17eedfdb3dfedd140ebc898a28ab5e21cf12ce094e772440e0549e42",
+      "target": "apps/web/components/CouncilRunForm.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/CouncilRunList.tsx",
+      "source_sha256": "bb364b31cfd41497924bbd95b7310fae7c7f3e3633a1bf8625b8f07ae4a52b7c",
+      "target": "apps/web/components/CouncilRunList.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/EmptyState.tsx",
+      "source_sha256": "402a8e9341d44f55887913dbb913695447b7ed371b3ef6bc1968a9c5321f33a1",
+      "target": "apps/web/components/EmptyState.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/PersonaCard.tsx",
+      "source_sha256": "3235302bf8dc9e2823d380c3074995682374381e05c5e24d739cf201f0ea4c3b",
+      "target": "apps/web/components/PersonaCard.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/PersonaDetail.tsx",
+      "source_sha256": "010b9bd06039aa91953b8041c6fd1bd6d0a6210470343efd4719a4fadbd18136",
+      "target": "apps/web/components/PersonaDetail.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/PersonaForm.tsx",
+      "source_sha256": "78c4b9028caded942b6eb1bf299b2fba215cb29d141e4198a60bc2105618c3f4",
+      "target": "apps/web/components/PersonaForm.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/PersonaList.tsx",
+      "source_sha256": "ec96f27b90eb5ce96cd5e7fc39ec41bb84e5e54bb7b21e7e3861c77fc741fe94",
+      "target": "apps/web/components/PersonaList.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/RosterPassSelector.tsx",
+      "source_sha256": "d949a4f28fd4abea02f7c6e7ad72a4d750afc65a6dc11628495c9f0564e13ccb",
+      "target": "apps/web/components/RosterPassSelector.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "components/StatusPill.tsx",
+      "source_sha256": "7a5c8e5154ecef41223616b81b00145a11542753da959828ba077bd9dbf2d621",
+      "target": "apps/web/components/StatusPill.tsx",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/README.md",
+      "source_sha256": "ddfc7ba0b278bded93889620a9b9449f2d3e4c31d86b6a81da66ae10f3352c8c",
+      "target": "apps/web/councils/README.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/decision-council-2026-06-08.md",
+      "source_sha256": "6e3bde514b1499ecc681d8ff3c338fb510899158480284d11dc13b203beecd95",
+      "target": "apps/web/councils/decision-council-2026-06-08.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/PANEL-REPORT.md",
+      "source_sha256": "a468ef18b7e22ac9b6dee2346936981fa9ae6deee547508ed6325be4484a97d1",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/PANEL-REPORT.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p01-morgan-lee.json",
+      "source_sha256": "521c9d46c5a9b9d7714f1960432eb34bdefa2b3c9b1cfea4cf6004690c7ebfa4",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p01-morgan-lee.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p02-priya-shah.json",
+      "source_sha256": "4c3d791f99f8063e463f3f619b372336daafeee9a1616a4b3f89bc31969a8567",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p02-priya-shah.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p03-dee-carter.json",
+      "source_sha256": "a87c03091ac9196db30259cf0d2071b42c2aaa0bc072d80054cfe3a0607a6cf2",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p03-dee-carter.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p04-elena-martinez.json",
+      "source_sha256": "cf3b77d07c64e8cba1d8920971aa6763e954c1e297cbae90331463737da6102d",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p04-elena-martinez.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p05-marcus-chen.json",
+      "source_sha256": "099cd77fa816354bea10c8ad1a7d5998c79f856fb05830c665a1249e6940e75f",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p05-marcus-chen.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p06-nadia-brooks.json",
+      "source_sha256": "d2c17cc8fe446f3b552edd4b78bbdfa8253d6ceca0c6fb5c36e45c3a75a6d031",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p06-nadia-brooks.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p07-asha-patel.json",
+      "source_sha256": "aba6d9ba4b01fa281d79f2c30b7435c4bc015ba448893163494a0c229405b0ca",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p07-asha-patel.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p08-tomas-rivera.json",
+      "source_sha256": "8adbb5758d2a569cd08e136f1106c1ae55775d96f9b219d33abf74f17e8f648f",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p08-tomas-rivera.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p09-jamie-park.json",
+      "source_sha256": "3758971a7763885d196a4d5304d8d3cb905a3aeaea772aa35e08b525083d2030",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p09-jamie-park.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/p10-lena-fischer.json",
+      "source_sha256": "c91a31e03625c0d41c088f85335195d97cc180647fb30bc42dbf1c75ef77ef76",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/p10-lena-fischer.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/runs/haiku-scale-20260609-01/workstream.json",
+      "source_sha256": "23743487400c0a20d70939470d7913493308e0e193eaabc6a436212e05a42d40",
+      "target": "apps/web/councils/runs/haiku-scale-20260609-01/workstream.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/strategy-council-2026-06-08.md",
+      "source_sha256": "ca0534656b86de98270644620b8b8de4c85e184e31e833f46b1eac73e9f653cc",
+      "target": "apps/web/councils/strategy-council-2026-06-08.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "councils/ui-test-council-2026-06-08.md",
+      "source_sha256": "5c09ae131f7fa05332a3ba0e1b87f13af073e83d5f6174045889a3df7929cbbb",
+      "target": "apps/web/councils/ui-test-council-2026-06-08.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "data/council-rosters.json",
+      "source_sha256": "e2b5f79b457ae27085621fb91dd44d00bbb880ed3635485653812021257cf10b",
+      "target": "apps/web/data/council-rosters.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "data/council-runs.json",
+      "source_sha256": "aef8fcf82d67a8ff79253185f485c8c6d77ffb500cf9c5b9ced31cd7aadec88b",
+      "target": "apps/web/data/council-runs.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "data/personas.json",
+      "source_sha256": "8affad65f0256a6c47abd586eb3fd0ecf0bd6652bfff01693e02c611d42c59c9",
+      "target": "apps/web/data/personas.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/architecture.md",
+      "source_sha256": "a04fa4fe0c6c178404a5ef13db89b25ae12c184436c445e8cb928b07558c75bc",
+      "target": "apps/web/docs/architecture.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/data-contracts.md",
+      "source_sha256": "1b6e088d615b5cf2fcaedb6d1daa1d36417cbcf0a33e4f990833949f239cf543",
+      "target": "apps/web/docs/data-contracts.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/deployment.md",
+      "source_sha256": "d8ec2f1e3603638e4a472ad526f292af17958617fa7c53df45a5935074b08bed",
+      "target": "apps/web/docs/deployment.md",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "docs/longterm-ideas.md",
+      "source_sha256": "fe1dc465cc912da82f2cfa1618f9c5bb2b89286938c4905ed32c45fbff17cf72",
+      "target": "apps/web/docs/longterm-ideas.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/persona-review-operating-model.md",
+      "source_sha256": "28f41e0662eb6bd24f916ba0931fc9f41b41fd85d19efc3c150c080cb8746b92",
+      "target": "apps/web/docs/persona-review-operating-model.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/plans/persona-review-capability.handoff.md",
+      "source_sha256": "2c8dc8db82913d1e73e685ebe2d47e1d57c1ff0249e119167b576ffc3d59288d",
+      "target": "apps/web/docs/plans/persona-review-capability.handoff.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/plans/persona-review-capability.md",
+      "source_sha256": "89143eb7c262ac3fec9ef1ed012d95298176a3f0a261fd9aacae6a3f97b76537",
+      "target": "apps/web/docs/plans/persona-review-capability.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/rally-dogfood-plan.md",
+      "source_sha256": "a2aeccbf5b1cd7afdc6667fd09a5605942c8b423f2bc52b71bf6ed97b0fdf23e",
+      "target": "apps/web/docs/rally-dogfood-plan.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "docs/rally-point-user-communication-recommendations.md",
+      "source_sha256": "7541fa8f4af6367c9d94870b301e526bf6c0473ea33824f48fc50ba75f23e5b4",
+      "target": "apps/web/docs/rally-point-user-communication-recommendations.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "next-env.d.ts",
+      "source_sha256": "7ad303e40d4fddf44f156129e397511953a71481c5cfd86b1862649aaaf240cc",
+      "target": "apps/web/next-env.d.ts",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "next.config.ts",
+      "source_sha256": "dd1617c9cbd2d13c86188d256f00d3097c3936b996c9b678dd0ee812a38ee81c",
+      "target": "apps/web/next.config.ts",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "package-lock.json",
+      "source_sha256": "7c82478648f5c36ea11f4496bfb756d185cb96a4b1d861165a5ccbbe5ddc2db2",
+      "target": "apps/web/package-lock.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "package.json",
+      "source_sha256": "320db72031d7831e9858ae3a3f6350533b1edc0864806101db378dd2feec40c4",
+      "target": "apps/web/package.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "plugins/persona-lab/.claude-plugin/plugin.json",
+      "source_sha256": "582c87870d4ee53535e6127b3ebf298de50046cf4dad2c3c611cd7b86286dcc7",
+      "target": ".claude-plugin/plugin.json",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/.codex-plugin/plugin.json",
+      "source_sha256": "220fc1bc85e4a64d3228ad0786ca7672f16e4cb4efbb4a78e4e327fe3dadb517",
+      "target": ".codex-plugin/plugin.json",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/CHANGELOG.md",
+      "source_sha256": "17f7352947667c95f39cd93208cd3f893617f8356d8a3b8467e7dd23d6ed27e2",
+      "target": "CHANGELOG.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/README.md",
+      "source_sha256": "d024991022993df43a8a0bcbd9d055aca497f096f50abd51256f2660a7a250f5",
+      "target": "README.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/agents/persona-panel-orchestrator.md",
+      "source_sha256": "d470abcdcae2fc54cf449c30ac61ff93525038928bccbb8cb63bb3abf04472fb",
+      "target": "agents/persona-panel-orchestrator.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/agents/persona-perspective-reviewer.md",
+      "source_sha256": "32f7b55693c7df9bf2fbcaca9e58252e6efda09a560dffd0c3f8f28c5a9fcb87",
+      "target": "agents/persona-perspective-reviewer.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/bin/persona.mjs",
+      "source_sha256": "c66dc9f46978f57e5db1b68e2382e1c36f91af81bb60ef74470e347735093277",
+      "target": "bin/persona.mjs",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/commands/feedback.md",
+      "source_sha256": "1453f90b76db975f68c427f87fac94e6f14b6a2552b813a0cae6372df627c37f",
+      "target": "commands/feedback.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/commands/persona-review.md",
+      "source_sha256": "6d3583ae88ca7bf57d19d7bf1d52ec930b311ba089d00067284e60d1512de87b",
+      "target": "commands/persona-review.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/commands/run.md",
+      "source_sha256": "18565582104feeb40e2fc684499a2dde4c3f2516e96ee1ca590923dd9aab9025",
+      "target": "commands/run.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/docs/persona-memory.md",
+      "source_sha256": "ba1c509e68eb046e3ebbfa21d776940ba938f2e13395a77e8389f42e955d8dd4",
+      "target": "docs/persona-memory.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/lib/encounters.mjs",
+      "source_sha256": "1118ac43dfa847bd4a7a5dbc9df093e198f18357f4532b93518162a34cc487f7",
+      "target": "lib/encounters.mjs",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/lib/library.mjs",
+      "source_sha256": "4a87b9d0372db8f710f3e7f1140a3d06ff47ec2862d171ea1898c8f1331c0819",
+      "target": "lib/library.mjs",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/lib/roles.mjs",
+      "source_sha256": "096bd556e122669527ad2b8a21d83c4f43ebfb8b066ef069e81983d86122e69b",
+      "target": "lib/roles.mjs",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/package.json",
+      "source_sha256": "a4d0db53af49c8254ad40a5cee1d788e0e474c65ee70cc239f4d06a89cbbd1e1",
+      "target": "package.json",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/schemas/persona.schema.json",
+      "source_sha256": "ed9027ec8541bf6367966e8405e3bb4011c77d73714b3a1487165a1b855f0d00",
+      "target": "schemas/persona.schema.json",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/scripts/persona-plan.mjs",
+      "source_sha256": "7a45317756e14a3b17be6fe4849c308f56978e33451bdb804b7b0b0f9043d37d",
+      "target": "scripts/persona-plan.mjs",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/scripts/publish-sync.sh",
+      "source_sha256": "676fcd1bb3687e04561b19581444d5ae079ff480785d267f6c24a895a273e162",
+      "target": "scripts/publish-sync.sh",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/skills/persona-lab/SKILL.md",
+      "source_sha256": "3ddcc9f09352d19b3b7de33045016ea14a43b1247eccd363497f9fcfac37e98a",
+      "target": "skills/persona-lab/SKILL.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "plugins/persona-lab/skills/persona-lab/references/persona-selection.md",
+      "source_sha256": "2fc768eac6420cad649c0a80abe73977abdc8464f459dc0854364ce78d035836",
+      "target": "skills/persona-lab/references/persona-selection.md",
+      "disposition": "canonical-root-plugin; original retained in merge history"
+    },
+    {
+      "source": "postcss.config.mjs",
+      "source_sha256": "5b0bc4c78be977cd81f947fb5563aaa7cc6d451e6f1c53a3260b7656a7144d20",
+      "target": "apps/web/postcss.config.mjs",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "schemas/persona-review-run.schema.json",
+      "source_sha256": "17685bd94c1922402e096a5820f695ece08ad7b700859718347b1aefa7e8cbfe",
+      "target": "apps/web/schemas/persona-review-run.schema.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "schemas/persona-roster.schema.json",
+      "source_sha256": "729339da895f770434a6c9d1d63abcf4779f6ec5b42e180ea7432fdd5b191eb6",
+      "target": "apps/web/schemas/persona-roster.schema.json",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "schemas/persona.schema.json",
+      "source_sha256": "ed9027ec8541bf6367966e8405e3bb4011c77d73714b3a1487165a1b855f0d00",
+      "target": "apps/web/schemas/persona.schema.json",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "scripts/rally-two-agent-smoke.sh",
+      "source_sha256": "17a70fa96f2df7cc5330304233ff73709581285d859eb0d21b3439ebbbe79f51",
+      "target": "apps/web/scripts/rally-two-agent-smoke.sh",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "src/UI_PLAN.md",
+      "source_sha256": "0bc0f8fd564c93eab9186d50fbf75f1dba09563b552e557472839f8fbddda134",
+      "target": "apps/web/src/UI_PLAN.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/command-packets.ts",
+      "source_sha256": "e97d93cc919c88ee1dacc9dcfbf7da6e084cfa80d4365f43ea42b8f028da880d",
+      "target": "apps/web/src/lib/command-packets.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council-export.ts",
+      "source_sha256": "6e50159412eb32166929185d3c4f9816361025c29e07c47dddfa4b29e254f8d9",
+      "target": "apps/web/src/lib/council-export.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council-library-adapter.ts",
+      "source_sha256": "e09005fcfad9d807aaafdbb311a502ccfb344b1d19851987ad904cf629778b46",
+      "target": "apps/web/src/lib/council-library-adapter.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council-repository.server.ts",
+      "source_sha256": "30a479bb5fc22a1658b35dadb1fe56a98dc2321c4d2adc8efd6529f99a49e60c",
+      "target": "apps/web/src/lib/council-repository.server.ts",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "src/lib/council-repository.ts",
+      "source_sha256": "a2633207e50c4d54d48c958bc5b52cc44f3587f16a35004b066441b7a28fe450",
+      "target": "apps/web/src/lib/council-repository.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council-validation.ts",
+      "source_sha256": "18615d7171a488697f0574ea9bbb4044bb820c40ceeddc9b4e22c7fadaba3e9a",
+      "target": "apps/web/src/lib/council-validation.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council-writeback.ts",
+      "source_sha256": "87aad5f9e9cb789b4bfad3957c6ef36d58f1399ee7b116cb692205dd835ac6b1",
+      "target": "apps/web/src/lib/council-writeback.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/council.ts",
+      "source_sha256": "667e48c85ee7ad12d470c9a6db68ade262f5749da7a0ba8cc48edab8af13a193",
+      "target": "apps/web/src/lib/council.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/format.ts",
+      "source_sha256": "b6f84d3c51e46777f0d20a8ffd92730f572134ed05f22119091aa8c8e440496e",
+      "target": "apps/web/src/lib/format.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/id.ts",
+      "source_sha256": "fef0909b711cede70a7cb2c804ab90111ffc803d1c9bdff04d6dbf15b644bbd6",
+      "target": "apps/web/src/lib/id.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/persona-generate.server.ts",
+      "source_sha256": "63be74d264d786256053b7654ef63e260fe3a5edff151cae011657191aca0fcf",
+      "target": "apps/web/src/lib/persona-generate.server.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/persona-plan-adapter.ts",
+      "source_sha256": "0fd78bf1cede897e20ae66f5ed6f93083553ecd3e7a6dd4eefaade5f9377d610",
+      "target": "apps/web/src/lib/persona-plan-adapter.ts",
+      "disposition": "adapted-for-consolidation"
+    },
+    {
+      "source": "src/lib/persona-repository.server.ts",
+      "source_sha256": "526836dabfef5654fcabd448bcb535d252e29ec7dc56500e8c62000a24545e96",
+      "target": "apps/web/src/lib/persona-repository.server.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/persona-validation.ts",
+      "source_sha256": "761042d53c76ed2d04f9f8640d3c397354e25407d8e719c51ca3f83695211627",
+      "target": "apps/web/src/lib/persona-validation.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/persona.ts",
+      "source_sha256": "bca3d789e82a647836d310f0b6bcda901f083f722fd9acfeb1266ae6215c0858",
+      "target": "apps/web/src/lib/persona.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/prompt-comparison.ts",
+      "source_sha256": "3c1535548ee03eb025188e5bc8233273ef00c5605553c65153a3313c12a3546d",
+      "target": "apps/web/src/lib/prompt-comparison.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/lib/repository.ts",
+      "source_sha256": "e3441eac61284434dcaa8f7c501ec7aa31df914d2a7ca6f6323a140f2d04d364",
+      "target": "apps/web/src/lib/repository.ts",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "src/notes/RALLY_FEEDBACK.md",
+      "source_sha256": "3714d509a803e8c210a63f200ca8136a156abcc1961a4d104f3c3af14c362313",
+      "target": "apps/web/src/notes/RALLY_FEEDBACK.md",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "styles/globals.css",
+      "source_sha256": "c64abd79f866b6ec621925c39de4733d81021309826dfea2de45f5dcfd298843",
+      "target": "apps/web/styles/globals.css",
+      "disposition": "imported-identical"
+    },
+    {
+      "source": "tsconfig.json",
+      "source_sha256": "e9c1753293ce2df47918ac4fe2f1c66b8d3e6e6d244fd7fb7c63b308a1ff22b3",
+      "target": "apps/web/tsconfig.json",
+      "disposition": "imported-identical"
+    }
+  ]
+}

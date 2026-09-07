@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-user-personas.local/schemas/persona-review-run.schema.json",
+  "title": "AI User Personas Review Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "repo_path",
+    "request",
+    "council_type",
+    "level",
+    "target_artifacts",
+    "roster_id",
+    "persona_ids",
+    "measurement_plan_id",
+    "status",
+    "coordination_mode",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^run_[a-z0-9][a-z0-9-]*_[a-f0-9]{8}$|^run_[a-z0-9][a-z0-9-]*_[0-9]{8}.*$"
+    },
+    "repo_path": {
+      "$ref": "#/$defs/non_empty_string"
+    },
+    "request": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 2000
+    },
+    "council_type": {
+      "type": "string",
+      "enum": ["ui_test", "decision", "strategy", "prompt", "research", "architecture", "competitive"]
+    },
+    "level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "target_artifacts": {
+      "$ref": "#/$defs/non_empty_string_list"
+    },
+    "roster_id": {
+      "$ref": "#/$defs/non_empty_string"
+    },
+    "persona_ids": {
+      "$ref": "#/$defs/non_empty_string_list_unique"
+    },
+    "measurement_plan_id": {
+      "$ref": "#/$defs/non_empty_string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "ready", "running", "needs_evidence", "synthesizing", "complete", "archived"]
+    },
+    "coordination_mode": {
+      "type": "string",
+      "enum": ["local", "host_subagents", "rally"]
+    },
+    "created_at": {
+      "$ref": "#/$defs/iso_datetime"
+    },
+    "updated_at": {
+      "$ref": "#/$defs/iso_datetime"
+    }
+  },
+  "$defs": {
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "non_empty_string_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_empty_string"
+      }
+    },
+    "non_empty_string_list_unique": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/non_empty_string"
+      },
+      "uniqueItems": true
+    },
+    "iso_datetime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

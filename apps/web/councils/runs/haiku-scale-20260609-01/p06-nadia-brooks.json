@@ -1,0 +1,54 @@
+{
+  "task": "p06",
+  "persona": "Nadia Brooks — Enterprise field strategist",
+  "top_concern": "Field personas need evidence sourcing workflow and deal-stage filtering so sales can answer objections same-day without overstating claims.",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "fixtures.ts:299-305 — Evidence item contains 5 opportunities but notes only 2 had enough context; stored as single entry with confidence 0.58.",
+      "why_it_matters": "Nadia's primary goal is 'Answer competitor objections without overstating evidence' (line 271). Her evidence is granular (5 opportunities) but collapsed into one low-confidence record. She can't query 'which 2 opportunities had solid context' when a live objection lands — only reads persona-level 0.58.",
+      "suggested_change": "Disaggregate evidence by opportunity. Create separate evidence items (one per named opportunity, or cohort by context quality) with per-evidence confidence. Schema already supports multiple evidence items (array, minItems 1); store each objection mention with source context ('1-call cite', 'pattern across N deals', 'desk research only').",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "PersonaCard.tsx:1-35 — No rendered field for talk-track or objection-response content; confidence meter exists (line 26) but no escalation/uncertainty language.",
+      "why_it_matters": "Nadia's need (fixtures.ts:286-288) is 'Approved language for uncertain claims' and 'Fast escalation path for missing proof.' PersonaCard is read-only view; no UI surface for storing pre-vetted response language or conditional talk tracks. In field scenario (line 292-295), she must compose a 'same-day follow-up that addresses a competitor's migration claim without inventing proof' — but nowhere to pull approved conditional language.",
+      "suggested_change": "Extend schema to include optional 'response_templates' or 'approved_language' array with fields: claim (the objection), strongest_proof (evidence link), uncertainty_label (e.g., 'Based on 2 customer inputs; confirm in call'), escalation_trigger (true/false). Render in detail view (not card), with conditional warnings when confidence < threshold. Allows Nadia to draft answers inline without breaking trust.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "schema.persona.schema.json line 182-187 — source_type enum is 'interview, survey, analytics, support, sales, desk_research, synthetic' with no depth/freshness qualifiers.",
+      "why_it_matters": "Nadia's frustration (fixtures.ts:277-278): 'Internal claims that sound confident but lack source context.' For a 'sales' source (evidence line 301), she needs to know: was this 1 AE's observation, 2 customer interviews, or pattern across 15 opportunities? Schema accepts source_type but not sample size, date range, or coverage. All sales-sourced evidence looks equally credible in the UI.",
+      "suggested_change": "Add optional fields to evidence_item: coverage_count (e.g., 5 opportunities mentioned, 2 had detailed context), source_freshness_days (age of evidence), and source_quality_notes (text: 'single AE callnote' vs. 'pattern from 8 enterprise deals'). Render as tooltip in PersonaCard confidence meter. Allows Nadia to quickly assess 'this is weak (1 cite)' vs. 'strong (pattern across 8)'.",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "fixtures.ts:291-296 — Scenarios support 'Late-stage competitor objection' but persona schema has no deal_stage or objection_type field.",
+      "why_it_matters": "Nadia's workflow is deal-driven: she needs to filter personas and evidence by stage (evaluation, negotiation, post-sale) and objection type (speed, migration risk, governance). Currently can only view all 6 personas at once; no way to search 'which personas are relevant to this procurement-stage objection about compliance?' Scenario is descriptive only.",
+      "suggested_change": "Add optional field to scenarios: objection_type (enum: competitor_speed, migration_risk, governance, cost, integration). Add optional field to evidence: deal_stage (enum: consideration, evaluation, negotiation, post-sale). Filter PersonaList by stage/type. Use case: Nadia loads deals from CRM, filters to personas relevant to her open opportunities, sees evidence most likely to answer this week's objections.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "PersonaCard.tsx line 1-35 + fixtures.ts line 314-315 — Notes field in schema (line 121-124) not rendered; Nadia's persona status is 'draft' with note 'until field-research examples are replaced with named opportunity evidence.'",
+      "why_it_matters": "Nadia is 'draft' (lowest confidence base) by design, but no UI surface flags this or tracks what field evidence is missing. Notes are metadata (not rendered), so field teams won't know 'this persona needs validation from named opportunities.' No progress tracking toward moving from 'draft' to 'active.'",
+      "suggested_change": "Render notes field in PersonaCard for draft personas (e.g., amber border + 'Draft: needs field validation' banner). Add optional 'validation_plan' field to schema: text describing what evidence would move this from draft→active. Render as actionable task for field teams ('Collect 5 named opportunities with migration claims'; 'Get 3 competitive proof points'). Turns Nadia into a source of evidence, not just a consumer.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Build a field-response workflow: Load CRM opportunity context → filter personas by deal stage + objection type → show approved talk tracks + escalation paths for uncertain claims. Nadia's trust story depends on traceability; UI should make sourcing visible, not hide it.",
+    "Evidence-sourcing feedback loop: When Nadia uses a persona to answer an objection, record (1) which evidence claim she cited, (2) whether buyer pushed back, (3) whether research was later updated. Feed back into confidence scoring. Currently evidence_item.confidence is static; should decay with age and update when new contradicting evidence surfaces.",
+    "Per-evidence escalation: Add a 'flag for research' action on each evidence item. Nadia clicks 'This competitor claim is not covered by current evidence' → creates task for competitive intel team (Elena Martinez) to investigate. Closes the gap between Nadia needing proof and research having stale data.",
+    "Confidence thresholds by use case: Move confidence from persona-level (0.58) to evidence-level, then set stage gates (e.g., for 'approval language' = min 0.7 confidence, for 'mention only' = min 0.5, for 'escalate' = <0.5). Current 0.58 is useless in the field; evidence-level with gates is actionable."
+  ],
+  "access_gaps": [
+    "Deal-context integration: Nadia can't load her open opportunities (from CRM or internal system) to filter personas by relevance. Workspace is persona-browsing only, not deal-aware.",
+    "Competitive intelligence feed: No integration with Elena Martinez's competitive research or Marcus Chen's switching narrative work. Nadia might see stale evidence while Elena is updating battlecards or Marcus is refining positioning. Personas should reference which marketing assets depend on them.",
+    "Approval workflow for talk-track generation: No path for Nadia to draft a response, get it reviewed by competitive intel (Elena) or product (for accuracy), and store the approved version. She's expected to generate safe language on her own.",
+    "Mobile/async workflow support: PersonaCard + detail view are full-width desktop; Nadia needs to check evidence on a phone between calls. Current UI is not optimized for quick field checks or async updates to evidence."
+  ]
+}

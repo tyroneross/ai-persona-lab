@@ -24,7 +24,13 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "web:install": "npm --prefix apps/web ci",
+    "web:dev": "npm --prefix apps/web run dev",
+    "web:build": "npm --prefix apps/web run build",
+    "web:start": "npm --prefix apps/web run start",
+    "web:typecheck": "npm --prefix apps/web run typecheck",
+    "web:smoke": "node scripts/web-smoke.mjs"
   },
   "keywords": [
     "personas",

@@ -1,0 +1,63 @@
+{
+  "task": "p07",
+  "persona": "Asha Patel — Accessibility auditor",
+  "top_concern": "Form validation and interactive states rely on color and subtle visual cues without accessible text alternatives, creating barriers for color-blind and assistive-tech users.",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "components/PersonaForm.tsx:394-398",
+      "why_it_matters": "Focus indicators with 40% opacity ring color don't meet WCAG 2.4.7 (3:1 contrast minimum). Users with color blindness or tunnel vision cannot locate focused elements. Removing outline-none keeps fallback, but ring is the only cue.",
+      "suggested_change": "Add `focus:outline-2 focus:outline-offset-2 focus:outline-current` alongside ring, or increase ring opacity to `focus:ring-accent/100`. Test with Windows High Contrast mode.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "components/PersonaForm.tsx:366, 397",
+      "why_it_matters": "Error messages displayed in red text only. WCAG 1.4.1 forbids color as the sole differentiator. Deaf-blind users and those with achromatopsia cannot distinguish error from normal text. No aria-live region means screen reader users aren't notified of dynamic errors.",
+      "suggested_change": "Add an error icon (⚠️ or ✕) beside error text. Wrap error state in `role='status' aria-live='polite' aria-atomic='true'` to announce changes. Example: `<p role='status' aria-live='polite' className='text-xs text-error'><span aria-hidden>✕</span> {error}</p>`",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "components/PersonaForm.tsx:348-369 (Field component)",
+      "why_it_matters": "Hint and error text rendered as siblings to inputs without aria-describedby. Screen reader users hear label only; context and validation rules are disconnected. WCAG 1.3.1 requires programmatic association.",
+      "suggested_change": "Generate unique ID for each hint/error, connect via aria-describedby: `<input aria-describedby='hint-primary_goal error-primary_goal' />` then `<p id='hint-primary_goal'>{hint}</p>` and `<p id='error-primary_goal'>{error}</p>`",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "components/PersonaForm.tsx:286-294 (Confidence slider)",
+      "why_it_matters": "Hint 'label' text '0 = none, 1 = high' is not programmatically bound to the number input. Screen readers read input without context. Users unfamiliar with 0–1 scales cannot navigate.",
+      "suggested_change": "Use aria-describedby to link hint. Add aria-valuemin='0' aria-valuemax='1' aria-valuenow to numeric input. Consider a range slider or segmented buttons (None/Low/Medium/High) for better discoverability.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "components/PersonaCard.tsx:14, 20",
+      "why_it_matters": "Persona name truncated with `truncate` and summary cut with `line-clamp-3`. Sighted users cannot see full content. Screen readers expose full text, creating mismatch. No expand button or tooltip fallback.",
+      "suggested_change": "Use `title` attribute on truncated elements for tooltip on hover, or add a 'Read more' button. If card is a link, full text is announced; ensure truncated text isn't misleading.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "medium",
+      "evidence": "components/PersonaList.tsx:15-24",
+      "why_it_matters": "When `personas.length === 0`, the list renders with zero items but no empty state message. Screen reader users hear only 'Personas' heading and '0 personas on file' but no guidance on next steps.",
+      "suggested_change": "Add a conditional empty state: `{personas.length === 0 ? <p role='status'>No personas created yet. <a href='/personas/new'>Create your first persona</a>.</p> : <ul>...</ul>}`. Announce via role='status' for dynamic updates.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Introduce a FormField wrapper component that auto-generates and manages aria-describedby IDs, eliminating manual ID creation per field. This scales accessibility across all forms in the workspace.",
+    "Accessibility audit checklist: run axe-core via Jest before merging form components. Catch color-contrast and missing labels at PR time, not in UAT.",
+    "Add status/error announcements with aria-live regions. Currently, form validation happens silently; users on screen readers must manually navigate to see what failed.",
+    "Implement light/dark mode contrast validation. Current hint text (text-muted) may fail on light backgrounds; test 4.5:1 WCAG AAA on all color themes.",
+    "Document persona-specific accessibility testing: personas themselves should include a field for 'assistive tech used' (e.g., NVDA, JAWS, switch control) so generated personas embed real a11y personas instead of generic ones."
+  ],
+  "access_gaps": [
+    "No keyboard navigation tested; form fields may trap keyboard users if tabindex is misset or focus management doesn't loop properly in modal/dialog contexts.",
+    "Missing internationalization considerations: placeholder text, error messages, and hints are English-only; RTL languages and non-Latin scripts not accommodated.",
+    "Confidence slider (0–1) is unfamiliar to users with dyslexia or dyscalculia; semantic number input doesn't map to user intent. A prose option ('None / Low / Medium / High') would be more accessible.",
+    "No indication of required vs. optional fields in FormState; asterisk-only labeling is insufficient (WCAG 3.2.2). Explicitly say 'Required' in label text.",
+    "PersonaCard link text 'Open Morgan Lee persona' is generic; AT doesn't know if it opens a detail page or edit flow. Use more specific aria-label like 'View Morgan Lee persona details' or 'Edit Morgan Lee'."
+  ]
+}

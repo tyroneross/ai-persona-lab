@@ -1,0 +1,76 @@
+{
+  "workstream": "Haiku-fleet persona panel — 10 parallel persona reviews of the persona workspace's effectiveness",
+  "description": "Scale test of rally-workflows coordination with 10 concurrent Haiku-tier agents. Each task adopts one persona and reviews the persona workspace (schema, fixtures, UI components, persona-lab skill) answering: what would make this persona system more effective at producing useful, trustworthy synthetic-user feedback? Read-only review; each task writes exactly one result JSON in its own path. run_id: haiku-scale-20260609-01.",
+  "tasks": [
+    {
+      "id": "p01",
+      "intent": "Persona review as Morgan Lee (Operations skeptic, RevOps lead): audit the persona workspace for operational trustworthiness and auditability of persona-derived feedback",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p01-morgan-lee.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p01-morgan-lee.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p02",
+      "intent": "Persona review as Priya Shah (Design systems lead): audit persona workspace UI components for design-system coherence and persona-card information hierarchy",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p02-priya-shah.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p02-priya-shah.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p03",
+      "intent": "Persona review as Dee Carter (Frontline support veteran): do persona notes map to real ticket patterns; would support trust persona-derived feedback",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p03-dee-carter.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p03-dee-carter.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p04",
+      "intent": "Persona review as Elena Martinez (Competitive intelligence lead): does the schema capture competitive/market context needed for strategy-grade persona output",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p04-elena-martinez.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p04-elena-martinez.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p05",
+      "intent": "Persona review as Marcus Chen (Product marketing lead): can personas express switching narratives and objections well enough to pressure-test positioning",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p05-marcus-chen.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p05-marcus-chen.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p06",
+      "intent": "Persona review as Nadia Brooks (Enterprise field strategist): can personas surface buyer objections and demo-critical moments; field-readiness of persona output",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p06-nadia-brooks.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p06-nadia-brooks.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p07",
+      "intent": "Persona review as Asha Patel (Accessibility auditor): does the schema/UI capture disability, assistive-tech and inclusive-design dimensions; a11y of the workspace itself",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p07-asha-patel.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p07-asha-patel.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p08",
+      "intent": "Persona review as Tomás Rivera (Privacy & compliance officer): synthetic-persona data ethics, PII risk in persona fields, provenance/disclosure of synthetic feedback",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p08-tomas-rivera.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p08-tomas-rivera.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p09",
+      "intent": "Persona review as Jamie Park (Junior PM, first week): novice onboarding lens — can a new user create a good persona and run a useful review without tribal knowledge",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p09-jamie-park.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p09-jamie-park.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    },
+    {
+      "id": "p10",
+      "intent": "Persona review as Dr. Lena Fischer (Research methodologist): validity of synthetic personas — what schema/process changes would make persona output measurably more predictive of real-user findings",
+      "owns": ["councils/runs/haiku-scale-20260609-01/p10-lena-fischer.json"],
+      "validation": "node -e \"JSON.parse(require('fs').readFileSync('councils/runs/haiku-scale-20260609-01/p10-lena-fischer.json','utf8'))\" && echo VALID",
+      "output": "JSON: {task, persona, top_concern, findings[{severity, evidence, why_it_matters, suggested_change, confidence}], effectiveness_suggestions[], access_gaps[]}"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "task": "p03",
+  "persona": "Dee Carter — Frontline support veteran",
+  "top_concern": "Evidence is summarized, not sampled—a support veteran needs to see actual ticket patterns and tone shifts, not trust abstract summary.",
+  "findings": [
+    {
+      "severity": "critical",
+      "evidence": "src/lib/fixtures.ts:135-141 — evidence array has one item with source_type='support', title='March escalation sample', but no source_uri, no quote, no observed_at timestamp",
+      "why_it_matters": "Support veterans do escalation triage by pattern-matching real tickets. A support leader claiming 'found three recurring user patterns not covered by current personas' without citing the tickets, tone markers, or time window is not trustworthy input. Dee's stated need is 'Evidence pulled from real ticket samples'—samples, plural, visible.",
+      "suggested_change": "Add source_uri (link to a ticket sample or internal postmortem), quote (a real customer snippet showing tone or frustration), and observed_at (when the pattern was sampled). Minimum: one ticket excerpt that shows the 'angry-customer edge case' mentioned in frustrations.",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:119-120 — frustration includes 'Personas that ignore the angry-customer edge case' but goals/needs do not mention handling escalation tone or customer emotion",
+      "why_it_matters": "A support engineer managing escalations faces customers who are frustrated, angry, or in crisis. Dee's goals focus on pattern-matching and knowledge capture but skip the emotional/interpersonal layer. This is a blind spot for triage—escalations are *hard* partly because of tone, not just category. An effective persona would include a need like 'guidance on de-escalation patterns for persona subtype X' or 'track which personas correlate with repeat escalations due to tone mismatch.'",
+      "suggested_change": "Add a goal or need around emotional/tone patterns in escalations. Example: 'Identify which customer personas escalate due to tone/trust issues vs. product gaps' or 'Capture de-escalation language that works for each persona subtype.'",
+      "confidence": "high"
+    },
+    {
+      "severity": "high",
+      "evidence": "src/lib/fixtures.ts:124 and 137 — behaviors include 'Writes postmortems from support data' but tags omit incident-response, knowledge-base, or learning; schema offers no evidence_links field to connect personas to postmortem artifacts",
+      "why_it_matters": "Dee doesn't just triage—they drive org learning via postmortems. This persona should surface how support data closes the loop (persona pattern → escalation → incident → postmortem → new awareness). Currently the persona is a read-only lookup tool, not a *feedback loop*. Tag gap means search/discovery tools won't connect Dee to knowledge-management workflows.",
+      "suggested_change": "Add tags: ['incident-response', 'knowledge-capture']. Add note: 'Postmortems should tag both the customer persona and the remediation pattern, so future escalations can reuse it. Currently no integration path exists for this feedback loop.'",
+      "confidence": "high"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:128-130 — scenarios describe triage but don't mention the tool/integration. Quote is missing.",
+      "why_it_matters": "Dee's scenario says 'sees the suggested persona' but doesn't explain how the suggestion surfaces (is it a dashboard, a slack bot, a CRM plugin?). A support veteran reviewing this would ask: 'Does this work in Zendesk? Slack? Or is this a standalone tool I have to tab over to during a call?' The scenario is UI-agnostic, which is a red flag for effectiveness—Dee needs to know *where* the persona shows up.",
+      "suggested_change": "Expand scenario description to name a channel: e.g., 'Dee opens a Zendesk escalation, tags a field with the suspected persona, and a sidebar panel surfaces prior remediation notes for that pattern.' Add a quote, e.g., 'Show me the ticket that taught us this.'"
+    },
+    {
+      "severity": "medium",
+      "evidence": "src/lib/fixtures.ts:146 — decision_style='fast' with no evidence or observed_at to back it",
+      "why_it_matters": "Is Dee fast because escalations are time-critical (true)? Or because support veterans prefer gut-feel over deliberate review (false, and dangerous if assumed)? The decision style drives how the persona is used—if a product team assumes Dee wants speed over thoroughness, they might ship weak persona suggestions. No evidence backing the style choice weakens confidence.",
+      "suggested_change": "Add evidence_item with source_type='support' and quote capturing a real escalation decision: e.g., 'Customer down, I have 5min to pick a remediation. I'm checking ticket history for this persona pattern, not reading design docs.' This grounds the 'fast' style.",
+      "confidence": "medium"
+    },
+    {
+      "severity": "low",
+      "evidence": "src/lib/fixtures.ts:143 — confidence=0.75, but Morgan Lee (ops-skeptic) has confidence=0.45 with synthetic evidence, and Dee has one support evidence item with no quote or uri. Proportionally, Dee's confidence is inflated.",
+      "why_it_matters": "Confidence calibration matters if this workspace is used for prioritization or feature-gate decisions. A support persona with one un-cited evidence sample should sit at 0.5–0.6, not 0.75. This signals data quality to downstream users.",
+      "suggested_change": "Lower confidence to 0.5 until source_uri and quote are added to the evidence item. Bump back to 0.75 when at least two named-ticket samples are linked.",
+      "confidence": "medium"
+    }
+  ],
+  "effectiveness_suggestions": [
+    "Add a 'feedback_loop' field to the persona schema so support personas can document how escalations update the persona definition—'When we see pattern X, do we update the persona or open a new one?'",
+    "Create a 'Dee Carter' use-case workflow doc: how does a support team actually use this during an escalation? What tool integration makes this work? Is it Slack? Zendesk? A persona lookup page?",
+    "Build a sampling rubric: support personas require 3+ named-ticket examples (anonymized), not summaries. Each example should show tone, customer emotion, and the remediation that worked.",
+    "Add a 'postmortem_link' field to evidence_items so support teams can trace a persona pattern back to org learning (root cause, prevention, process change)."
+  ],
+  "access_gaps": [
+    "No visibility into actual escalation tickets used to build this persona—'March escalation sample' is vague. A support veteran reviewing this cannot verify the claim.",
+    "No public or internal source_uri for the evidence—is this a Zendesk report? A Slack archive? A shared postmortem? Unknown.",
+    "Missing connection to remediation workflows—Dee needs to reuse 'prior remediation notes,' but no schema field or integration path exists for that lookup."
+  ]
+}
