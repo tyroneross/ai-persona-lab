@@ -40,6 +40,7 @@ import {
   personaRecall, personaLifespan, permittedEncounters,
 } from "../lib/recall.mjs";
 import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversarial } from "../lib/roles.mjs";
+import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
 
 // --- arg parsing -----------------------------------------------------------
 
@@ -79,7 +80,7 @@ function readInputFile(ref) {
 }
 
 const LEVELS = {
-  low: { min: 3, max: 4, note: "single independent pass, cheap first look" },
+  low: { min: 3, max: 4, note: "one independent pass per reviewer, cheap first look" },
   medium: { min: 4, max: 6, note: "independent passes + synthesis, red-team required" },
   high: { min: 6, max: 8, note: "independent passes + adversarial verification of critical findings + measurement rigor" },
 };
@@ -353,21 +354,33 @@ function cmdRoster(positional, flags) {
 function cmdPanel(positional, flags) {
   const topic = positional.join(" ").trim();
   if (!topic && !flags.roster) die('usage: persona panel "<topic>" [--roster <name> | --auto] [--level low|medium|high]');
-  const level = LEVELS[flags.level] ? flags.level : "medium";
+  if (flags.level !== undefined && !Object.hasOwn(LEVELS, flags.level)) die(`unknown level: ${flags.level}; choose low, medium, or high`);
+  if (flags.auto && flags.roster) die('--auto and --roster are mutually exclusive');
+  const level = flags.level ?? "medium";
   const bounds = LEVELS[level];
-  const count = Number.parseInt(flags.count || String(bounds.min + 1), 10) || bounds.min + 1;
-  const clamped = Math.min(Math.max(count, bounds.min), bounds.max);
+  const requestedCount = flags.count === undefined ? null : Number(flags.count);
+  if (requestedCount !== null && (!/^\d+$/.test(flags.count) || !Number.isSafeInteger(requestedCount) || requestedCount < bounds.min || requestedCount > bounds.max)) {
+    die(`--count for ${level} must be an integer from ${bounds.min} to ${bounds.max}; requested ${flags.count}. Choose a compatible level or use persona brief for one reviewer.`);
+  }
+  const count = requestedCount ?? bounds.min + 1;
 
   const { roles, source, roster } = resolveLenses({
     roster: flags.roster,
     auto: flags.auto || Boolean(topic),
-    count: clamped,
+    count,
     brief: topic,
   });
   const finalRoles = ensureAdversarial(roles);
+  if (finalRoles.length < bounds.min || finalRoles.length > bounds.max) die(`roster has ${finalRoles.length} lenses; ${level} requires ${bounds.min} to ${bounds.max}`);
+  if (requestedCount !== null && finalRoles.length !== requestedCount) die(`--count requested ${requestedCount}, but roster has ${finalRoles.length} lenses; choose a matching roster`);
   const savedPersonaIds = roster ? roster.persona_ids || [] : [];
 
   const plan = {
+    execution: "plan-only",
+    model_calls: 0,
+    requested_review_passes: requestedCount,
+    effective_review_passes: finalRoles.length,
+    additional_model_passes: level === "high" ? "one per critical finding, determined after review" : 0,
     topic,
     level,
     level_note: bounds.note,
@@ -380,7 +393,7 @@ function cmdPanel(positional, flags) {
       anti_sycophancy: "Each persona must surface anti-goals and may answer 'no concern' or 'cannot judge from available evidence' rather than fabricate a finding.",
       adversarial_required: finalRoles.some(isAdversarial),
       synthesis: "Cluster and dedupe findings; PRESERVE conflicts as explicit tradeoffs and keep dissenting critical findings. Label each finding's provenance (evidence-grounded vs assumption).",
-      verification: level === "high" ? "Adversarially verify every critical finding with a second independent pass before reporting." : "Report findings with severity + confidence; no separate verification pass.",
+      verification: level === "high" ? "The host checks evidence. Adversarially verify each critical finding with a second independent model pass; report this additional usage separately." : "The host checks reported defects against the artifact and synthesizes findings; no separate model verification or judge pass.",
     },
     report_template: [
       "Bottom line",
@@ -400,6 +413,7 @@ function cmdPanel(positional, flags) {
 
   process.stdout.write(`# Persona panel plan: ${topic || roster?.name}\n\n`);
   process.stdout.write(`Level: ${level} (${bounds.note})\nLens source: ${source}\n\n`);
+  process.stdout.write(`Review passes: ${plan.effective_review_passes} (requested: ${requestedCount ?? 'level default'}). Additional model passes: ${plan.additional_model_passes}. CLI prepares only; the host executes reviews.\n\n`);
   process.stdout.write(`## Lenses (${finalRoles.length})\n`);
   for (const r of finalRoles) process.stdout.write(`- ${r.name}${r.adversarial ? " (adversarial / red-team)" : ""}: ${r.primaryQuestion}\n`);
   if (savedPersonaIds.length) process.stdout.write(`\nSaved personas: ${savedPersonaIds.join(", ")}\n`);
@@ -707,7 +721,11 @@ function usage() {
   process.stdout.write(
     [
       "persona — task-specific persona panels + a recallable persona library",
+      "Planning commands prepare text/JSON; the LLM host executes reviews. This CLI makes no model calls.",
       "",
+      '  persona brief <handoff|interface|decision> --artifact <locator@version> --question <text>',
+      '    [--constraints text] [--mode single|panel] [--personas id1,id2] [--json]',
+      '    Default: one reviewer; panel: three. Saved references never add reviewers. No writes.',
       '  persona new "<brief>" [--count N] [--roster <name>] [--json]',
       "  persona save <file|->            persona validate <file|-> [--strict]",
       "  persona list [--tag t] [--role r] [--status s] [--json]",
@@ -715,7 +733,8 @@ function usage() {
       "  persona rm <id>                  persona archive <id>",
       "  persona roster save <name> --lenses a,b,c [--personas ids] [--use-case ..] [--desc ..]",
       "  persona roster list | show <name> | rm <name> | lenses",
-      '  persona panel "<topic>" [--roster <name> | --auto] [--level low|medium|high] [--json]',
+      '  persona panel "<topic>" [--roster <name> | --auto] [--level low|medium|high] [--count N] [--json]',
+      '    Counts: low 3–4, medium 4–6, high 6–8; incompatible explicit counts are rejected.',
       "  persona encounter new <persona_id> --artifact <slug> [--label ..] [--version ..] [--informed ids]",
       "  persona encounter save <file|-> | validate <file|-> | list [<persona_id>] | show <encounter_id>",
       '  persona run new "<request>" --artifact <slug> --version <v> --personas id1,id2',
@@ -737,10 +756,19 @@ function usage() {
 
 function main() {
   const [, , cmd, ...rest] = process.argv;
-  const { positional, flags } = parseArgs(rest);
+  const options = cmd === 'brief'
+    ? { artifact: 'value', question: 'value', constraints: 'value', mode: 'value', personas: 'value', json: 'boolean' }
+    : cmd === 'panel' ? { roster: 'value', auto: 'boolean', level: 'value', count: 'value', json: 'boolean' } : null;
+  const { positional, flags } = options ? parsePlanningArgs(rest, options) : parseArgs(rest);
 
   switch (cmd) {
     case "home": return cmdHome();
+    case "brief": {
+      const plan = createBriefPlan(positional, flags);
+      if (flags.json) return out(plan, true);
+      process.stdout.write(`CLI prepares this brief only; the host executes reviews. No model calls or writes.\n\n${plan.brief}\n`);
+      return;
+    }
     case "new": return cmdNew(positional, flags);
     case "save": return cmdSave(positional, flags, { validateOnly: false });
     case "validate": return cmdSave(positional, flags, { validateOnly: true });

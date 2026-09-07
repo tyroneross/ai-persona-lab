@@ -1,6 +1,6 @@
 ---
 name: persona-lab
-description: Use when the user asks to launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or a solo UI review.
+description: Use when the user asks to execute a Persona Lab workspace/CLI review brief or launch, spin up, or dispatch personas — a persona panel, council, or roster that reviews, debates, interviews, stress-tests, or gives feedback on an artifact and reports back, optionally in parallel and with raw persona reactions kept separate from the synthesis. Not for personalization features or an unrelated solo UI review.
 ---
 
 # Persona Lab
@@ -19,7 +19,7 @@ description: Use when the user asks to launch, spin up, or dispatch personas —
 
 ## Objective
 
-Turn a user query or request into a focused persona panel that can review a UI,
+Turn a user query or request into a focused review brief or persona panel that can review a UI,
 product, workflow, feature plan, API surface, or research artifact.
 
 This skill is not a replacement for real user research. It is a structured
@@ -32,6 +32,31 @@ Stamp the report as "hypothesis, not validation" and never present a persona
 finding as proof of real user behavior.
 
 ## Workflow
+
+### Explicit brief and budget take precedence
+
+An explicit user request or workspace/CLI brief controls artifact/version,
+question, scope, reviewer count, pass budget, and recall. Preserve those values
+through dispatch and reporting. Do not expand one reviewer into one per lens.
+Saved persona references provide optional context, not extra reviewers or role
+assignments. Enforce the brief's recall restriction even when a saved profile
+allows broader recall; `none` means no history lookup. A no-write request skips
+persona, encounter, and run persistence. These constraints override the default
+panel and memory workflow below.
+
+For a focused brief, run:
+
+```bash
+persona brief <handoff|interface|decision> --artifact <locator@version> \
+  --question "<text>" [--constraints "<text>"] [--mode single|panel] \
+  [--personas id1,id2] [--json]
+```
+
+The default is one general reviewer using three lenses as a checklist. Explicit
+panel mode uses three independent reviewers. This command only emits text/JSON:
+it does not call models or write records. The host executes the brief. These
+briefs budget one pass per reviewer, no retries and no model judge. A maintainer
+checks evidence and reconciles findings without adding an independent LLM pass.
 
 ### 1. Capture the Request
 
@@ -56,7 +81,7 @@ Recommended default critique lenses:
 
 1. Novice / first-run user.
 2. Power user / expert.
-3. Skeptic / adversary / red-team. REQUIRED in every panel.
+3. Skeptic / adversary / red-team. Required as a lens, including within a single reviewer's checklist.
 4. Accessibility / constraint-bound user.
 5. Decision-maker / buyer.
 6. Domain specialist.
@@ -72,7 +97,7 @@ Selection rules:
   another.
 - Prefer roles with decision power over generic labels. For example:
   `Enterprise security admin` is better than `IT person`.
-- Always include at least one adversarial / red-team lens. This is not optional.
+- Include at least one adversarial / red-team lens within the authorized reviewer count.
   It is the structural counter to LLM positivity bias.
 - Include accessibility or inclusive-design review when the artifact is a UI,
   workflow, form, onboarding path, dashboard, or content-heavy surface.
@@ -165,7 +190,10 @@ Preferred launch path when subagents are available:
 3. Keep each review independent until synthesis.
 4. Require each persona to write its encounter file *before returning*, and
    collect the paths. See "Encounter memory" below.
-5. Run `persona-research-adjudicator` before synthesis.
+5. The host adjudicates evidence before synthesis. Low and medium levels add no
+   separate model judge or verification call. High adds one independent model
+   verification pass per critical finding, with usage reported separately.
+   A brief's explicit pass budget overrides this default.
 
 Fallback launch path:
 
@@ -197,8 +225,8 @@ persona, and it cannot be recovered.
    its own prior answer is a rationalisation, which is why step 2 shows other
    personas' positions and never the persona's own history.
 
-A judge or adjudicator pass (`persona-research-adjudicator`) reads both rounds.
-It does not vote — it verifies claims against the artifact and reports where the
+A host adjudication reads both rounds. A separate model judge requires an
+explicitly budgeted pass. Adjudication verifies claims against the artifact and reports where the
 debate changed a position without changing the evidence.
 
 ### 6. Report Back
@@ -412,11 +440,18 @@ Full contract: `docs/persona-memory.md`. Method assessment that produced it:
 
 ## Review Levels
 
-- low: 3 to 4 lenses, single independent pass, cheap. Fast first-look critique.
+- low: 3 to 4 lenses, one independent pass per reviewer. Fast first-look critique.
 - medium: 4 to 6 lenses including the required red-team lens, independent passes
   plus synthesis. The default.
-- high: 6 or more lenses, independent passes plus adversarial verification of
+- high: 6 to 8 lenses, independent passes plus adversarial verification of
   critical findings plus measurement rigor.
+
+`persona panel --count N` supports low 3–4, medium 4–6, and high 6–8. It rejects
+incompatible explicit counts and roster sizes rather than silently changing the
+request. JSON reports `requested_review_passes`, `effective_review_passes`, and
+`additional_model_passes`. Use `persona brief` for one reviewer. Low and medium
+have no extra model verification passes; the host still checks evidence and
+synthesizes findings.
 
 ## Persona CLI
 
@@ -425,7 +460,7 @@ persists and recalls personas and rosters, and scaffolds the review plan. The
 generative and review steps are yours as the LLM host; call the CLI to plan,
 persist, and recall.
 
-Recall before generating. Reuse saved personas and rosters instead of
+When the brief permits recall, recall before generating. Reuse saved personas and rosters instead of
 regenerating from scratch:
 
 ```bash
@@ -450,7 +485,7 @@ Scaffold the review. `persona panel` emits the review plan (lenses,
 measurement, independence rules, and guardrails) for you to execute:
 
 ```bash
-persona panel "<topic>" [--roster <name> | --auto] [--level low|medium|high]
+persona panel "<topic>" [--roster <name> | --auto] [--level low|medium|high] [--count N]
 ```
 
 Record what a persona saw (before the persona returns):

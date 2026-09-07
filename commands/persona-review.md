@@ -2,7 +2,7 @@
 description: Launch a task-specific persona panel for UI, product, or workflow review.
 ---
 
-Use the `persona-lab` skill to run a persona panel for the request below.
+Use the `persona-lab` skill to execute the requested review brief or persona panel below.
 
 Request:
 
@@ -12,15 +12,30 @@ $ARGUMENTS
 
 Execution rules:
 
-- Recall before generating. Use the `persona` CLI to reuse saved work:
+- Honor an explicit user or workspace/CLI brief first: preserve its artifact,
+  version, question, scope, reviewer count, pass budget, and recall restrictions.
+  A single-reviewer brief uses multiple lenses as a checklist; it does not launch
+  one reviewer per lens. Saved persona references never add reviewers. If the
+  brief says no recall, do not search history; if it says no writes, do not save
+  personas, encounters, or runs. Do not add retries, debate, or a model judge.
+- For an economical executable brief, use `persona brief
+  <handoff|interface|decision> --artifact <locator@version> --question "<text>"
+  [--constraints "<text>"] [--mode single|panel] [--personas id1,id2] [--json]`.
+  It defaults to one reviewer; explicit panel mode uses three independent
+  reviewers. The CLI only emits a brief. The host runs the model review.
+- When recall is permitted, recall before generating. Use the `persona` CLI to reuse saved work:
   `persona roster list`, `persona list`, `persona search "<query>"`. Scaffold
   the plan with `persona panel "<topic>" [--roster <name> | --auto]
-  [--level low|medium|high]`. Generate new personas with `persona new` and
-  `persona save` them so they are reusable. Levels: low = 3 to 4 lenses, single
-  pass; medium = 4 to 6 lenses incl. required red-team, independent passes plus
-  synthesis; high = 6+ lenses plus adversarial verification of critical
+  [--level low|medium|high] [--count N]`. Counts are low 3–4, medium 4–6,
+  high 6–8; incompatible explicit counts are rejected, never rounded or clamped.
+  `persona panel` and `persona new` prepare plans and skeletons; neither runs
+  models. Fill new persona content in the host with `persona new` and
+  `persona save` them so they are reusable. Levels: low = 3 to 4 lenses, one
+  pass per reviewer; medium = 4 to 6 lenses incl. required red-team, independent passes plus
+  synthesis; high = 6 to 8 lenses plus adversarial verification of critical
   findings.
-- Select 4 to 6 distinct persona perspectives by MECE coverage of goals,
+- Unless an explicit brief or user count applies, select perspectives using the
+  chosen level (medium defaults to 4 to 6), by MECE coverage of goals,
   jobs-to-be-done, and risk, not demographics. At least one must be an
   adversarial / red-team lens. This is required in every panel.
 - Use current web research when role selection, market context, competitor
@@ -40,9 +55,12 @@ Execution rules:
 - Have each persona write its encounter before returning
   (`persona encounter new <persona_id> --artifact <slug>` → `... save -`), and
   collect the paths. See `docs/persona-memory.md`.
-- Verify every reported defect against the artifact before treating it as real,
+- The host verifies every reported defect against the artifact before treating it as real,
   and say plainly where a persona was mistaken. Reported defects are frequently
-  silent gates rather than breakage. Use `persona-research-adjudicator`.
+  silent gates rather than breakage. Low and medium add no separate model judge
+  or verification call. High budgets one independent verification pass per
+  critical finding; report this additional usage. An explicit brief's smaller
+  budget wins. Adjudication and synthesis remain host responsibilities.
 - Launch each persona pass independently and keep passes independent until
   synthesis, so distinct personas do not collapse into one voice. Instruct
   personas to abstain rather than fabricate. If subagents are available, launch

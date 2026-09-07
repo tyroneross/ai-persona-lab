@@ -16,7 +16,7 @@
   --color-brand: #4f46e5;
   --color-accent: #0ea5e9;
   --color-accent-strong: #0284c7;
-  --color-warn: #d97706;
+  --color-warn: #9a5312;
   --color-warn-soft: #fef3c7;
   --color-error: #b91c1c;
   --color-success: #15803d;
@@ -153,4 +153,21 @@
   .persona-card { border-top: 3px solid #c7d2fe; }
   .review-field:focus-visible { border-color: #4f46e5; }
   input[type="radio"], input[type="checkbox"] { accent-color: #4f46e5; }
+}
+
+@layer components {
+  .choice-target, .quiet-action { min-height: 44px; }
+  .quiet-action { display: inline-flex; align-items: center; padding: 0.5rem 0.75rem; }
+  .quiet-action:hover { background: var(--color-canvas); }
+  .skip-link { position: fixed; top: -100px; left: 1rem; z-index: 50; padding: 0.75rem 1rem; background: var(--color-surface); color: var(--color-brand); border: 1px solid var(--color-brand); border-radius: 0.5rem; }
+  .skip-link:focus { top: 1rem; }
+  nav [aria-current="page"] { color: var(--color-brand); text-decoration: underline; text-underline-offset: 0.4em; }
+  .review-field[aria-invalid="true"] { border-color: var(--color-error); }
+  .review-field { min-height: 44px; }
+  .reference-disclosure > summary::marker { color: var(--color-brand); }
+  .review-panel { --color-line: var(--tone-line); }
+  .persona-card { --color-line: #c7d2fe; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
