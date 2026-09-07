@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2025-2026 Tyrone Ross, Jr <46267523+tyroneross@users.noreply.github.com>
+# SPDX-License-Identifier: Apache-2.0
+name: CI
+
+# This is the main-green signal release-weekly-merge.yml's Guard 1 reads via
+# `repos/$GH_REPO/actions/workflows/ci.yml/runs`. The filename must stay ci.yml --
+# that API call is hardcoded to it. Set CI_WORKFLOW_FILE: "ci.yml" in that workflow
+# once this lands so the guard is no longer disabled.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# The weekly cut reads the newest COMPLETED ci.yml run on main and treats any
+# conclusion other than `success` as red, so a cancelled main run would block a
+# release for a reason no test caused. Superseded PR runs are still cancelled --
+# only main's own run is protected.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # engines in package.json says node >=18, but Node 18 is past end-of-life,
+      # so the tested floor is 20. 24 is what the publish workflow runs on.
+      matrix:
+        node-version: ['20', '24']
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          # setup-node's npm cache needs a lockfile to hash and this repo has
+          # none; with zero dependencies there is nothing to cache anyway.
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: |
+          # The lockfile branch is there so this keeps working the day one is added.
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Build
+        # No build script exists today; --if-present is a no-op now and covers
+        # one being added later.
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm test
