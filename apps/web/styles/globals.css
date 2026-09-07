@@ -13,7 +13,7 @@
   --color-line-strong: #cbd5e1;
   --color-canvas: #f8fafc;
   --color-surface: #ffffff;
-  --color-brand: #0f766e;
+  --color-brand: #4f46e5;
   --color-accent: #0ea5e9;
   --color-accent-strong: #0284c7;
   --color-warn: #d97706;
@@ -103,7 +103,7 @@
   .workspace-intro {
     padding: 1.5rem;
     border-radius: 1rem;
-    background: linear-gradient(115deg, #edf8f5, #f4f1fb 72%, #fbf5eb);
+    background: linear-gradient(115deg, #eef2ff, #f4f1fb 72%, #fbf5eb);
   }
   .brand-mark {
     display: inline-flex;
@@ -112,17 +112,17 @@
     width: 1.8rem;
     height: 1.8rem;
     border-radius: 0.6rem;
-    background: #0f766e;
+    background: #4f46e5;
     color: white;
     font-size: 1.1rem;
     font-weight: 700;
   }
-  .brand-button { background: #0f766e; }
-  .brand-button:hover:not(:disabled) { background: #115e59; }
+  .brand-button { background: #4f46e5; }
+  .brand-button:hover:not(:disabled) { background: #4338ca; }
   .workspace-intro,
   .template-card { --color-muted: #556275; }
   .library-count { background: #f3effb; border-color: #ddd3f3; color: #684299; }
-  [data-tone="handoff"] { --tone: #0f766e; --tone-wash: #edf8f5; --tone-line: #add5cb; }
+  [data-tone="handoff"] { --tone: #4f46e5; --tone-wash: #eef2ff; --tone-line: #c7d2fe; }
   [data-tone="interface"] { --tone: #7142a2; --tone-wash: #f5effc; --tone-line: #d4bfe9; }
   [data-tone="decision"] { --tone: #9a5312; --tone-wash: #fdf4e7; --tone-line: #e9c99d; }
   .template-card {
@@ -150,7 +150,7 @@
   .template-card[aria-pressed="true"] .template-indicator { background: var(--tone); }
   .review-panel { border-top: 3px solid var(--tone-line); }
   .lens-number { color: var(--tone); background: var(--tone-wash); }
-  .persona-card { border-top: 3px solid #add5cb; }
-  .review-field:focus-visible { border-color: #0f766e; }
-  input[type="radio"], input[type="checkbox"] { accent-color: #0f766e; }
+  .persona-card { border-top: 3px solid #c7d2fe; }
+  .review-field:focus-visible { border-color: #4f46e5; }
+  input[type="radio"], input[type="checkbox"] { accent-color: #4f46e5; }
 }
