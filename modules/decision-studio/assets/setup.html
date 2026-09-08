@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decision Studio</title>
+  <style>
+    :root { color-scheme: light; --paper:#f6f6f4; --surface:#fff; --ink:#171717; --muted:#626262; --line:#d6d6d2; --soft:#ececea; --focus:#2d2d2d; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { width:min(100% - 32px, 920px); margin:48px auto 80px; }
+    header { margin-bottom:28px; }
+    h1 { margin:0 0 8px; font-size:clamp(28px,5vw,44px); letter-spacing:-.035em; }
+    h2 { margin:0 0 18px; font-size:20px; }
+    p { margin:0; color:var(--muted); }
+    section { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:24px; margin:14px 0; }
+    label, legend { display:block; font-weight:650; margin-bottom:7px; }
+    input[type=text], textarea, select { width:100%; border:1px solid #aaa; border-radius:7px; background:#fff; color:var(--ink); padding:10px 11px; font:inherit; }
+    textarea { min-height:96px; resize:vertical; }
+    input:focus, textarea:focus, select:focus, button:focus-visible { outline:3px solid #aaa; outline-offset:2px; }
+    .field { margin:0 0 18px; }
+    .hint { margin:6px 0 0; font-size:13px; }
+    fieldset { border:0; padding:0; margin:0; }
+    .rows { display:grid; gap:8px; }
+    .row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; }
+    .row input[type=text] { min-width:0; }
+    .row .role-brief { grid-column:2; min-height:68px; }
+    button { border:1px solid var(--ink); border-radius:7px; background:var(--ink); color:#fff; padding:10px 14px; font:650 14px/1 system-ui; cursor:pointer; }
+    button.secondary { background:#fff; color:var(--ink); }
+    button.remove { padding:8px 10px; border-color:var(--line); }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    #status { min-height:22px; color:var(--muted); }
+    #status.error { color:#8a1c1c; }
+    @media (max-width:520px) { main { width:min(100% - 20px,920px); margin-top:24px; } section { padding:18px; } .row { grid-template-columns:auto minmax(0,1fr); } .row .remove { grid-column:2; justify-self:start; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Decision Studio</h1>
+    <p>Define the task, then choose reviewer roles or add existing alternatives. The current agent reads the saved setup on your next turn.</p>
+  </header>
+  <form id="form">
+    <section aria-labelledby="task-heading">
+      <h2 id="task-heading">Task</h2>
+      <div class="field"><label for="mode">Setup mode</label><select id="mode"><option value="request-reviews">Request reviews</option><option value="compare-existing">Compare existing alternatives</option></select><p class="hint" id="mode-description"></p></div>
+      <div class="field"><label for="template">Template</label><select id="template"></select><p class="hint" id="template-description"></p></div>
+      <div class="field"><label for="title">Decision title</label><input id="title" type="text" maxlength="200" required></div>
+      <div class="field"><label for="question">Decision question</label><textarea id="question" maxlength="4000" required></textarea></div>
+      <div class="field"><label for="sources">Source references</label><textarea id="sources" maxlength="20000" placeholder="One file path or URL per line"></textarea></div>
+    </section>
+    <section id="roles-section" aria-labelledby="roles-heading">
+      <h2 id="roles-heading">Choose reviewers</h2>
+      <p class="field">Templates suggest roles. Select at least two. No role is selected automatically.</p>
+      <fieldset><legend class="sr-only">Reviewer roles</legend><div class="rows" id="roles"></div></fieldset>
+      <button class="secondary" id="add-role" type="button">Add role</button>
+    </section>
+    <section id="alternatives-section" aria-labelledby="alternatives-heading" hidden>
+      <h2 id="alternatives-heading">Existing alternatives</h2>
+      <p class="field">Add at least two named options. Each option needs a source reference or pasted text.</p>
+      <div class="rows" id="alternatives"></div>
+      <button class="secondary" id="add-alternative" type="button">Add alternative</button>
+    </section>
+    <section aria-labelledby="units-heading">
+      <h2 id="units-heading">Comparison units</h2>
+      <p class="field">Edit, add, or omit any unit. An omitted unit stays explicit in the saved request.</p>
+      <fieldset><legend class="sr-only">Comparison units</legend><div class="rows" id="units"></div></fieldset>
+      <button class="secondary" id="add-unit" type="button">Add unit</button>
+    </section>
+    <section aria-labelledby="notes-heading">
+      <h2 id="notes-heading">Notes</h2>
+      <label for="notes">Instructions for the review</label><textarea id="notes" maxlength="10000"></textarea>
+    </section>
+    <div class="actions"><button id="save" type="submit">Save review request</button><button class="secondary" id="reload" type="button">Reload saved request</button><button class="secondary" id="restore" type="button">Restore prior browser draft</button><span id="status" role="status" aria-live="polite"></span></div>
+  </form>
+</main>
+<script>
+const state = { templates: [], revision: 0, applying: false };
+const $ = id => document.getElementById(id);
+function row(container, label='', checked=false, kind='role', brief='') {
+  const item=document.createElement('div'); item.className='row';
+  const toggle=document.createElement('input'); toggle.type='checkbox'; toggle.checked=checked; toggle.setAttribute('aria-label', kind==='role'?'Select reviewer':'Include comparison unit');
+  const input=document.createElement('input'); input.type='text'; input.value=label; input.maxLength=kind==='role'?120:160; input.setAttribute('aria-label', kind==='role'?'Reviewer role':'Comparison unit');
+  const remove=document.createElement('button'); remove.type='button'; remove.className='secondary remove'; remove.textContent='Remove'; remove.addEventListener('click',()=>{item.remove(); persistDraft();});
+  item.append(toggle,input,remove); if(kind==='role'){const details=document.createElement('textarea');details.className='role-brief';details.maxLength=1000;details.value=brief;details.placeholder='Optional review brief';details.setAttribute('aria-label','Reviewer brief');item.append(details);} container.append(item);
+}
+function rows(id, values, key, kind) { const box=$(id); box.replaceChildren(); values.forEach(v=>row(box,typeof v==='string'?v:v.label,typeof v==='string'?false:v[key],kind,typeof v==='string'?'':v.brief||'')); }
+function alternative(value={}) { const item=document.createElement('div'); item.className='rows'; item.style.padding='12px'; item.style.border='1px solid var(--line)'; item.style.borderRadius='8px'; item.innerHTML='<label>Option name<input type="text" data-key="label" maxlength="160"></label><label>Source reference<input type="text" data-key="sourceRef" maxlength="2000" placeholder="File path or URL"></label><label>Pasted text<textarea data-key="content" maxlength="50000" placeholder="Optional when a source reference is provided"></textarea></label>'; Object.entries(value).forEach(([key,val])=>{const input=item.querySelector(`[data-key="${key}"]`);if(input)input.value=val;}); const remove=document.createElement('button');remove.type='button';remove.className='secondary remove';remove.textContent='Remove option';remove.addEventListener('click',()=>{item.remove();persistDraft();});item.append(remove);$('alternatives').append(item); }
+function setMode(mode){ const existing=mode==='compare-existing'; $('roles-section').hidden=existing; $('alternatives-section').hidden=!existing; $('mode-description').textContent=existing?'Save options you already have for the agent to compare.':'Save reviewer roles for the agent to use on the next turn.'; $('save').textContent=existing?'Save comparison request':'Save review request'; }
+function applyTemplate(id) { const t=state.templates.find(x=>x.id===id); if(!t)return; $('template-description').textContent=t.description; const currentRoles=collectRows('roles','selected'); const currentUnits=collectRows('units','included'); const merge=(current,suggestions,key)=>[...current,...suggestions.filter(label=>!current.some(item=>item.label.toLowerCase()===label.toLowerCase())).map(label=>({label,[key]:key==='included'}))]; rows('roles',merge(currentRoles,t.roles,'selected'),'selected','role'); rows('units',merge(currentUnits,t.units,'included'),'included','unit'); persistDraft(); }
+function collectRows(id,key) { return [...$(id).children].map(x=>{const value={label:x.querySelector('input[type=text]').value.trim(),[key]:x.querySelector('input[type=checkbox]').checked};const brief=x.querySelector('.role-brief');if(brief)value.brief=brief.value.trim();return value;}).filter(x=>x.label); }
+function collectAlternatives(){return [...$('alternatives').children].map(item=>Object.fromEntries([...item.querySelectorAll('[data-key]')].map(input=>[input.dataset.key,input.dataset.key==='content'?input.value:input.value.trim()]))).filter(item=>item.label||item.sourceRef||item.content.trim());}
+function collect() { return {version:1,baseRevision:state.revision,mode:$('mode').value,templateId:$('template').value,title:$('title').value.trim(),question:$('question').value.trim(),sourceRefs:$('sources').value.split('\n').map(x=>x.trim()).filter(Boolean),roles:collectRows('roles','selected'),alternatives:collectAlternatives(),comparisonUnits:collectRows('units','included'),notes:$('notes').value.trim()}; }
+function readDraft(key='decision-studio-draft-v1'){try{return JSON.parse(localStorage.getItem(key)||'null');}catch{return null;}}
+function writeStorage(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
+function persistDraft(){ if(!state.applying) writeStorage('decision-studio-draft-v1',collect()); }
+function apply(data){ state.applying=true; state.revision=data.revision??data.baseRevision??0; $('mode').value=data.mode||'request-reviews'; setMode($('mode').value); $('template').value=data.templateId||'custom'; $('title').value=data.title||''; $('question').value=data.question||''; $('sources').value=(data.sourceRefs||[]).join('\n'); $('notes').value=data.notes||''; rows('roles',data.roles||[],'selected','role'); rows('units',data.comparisonUnits||[],'included','unit'); $('alternatives').replaceChildren(); (data.alternatives||[]).forEach(alternative); const t=state.templates.find(x=>x.id===$('template').value); $('template-description').textContent=t?t.description:''; state.applying=false; persistDraft(); }
+function setStatus(message,error=false){ $('status').textContent=message; $('status').className=error?'error':''; }
+async function loadSaved(explicit=false){ setStatus('Loading saved request…'); try { const res=await fetch('/api/request'); if(!res.ok)throw Error(); const data=await res.json(); const draft=readDraft(); if(explicit){writeStorage('decision-studio-draft-backup-v1',collect());apply(data);setStatus(Object.keys(data).length?'Saved request loaded. Your prior browser draft is backed up.':'No saved request yet.');}else if(draft){apply(draft);setStatus(Object.keys(data).length?'Browser draft restored. Reload to replace it with the saved request.':'Browser draft restored.');}else{apply(data);setStatus(Object.keys(data).length?'Saved request loaded.':'No saved request yet.');} } catch { setStatus('Could not load the saved request. Your current edits remain.',true); } }
+function setBusy(busy){[...$('form').elements].forEach(control=>control.disabled=busy);}
+$('template').addEventListener('change',e=>applyTemplate(e.target.value));
+$('mode').addEventListener('change',e=>{setMode(e.target.value);persistDraft();});
+$('add-role').addEventListener('click',()=>{row($('roles'),' ',false,'role'); $('roles').lastElementChild.querySelector('input[type=text]').focus();});
+$('add-unit').addEventListener('click',()=>{row($('units'),' ',true,'unit'); $('units').lastElementChild.querySelector('input[type=text]').focus();});
+$('add-alternative').addEventListener('click',()=>{alternative();$('alternatives').lastElementChild.querySelector('input').focus();});
+$('restore').addEventListener('click',()=>{const draft=readDraft('decision-studio-draft-backup-v1');if(!draft){setStatus('No prior browser draft is available.');return;}const current=collect();apply(draft);writeStorage('decision-studio-draft-backup-v1',current);setStatus('Prior browser draft restored.');});
+$('reload').addEventListener('click',()=>loadSaved(true));
+$('form').addEventListener('input',persistDraft);
+$('form').addEventListener('submit',async e=>{e.preventDefault(); const data=collect(); const selected=data.roles.filter(x=>x.selected).map(x=>x.label.toLowerCase()); if(data.mode==='request-reviews'&&(selected.length<2||new Set(selected).size!==selected.length)){setStatus('Select at least two unique reviewer roles.',true);return;} if(data.mode==='compare-existing'&&(data.alternatives.length<2||data.alternatives.some(x=>!x.label||(!x.sourceRef&&!x.content.trim())))){setStatus('Add at least two named options with a source reference or pasted text.',true);return;} setStatus('Saving…');setBusy(true); try { const res=await fetch('/api/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); const reply=await res.json(); if(res.status===409){setStatus('A newer request is saved. Your edits remain. Reload when you are ready.',true);return;} if(!res.ok)throw Error(); apply(reply.request); setStatus(data.mode==='compare-existing'?'Comparison request saved. The current agent can read it on your next turn.':'Review request saved. The current agent can read it on your next turn.'); } catch { setStatus('Save failed. Your edits remain in this browser. Try again.',true); } finally {setBusy(false);} });
+(async()=>{ try { const response=await fetch('/api/templates'); const payload=await response.json(); state.templates=payload.templates; payload.templates.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.label;$('template').append(o);}); await loadSaved(); if(!$('roles').children.length&&!$('units').children.length) applyTemplate('custom'); } catch { setStatus('Decision Studio could not load its templates.',true); } })();
+</script>
+</body>
+</html>

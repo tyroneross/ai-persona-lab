@@ -21,7 +21,7 @@ recommended changes, and questions we should check with real users.
 
 The host asks each perspective to review the same artifact separately, then synthesizes the findings without hiding disagreement.
 
-An **illustrative output**, not a measured result:
+**Illustrative output:**
 
 | Perspective | Possible finding | Next check |
 | --- | --- | --- |
@@ -29,7 +29,7 @@ An **illustrative output**, not a measured result:
 | Experienced admin | “Bulk invites matter more than a guided setup.” | Check whether larger teams need a separate path. |
 | Skeptical buyer | “Mandatory invites could expose an evaluation before approval.” | Ask buyers how trials get authorized. |
 
-The realization is practical: making invitations optional may be worth considering, but the reviews have identified a hypothesis, not proved the answer. Real-user research determines whether the change helps.
+Test optional invitations with real users to see whether the change helps.
 
 ## Install and verify
 
@@ -54,7 +54,7 @@ state created, and whether a real review ran. Start the web app only if requeste
 | Plan and preserve reviews | `persona` CLI | Creates plan-only briefs and stores personas, rosters, encounters, and reports. It makes no model calls. |
 | Prepare a review visually | [Web workspace](docs/review-workspace.md) | Selects profiles and prepares a brief; it does not execute model reviews. |
 
-The CLI, plugin, and web app share this repository, while their installation and state remain distinct. CLI installation does not install web dependencies. The CLI persona library defaults to `~/.persona-lab` and can be moved with `PERSONA_LAB_HOME`. Web council records default to `apps/web/data` and can be moved with `PERSONA_COUNCIL_DATA_DIR`; do not run two writers against one store.
+The CLI, plugin, and web app share this repository, while their installation and state remain distinct. Web dependencies are installed separately. The CLI persona library defaults to `~/.persona-lab` and can be moved with `PERSONA_LAB_HOME`. Web council records default to `apps/web/data` and can be moved with `PERSONA_COUNCIL_DATA_DIR`; do not run two writers against one store.
 
 Saved personas, rosters, and encounters let you reuse a perspective or revisit a review. The review brief and the persona's permitted scope control recall. A CLI smoke check proves plan generation only; confirm that the host loaded the workflow before treating a review as executed.
 
@@ -74,4 +74,4 @@ Built by [RossLabs](https://rosslabs.ai). The [package metadata](package.json) d
 
 ## Method notes
 
-Synthetic personas produce review hypotheses, not validated user research. Their findings depend on the artifact, brief, selected perspectives, permitted recall, and host model. Separate reviews preserve useful disagreement, but they still require synthesis and real-user validation. See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.
+Synthetic personas produce hypotheses for further review and user research. Their findings depend on the artifact, brief, selected perspectives, permitted recall, and host model. Synthesize the independent reviews and test their recommendations with real users. See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.

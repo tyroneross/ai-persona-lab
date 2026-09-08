@@ -27,7 +27,10 @@
     "docs/LIMITATIONS.md",
     "docs/persona-memory.md",
     "docs/review-workspace.md",
-    "AGENTS.md"
+    "AGENTS.md",
+    "modules/decision-studio",
+    "!modules/**/__pycache__/**",
+    "!modules/**/*.pyc"
   ],
   "engines": {
     "node": ">=18"

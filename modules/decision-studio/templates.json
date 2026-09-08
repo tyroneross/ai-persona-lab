@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "readme",
+      "label": "README",
+      "description": "Compare how each draft helps a reader understand, trust, and use a project.",
+      "roles": ["Communications editor", "Product marketing editor", "Story editor", "Installing agent", "First-time user"],
+      "units": ["Opening and value", "Example", "Setup", "How it works", "Limits and evidence"]
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI/UX",
+      "description": "Compare observed screen evidence, interaction findings, and recommended changes.",
+      "roles": ["First-time user", "Accessibility reviewer", "Product designer"],
+      "units": ["Screen evidence", "Task flow", "Information hierarchy", "Interaction feedback", "Accessibility findings"]
+    },
+    {
+      "id": "writing",
+      "label": "Writing",
+      "description": "Compare structure, claims, wording, and support for the intended reader.",
+      "roles": ["Communications editor", "Story editor", "Subject reviewer"],
+      "units": ["Main claim", "Structure", "Evidence", "Word choices", "Closing action"]
+    },
+    {
+      "id": "custom",
+      "label": "Custom",
+      "description": "Start with blank roles and comparison units.",
+      "roles": [],
+      "units": []
+    }
+  ]
+}

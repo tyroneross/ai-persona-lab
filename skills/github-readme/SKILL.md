@@ -65,7 +65,9 @@ ran a review. Explicitly name untested host-specific steps.
 For an explicitly requested persona panel, freeze the README before dispatch.
 Use an immutable copy and content hash for dirty files; a commit alone does not
 identify uncommitted content. Keep that copy unchanged through all review passes.
-Use four independent passes unless the user specifies another budget:
+Offer the following roles as an editable starting point. Let the user choose,
+remove, or add roles before launching a panel. Reuse a panel already selected
+in the current task:
 
 1. First-time target user: relevance, output, example, next action.
 2. Installing coding agent: complete setup path and observable success.
@@ -88,6 +90,16 @@ and up to three obstacles with exact source quotes. Separate factual omissions
 from preferences. Synthetic reactions are hypotheses, not user validation.
 Use AI Persona Lab's review workflow when available, respecting explicit recall,
 storage, and budget constraints; this skill also works without its CLI.
+
+## Edit for direct prose
+
+Audit proposed copy for repeated claims, vague benefits, ceremonial openings,
+mannered transitions, and unsupported certainty. Replace rhetorical “not X but Y”
+constructions with the useful claim. Prefer full stops or commas to em dashes.
+Keep necessary technical distinctions, uncertainty, and exact source quotations
+accurate. Treat these patterns as editing prompts, rather than mechanically
+rewriting code, commands, quotations, or filenames. Show material meaning changes
+for review and preserve the original source.
 
 ## Compare complete rewrites
 
