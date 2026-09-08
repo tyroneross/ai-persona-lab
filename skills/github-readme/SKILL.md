@@ -89,6 +89,15 @@ from preferences. Synthetic reactions are hypotheses, not user validation.
 Use AI Persona Lab's review workflow when available, respecting explicit recall,
 storage, and budget constraints; this skill also works without its CLI.
 
+## Compare complete rewrites
+
+When the user wants to choose among complete rewrites, use the adjacent
+[persona output comparison skill](../persona-output-comparison/SKILL.md). Give
+reviewers shared section keys while preserving their preferred order and complete
+wording. Build the comparison around opening, example, setup, operation, and other
+units appropriate to this README. Read saved choices directly before applying the
+selected draft; preserve custom edits and explicit omissions.
+
 ## Return and verify
 
 Lead with the recommended change. Provide ranked findings with source location,

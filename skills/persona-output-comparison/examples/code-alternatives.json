@@ -1,0 +1,67 @@
+{
+  "task": {
+    "title": "Compare input-handling implementations",
+    "kind": "Code alternatives",
+    "description": "Compare the implementation contract and its validation cases. Code is shown verbatim.",
+    "sections": {
+      "implementation": "Implementation",
+      "checks": "Validation cases"
+    },
+    "provenance": "Illustrative code fixture for the dashboard, not independently reviewed or production-tested code.",
+    "baseline": "Example task: normalize a display label. Decide whether non-string input should be accepted."
+  },
+  "reviewers": [
+    {
+      "id": "permissive",
+      "name": "Permissive input lens",
+      "subtitle": "Input contract comparison",
+      "philosophy": "Make accepted input explicit before choosing an implementation.",
+      "strength": "Shows the contract in executable syntax.",
+      "tradeoff": "The two alternatives accept different inputs.",
+      "wordChoices": [
+        {
+          "phrase": "normalizeLabel",
+          "reason": "Both variants address the same operation."
+        }
+      ],
+      "sections": [
+        {
+          "key": "implementation",
+          "heading": "Implementation",
+          "markdown": "## Implementation\n\n```javascript\nfunction normalizeLabel(value) {\n  return String(value ?? \"\").trim();\n}\n```"
+        },
+        {
+          "key": "checks",
+          "heading": "Validation cases",
+          "markdown": "## Validation cases\n\nCheck null, undefined, numbers, empty strings, and surrounding spaces."
+        }
+      ]
+    },
+    {
+      "id": "strict",
+      "name": "Explicit contract lens",
+      "subtitle": "Input contract comparison",
+      "philosophy": "Make accepted input explicit before choosing an implementation.",
+      "strength": "Shows the contract in executable syntax.",
+      "tradeoff": "The two alternatives accept different inputs.",
+      "wordChoices": [
+        {
+          "phrase": "normalizeLabel",
+          "reason": "Both variants address the same operation."
+        }
+      ],
+      "sections": [
+        {
+          "key": "implementation",
+          "heading": "Implementation",
+          "markdown": "## Implementation\n\n```javascript\nfunction normalizeLabel(value) {\n  if (typeof value !== \"string\") throw new TypeError(\"Expected string\");\n  return value.trim();\n}\n```"
+        },
+        {
+          "key": "checks",
+          "heading": "Validation cases",
+          "markdown": "## Validation cases\n\nCheck accepted strings and rejection of null, numbers, objects, and undefined."
+        }
+      ]
+    }
+  ]
+}

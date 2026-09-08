@@ -1,0 +1,68 @@
+{
+  "task": {
+    "title": "Compare release approaches",
+    "kind": "Release planning",
+    "description": "Compare sequencing, risks, and validation. Choose a complete plan or keep individual decisions.",
+    "sections": {
+      "sequence": "Release sequence",
+      "risks": "Risks and assumptions",
+      "validation": "Validation and rollback"
+    },
+    "provenance": "Illustrative fixture authored to demonstrate the reusable dashboard. These are not independent persona reviews or recommendations for an actual release.",
+    "baseline": "A hypothetical team is preparing a release. No production system is involved."
+  },
+  "reviewers": [
+    {
+      "id": "reliability",
+      "name": "Reliability lens",
+      "subtitle": "Prioritizes containment and observable release gates.",
+      "philosophy": "Prioritizes containment and observable release gates.",
+      "strength": "Makes the release decision explicit.",
+      "tradeoff": "Requires choosing between rollout stages and implementation scope.",
+      "wordChoices": [],
+      "sections": [
+        {
+          "key": "sequence",
+          "heading": "Release sequence",
+          "markdown": "## Release sequence\n\nStart with an internal canary, inspect results, then expand gradually."
+        },
+        {
+          "key": "risks",
+          "heading": "Risks and assumptions",
+          "markdown": "## Risks and assumptions\n\nA canary must exercise representative requests. Rare paths may remain untested."
+        },
+        {
+          "key": "validation",
+          "heading": "Validation and rollback",
+          "markdown": "## Validation and rollback\n\nDefine rollback triggers before rollout. Check errors and latency at each stage."
+        }
+      ]
+    },
+    {
+      "id": "delivery",
+      "name": "Delivery lens",
+      "subtitle": "Prioritizes a small release with an easy recovery path.",
+      "philosophy": "Prioritizes a small release with an easy recovery path.",
+      "strength": "Makes the release decision explicit.",
+      "tradeoff": "Requires choosing between rollout stages and implementation scope.",
+      "wordChoices": [],
+      "sections": [
+        {
+          "key": "sequence",
+          "heading": "Release sequence",
+          "markdown": "## Release sequence\n\nShip the smallest reversible change first. Separate unrelated migrations from the release."
+        },
+        {
+          "key": "risks",
+          "heading": "Risks and assumptions",
+          "markdown": "## Risks and assumptions\n\nA smaller release may delay dependent features. Confirm the change can be reverted independently."
+        },
+        {
+          "key": "validation",
+          "heading": "Validation and rollback",
+          "markdown": "## Validation and rollback\n\nRun a focused smoke check, inspect the first results, and revert if the agreed checks fail."
+        }
+      ]
+    }
+  ]
+}
