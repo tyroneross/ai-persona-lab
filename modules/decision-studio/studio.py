@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -14,6 +15,8 @@ ASSET = ROOT / "assets" / "setup.html"
 TEMPLATES = ROOT / "templates.json"
 WRITE_LOCK = threading.Lock()
 MAX_BODY = 256_000
+HISTORY_NAME = "history"
+HISTORY_FILE = re.compile(r"revision-(\d+)\.json\Z")
 
 
 def _text(value, field, *, required=False, maximum=4_000, strip=True):
@@ -73,16 +76,16 @@ def validate_request(data):
         if not isinstance(alternative, dict):
             raise ValueError("alternatives")
         item = {
-            "label": _text(alternative.get("label"), "alternatives", required=True, maximum=160),
+            "label": _text(alternative.get("label", ""), "alternatives", maximum=160),
             "sourceRef": _text(alternative.get("sourceRef", ""), "alternatives", maximum=2_000),
             "content": _text(alternative.get("content", ""), "alternatives", maximum=50_000, strip=False),
         }
-        if not item["sourceRef"] and not item["content"].strip():
-            raise ValueError("alternatives")
         clean_alternatives.append(item)
     alternative_labels = [item["label"].casefold() for item in clean_alternatives]
-    if mode == "compare-existing" and (len(clean_alternatives) < 2 or len(alternative_labels) != len(set(alternative_labels))):
-        raise ValueError("Provide at least two unique alternatives")
+    if mode == "compare-existing":
+        complete = all(item["label"] and (item["sourceRef"] or item["content"].strip()) for item in clean_alternatives)
+        if len(clean_alternatives) < 2 or not complete or len(alternative_labels) != len(set(alternative_labels)):
+            raise ValueError("Provide at least two complete, unique alternatives")
 
     units = data.get("comparisonUnits")
     if not isinstance(units, list) or len(units) > 50:
@@ -121,6 +124,68 @@ def private_write(path, text):
         output.write(text)
 
 
+def history_path(data_dir, revision):
+    return data_dir / HISTORY_NAME / f"revision-{revision}.json"
+
+
+def ensure_history_dir(data_dir):
+    directory = data_dir / HISTORY_NAME
+    directory.mkdir(mode=0o700, exist_ok=True)
+    directory.chmod(0o700)
+    return directory
+
+
+def archive_request(data_dir, request):
+    """Create one immutable snapshot; an identical retry is a no-op."""
+    revision = request.get("revision")
+    if not isinstance(revision, int) or isinstance(revision, bool) or revision < 1:
+        raise ValueError("revision")
+    directory = ensure_history_dir(data_dir)
+    destination = history_path(data_dir, revision)
+    payload = json.dumps(request, indent=2) + "\n"
+    temporary = directory / f".revision-{revision}-{os.getpid()}-{threading.get_ident()}.tmp"
+    private_write(temporary, payload)
+    try:
+        try:
+            os.link(temporary, destination)
+        except FileExistsError:
+            if destination.read_text() != payload:
+                raise RuntimeError(f"History revision {revision} already has different content")
+        destination.chmod(0o600)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def backfill_latest(data_dir):
+    ensure_history_dir(data_dir)
+    latest = data_dir / "review-request.json"
+    if latest.exists():
+        archive_request(data_dir, json.loads(latest.read_text()))
+
+
+def replace_latest(data_dir, request, previous=None):
+    if previous:
+        private_write(data_dir / "review-request.previous.json", json.dumps(previous, indent=2) + "\n")
+    temporary = data_dir / "review-request.tmp"
+    private_write(temporary, json.dumps(request, indent=2) + "\n")
+    os.replace(temporary, data_dir / "review-request.json")
+
+
+def history_summary(data_dir):
+    requests = []
+    for path in ensure_history_dir(data_dir).iterdir():
+        match = HISTORY_FILE.fullmatch(path.name)
+        if not match:
+            continue
+        saved = json.loads(path.read_text())
+        revision = int(match.group(1))
+        if saved.get("revision") != revision:
+            raise ValueError("revision")
+        requests.append({key: saved[key] for key in ("revision", "title", "mode", "templateId", "savedAt")})
+    requests.sort(key=lambda item: item["revision"])
+    return {"requests": requests, "latestRevision": requests[-1]["revision"] if requests else 0}
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "DecisionStudio/1"
 
@@ -147,14 +212,25 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.valid_host():
             return self.send_error(403)
-        path = urlsplit(self.path).path
+        parsed = urlsplit(self.path)
+        path = parsed.path
         if path in ("/", "/setup.html"):
             return self.send_bytes(ASSET.read_bytes(), "text/html; charset=utf-8")
         if path == "/api/templates":
             return self.send_bytes(TEMPLATES.read_bytes(), "application/json; charset=utf-8")
         if path == "/api/request":
-            request_path = self.server.data_dir / "review-request.json"
-            return self.send_json(json.loads(request_path.read_text()) if request_path.exists() else {})
+            if not parsed.query:
+                request_path = self.server.data_dir / "review-request.json"
+                return self.send_json(json.loads(request_path.read_text()) if request_path.exists() else {})
+            match = re.fullmatch(r"revision=([1-9]\d{0,9})", parsed.query)
+            if not match:
+                return self.send_json({"error": "Invalid revision"}, 400)
+            request_path = history_path(self.server.data_dir, int(match.group(1)))
+            if not request_path.exists():
+                return self.send_json({"error": "Revision not found"}, 404)
+            return self.send_json(json.loads(request_path.read_text()))
+        if path == "/api/history" and not parsed.query:
+            return self.send_json(history_summary(self.server.data_dir))
         self.send_error(404)
 
     def do_POST(self):
@@ -172,17 +248,25 @@ class Handler(BaseHTTPRequestHandler):
                 destination = self.server.data_dir / "review-request.json"
                 previous = json.loads(destination.read_text()) if destination.exists() else None
                 current_revision = previous.get("revision", 0) if previous else 0
-                if clean.pop("baseRevision") != current_revision:
+                base_revision = clean.pop("baseRevision")
+                if base_revision != current_revision:
                     return self.send_json({"error": "A newer review request is saved", "revision": current_revision}, 409)
-                clean["revision"] = current_revision + 1
-                clean["savedAt"] = int(time.time() * 1000)
-                if previous:
-                    backup = self.server.data_dir / "review-request.previous.json"
-                    private_write(backup, json.dumps(previous, indent=2) + "\n")
-                temporary = self.server.data_dir / "review-request.tmp"
-                private_write(temporary, json.dumps(clean, indent=2) + "\n")
-                os.replace(temporary, destination)
-            self.send_json({"saved": True, "request": clean})
+                next_revision = current_revision + 1
+                archived_path = history_path(self.server.data_dir, next_revision)
+                if archived_path.exists():
+                    archived = json.loads(archived_path.read_text())
+                    expected = {key: value for key, value in archived.items() if key not in {"revision", "savedAt"}}
+                    replace_latest(self.server.data_dir, archived, previous)
+                    if clean != expected:
+                        return self.send_json({"error": "A newer review request is saved", "revision": next_revision}, 409)
+                    saved_request = archived
+                else:
+                    clean["revision"] = next_revision
+                    clean["savedAt"] = int(time.time() * 1000)
+                    archive_request(self.server.data_dir, clean)
+                    replace_latest(self.server.data_dir, clean, previous)
+                    saved_request = clean
+            self.send_json({"saved": True, "request": saved_request, "requestUrl": f"/api/request?revision={saved_request['revision']}"})
         except (ValueError, TypeError, KeyError, json.JSONDecodeError):
             self.send_json({"error": "Invalid review request"}, 400)
 
@@ -203,6 +287,7 @@ def main():
         saved = args.data_dir / name
         if saved.exists():
             saved.chmod(0o600)
+    backfill_latest(args.data_dir)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     server.data_dir = args.data_dir.resolve()
     server.quiet = args.quiet

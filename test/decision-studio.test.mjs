@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { chmod, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -65,6 +65,7 @@ test('validates roles and saves exact editable choices', async () => {
   const reloaded = await (await fetch(base + '/api/request')).json();
   assert.deepEqual(reloaded, saved);
   assert.deepEqual(JSON.parse(await readFile(path.join(dataDir, 'review-request.json'), 'utf8')), saved);
+  assert.equal((await (await fetch(base + '/api/request?revision=1')).json()).title, request.title);
 });
 
 test('rejects stale revisions without overwriting the saved request', async () => {
@@ -78,10 +79,13 @@ test('rejects stale revisions without overwriting the saved request', async () =
 test('rejects cross-origin writes and accepts explicit omission of all units', async () => {
   const crossOrigin = await fetch(base + '/api/request', { method: 'POST', headers: { Origin: 'https://example.com' }, body: JSON.stringify({ ...request, baseRevision: 1 }) });
   assert.equal(crossOrigin.status, 403);
-  const allOmitted = { ...request, baseRevision: 1, comparisonUnits: request.comparisonUnits.map(unit => ({ ...unit, included: false })) };
+  const hiddenDraft = [{ label: 'Unfinished option', sourceRef: '', content: '' }, { label: '', sourceRef: 'drafts/later.md', content: '' }];
+  const allOmitted = { ...request, baseRevision: 1, alternatives: hiddenDraft, comparisonUnits: request.comparisonUnits.map(unit => ({ ...unit, included: false })) };
   const response = await fetch(base + '/api/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(allOmitted) });
   assert.equal(response.status, 200);
-  assert.ok((await response.json()).request.comparisonUnits.every(unit => !unit.included));
+  const saved = (await response.json()).request;
+  assert.ok(saved.comparisonUnits.every(unit => !unit.included));
+  assert.deepEqual(saved.alternatives, hiddenDraft);
 });
 
 test('saves existing alternatives without reviewer roles', async () => {
@@ -89,6 +93,9 @@ test('saves existing alternatives without reviewer roles', async () => {
     { label: 'Current draft', sourceRef: 'drafts/current.md', content: '' },
     { label: 'Proposed draft', sourceRef: '', content: '  # Proposed\n\n    indented code\n' }
   ] };
+  const incomplete = structuredClone(existing);
+  incomplete.alternatives[1].content = '';
+  assert.equal((await fetch(base + '/api/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(incomplete) })).status, 400);
   const response = await fetch(base + '/api/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(existing) });
   assert.equal(response.status, 200);
   const saved = (await response.json()).request;
@@ -98,9 +105,48 @@ test('saves existing alternatives without reviewer roles', async () => {
   assert.equal(saved.alternatives[1].content, '  # Proposed\n\n    indented code\n');
 });
 
+test('retains immutable revisions and exposes bounded history metadata', async () => {
+  const first = await (await fetch(base + '/api/request?revision=1')).json();
+  const second = await (await fetch(base + '/api/request?revision=2')).json();
+  const third = await (await fetch(base + '/api/request?revision=3')).json();
+  assert.equal(first.title, 'Choose project README');
+  assert.ok(second.comparisonUnits.every(unit => !unit.included));
+  assert.equal(third.mode, 'compare-existing');
+
+  const history = await (await fetch(base + '/api/history')).json();
+  assert.equal(history.latestRevision, 3);
+  assert.deepEqual(history.requests.map(item => item.revision), [1, 2, 3]);
+  assert.deepEqual(Object.keys(history.requests[0]), ['revision', 'title', 'mode', 'templateId', 'savedAt']);
+
+  assert.equal((await fetch(base + '/api/request?revision=0')).status, 400);
+  assert.equal((await fetch(base + '/api/request?revision=abc')).status, 400);
+  assert.equal((await fetch(base + '/api/request?revision=999')).status, 404);
+});
+
+test('finishes an interrupted archival retry without replacing its snapshot', async () => {
+  const retry = { ...request, baseRevision: 3, title: 'Recovered archived request' };
+  const archived = { ...retry, revision: 4, savedAt: 123456789 };
+  delete archived.baseRevision;
+  const snapshot = path.join(dataDir, 'history', 'revision-4.json');
+  await writeFile(snapshot, JSON.stringify(archived, null, 2) + '\n', { mode: 0o600 });
+  await chmod(snapshot, 0o600);
+
+  const response = await fetch(base + '/api/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(retry) });
+  assert.equal(response.status, 200);
+  const reply = await response.json();
+  assert.equal(reply.request.savedAt, archived.savedAt);
+  assert.equal(reply.requestUrl, '/api/request?revision=4');
+  assert.deepEqual(await (await fetch(base + reply.requestUrl)).json(), archived);
+  assert.deepEqual(JSON.parse(await readFile(snapshot, 'utf8')), archived);
+});
+
  test('decision files and backups are owner-only', async () => {
   assert.equal((await stat(dataDir)).mode & 0o777, 0o700);
   for (const name of ['review-request.json', 'review-request.previous.json']) {
     assert.equal((await stat(path.join(dataDir, name))).mode & 0o777, 0o600);
+  }
+  assert.equal((await stat(path.join(dataDir, 'history'))).mode & 0o777, 0o700);
+  for (const revision of [1, 2, 3, 4]) {
+    assert.equal((await stat(path.join(dataDir, 'history', `revision-${revision}.json`))).mode & 0o777, 0o600);
   }
 });

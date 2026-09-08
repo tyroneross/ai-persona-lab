@@ -31,6 +31,14 @@
     .actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
     #status { min-height:22px; color:var(--muted); }
     #status.error { color:#8a1c1c; }
+    .steps { display:flex; flex-wrap:wrap; gap:10px 24px; margin-bottom:24px; color:var(--muted); font-size:13px; }
+    .history { border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:20px; }
+    .history summary { cursor:pointer; font-weight:650; }
+    .history select { margin:8px 0 12px; }
+    .save-bar { position:sticky; bottom:0; background:var(--surface); border:1px solid var(--line); padding:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; border-radius:10px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    input[type=checkbox] { width:22px; height:22px; accent-color:var(--ink); }
+    #receipt { scroll-margin-bottom:110px; } #receipt a { color:var(--ink); } #handoff { margin:8px 0; }
     @media (max-width:520px) { main { width:min(100% - 20px,920px); margin-top:24px; } section { padding:18px; } .row { grid-template-columns:auto minmax(0,1fr); } .row .remove { grid-column:2; justify-self:start; } }
   </style>
 </head>
@@ -38,20 +46,22 @@
 <main>
   <header>
     <h1>Decision Studio</h1>
-    <p>Define the task, then choose reviewer roles or add existing alternatives. The current agent reads the saved setup on your next turn.</p>
+    <p>Compare options and decide what to keep. Choose your reviewers or bring alternatives you already have.</p>
   </header>
+  <nav aria-label="Workflow" class="steps"><span>1. Set up the decision</span><span>2. Save and ask your agent</span><span>3. Compare and choose</span></nav>
+  <details class="history"><summary>Saved decisions and recovery</summary><p class="hint">Open an earlier saved version to continue editing. Every save keeps a new version.</p><label for="history">Saved version</label><select id="history"><option value="">Choose a saved version</option></select><div class="actions"><button class="secondary" id="new-decision" type="button">New decision</button><button class="secondary" id="open-history" type="button">Open saved version</button><button class="secondary" id="reload" type="button">Load latest saved version</button><button class="secondary" id="restore" type="button">Undo last load</button></div><p class="hint">Loading replaces the form. Undo last load restores the draft you had open.</p></details>
   <form id="form">
     <section aria-labelledby="task-heading">
       <h2 id="task-heading">Task</h2>
       <div class="field"><label for="mode">Setup mode</label><select id="mode"><option value="request-reviews">Request reviews</option><option value="compare-existing">Compare existing alternatives</option></select><p class="hint" id="mode-description"></p></div>
       <div class="field"><label for="template">Template</label><select id="template"></select><p class="hint" id="template-description"></p></div>
-      <div class="field"><label for="title">Decision title</label><input id="title" type="text" maxlength="200" required></div>
-      <div class="field"><label for="question">Decision question</label><textarea id="question" maxlength="4000" required></textarea></div>
+      <div class="field"><label for="title">Decision title</label><input placeholder="Choose the onboarding approach" id="title" type="text" maxlength="200" required></div>
+      <div class="field"><label for="question">Decision question</label><textarea id="question" placeholder="Which option helps a new user complete setup with the least effort?" maxlength="4000" required></textarea></div>
       <div class="field"><label for="sources">Source references</label><textarea id="sources" maxlength="20000" placeholder="One file path or URL per line"></textarea></div>
     </section>
     <section id="roles-section" aria-labelledby="roles-heading">
       <h2 id="roles-heading">Choose reviewers</h2>
-      <p class="field">Templates suggest roles. Select at least two. No role is selected automatically.</p>
+      <p class="field">Templates suggest roles. Select at least two. No role is selected automatically.</p><p id="role-count" class="hint" aria-live="polite"></p>
       <fieldset><legend class="sr-only">Reviewer roles</legend><div class="rows" id="roles"></div></fieldset>
       <button class="secondary" id="add-role" type="button">Add role</button>
     </section>
@@ -62,52 +72,84 @@
       <button class="secondary" id="add-alternative" type="button">Add alternative</button>
     </section>
     <section aria-labelledby="units-heading">
-      <h2 id="units-heading">Comparison units</h2>
-      <p class="field">Edit, add, or omit any unit. An omitted unit stays explicit in the saved request.</p>
-      <fieldset><legend class="sr-only">Comparison units</legend><div class="rows" id="units"></div></fieldset>
-      <button class="secondary" id="add-unit" type="button">Add unit</button>
+      <h2 id="units-heading">What to compare</h2>
+      <p class="field">Choose the sections or criteria that matter to this decision. Unchecked items stay excluded.</p>
+      <fieldset><legend class="sr-only">What to compare</legend><div class="rows" id="units"></div></fieldset>
+      <button class="secondary" id="add-unit" type="button">Add criterion</button>
     </section>
     <section aria-labelledby="notes-heading">
       <h2 id="notes-heading">Notes</h2>
       <label for="notes">Instructions for the review</label><textarea id="notes" maxlength="10000"></textarea>
     </section>
-    <div class="actions"><button id="save" type="submit">Save review request</button><button class="secondary" id="reload" type="button">Reload saved request</button><button class="secondary" id="restore" type="button">Restore prior browser draft</button><span id="status" role="status" aria-live="polite"></span></div>
+    <div class="save-bar"><button id="save" type="submit">Save review request</button><span id="status" role="status" aria-live="polite" tabindex="-1"></span></div>
+    <section id="receipt" hidden aria-labelledby="receipt-heading" tabindex="-1"><h2 id="receipt-heading">Saved. Continue with your agent.</h2><p id="receipt-summary"></p><p class="hint">Send this message in your agent conversation to start the next step:</p><label for="handoff">Message for your agent</label><textarea id="handoff" readonly></textarea><a id="saved-link">Open saved request</a></section>
   </form>
 </main>
 <script>
-const state = { templates: [], revision: 0, applying: false };
+const state = { templates: [], revision: 0, applying: false, loading: false };
 const $ = id => document.getElementById(id);
-function row(container, label='', checked=false, kind='role', brief='') {
-  const item=document.createElement('div'); item.className='row';
-  const toggle=document.createElement('input'); toggle.type='checkbox'; toggle.checked=checked; toggle.setAttribute('aria-label', kind==='role'?'Select reviewer':'Include comparison unit');
-  const input=document.createElement('input'); input.type='text'; input.value=label; input.maxLength=kind==='role'?120:160; input.setAttribute('aria-label', kind==='role'?'Reviewer role':'Comparison unit');
-  const remove=document.createElement('button'); remove.type='button'; remove.className='secondary remove'; remove.textContent='Remove'; remove.addEventListener('click',()=>{item.remove(); persistDraft();});
-  item.append(toggle,input,remove); if(kind==='role'){const details=document.createElement('textarea');details.className='role-brief';details.maxLength=1000;details.value=brief;details.placeholder='Optional review brief';details.setAttribute('aria-label','Reviewer brief');item.append(details);} container.append(item);
+function setStatus(message, error=false) {
+  $('status').textContent=message; $('status').className=error?'error':'';
+  if(error) $('status').focus();
 }
-function rows(id, values, key, kind) { const box=$(id); box.replaceChildren(); values.forEach(v=>row(box,typeof v==='string'?v:v.label,typeof v==='string'?false:v[key],kind,typeof v==='string'?'':v.brief||'')); }
-function alternative(value={}) { const item=document.createElement('div'); item.className='rows'; item.style.padding='12px'; item.style.border='1px solid var(--line)'; item.style.borderRadius='8px'; item.innerHTML='<label>Option name<input type="text" data-key="label" maxlength="160"></label><label>Source reference<input type="text" data-key="sourceRef" maxlength="2000" placeholder="File path or URL"></label><label>Pasted text<textarea data-key="content" maxlength="50000" placeholder="Optional when a source reference is provided"></textarea></label>'; Object.entries(value).forEach(([key,val])=>{const input=item.querySelector(`[data-key="${key}"]`);if(input)input.value=val;}); const remove=document.createElement('button');remove.type='button';remove.className='secondary remove';remove.textContent='Remove option';remove.addEventListener('click',()=>{item.remove();persistDraft();});item.append(remove);$('alternatives').append(item); }
-function setMode(mode){ const existing=mode==='compare-existing'; $('roles-section').hidden=existing; $('alternatives-section').hidden=!existing; $('mode-description').textContent=existing?'Save options you already have for the agent to compare.':'Save reviewer roles for the agent to use on the next turn.'; $('save').textContent=existing?'Save comparison request':'Save review request'; }
-function applyTemplate(id) { const t=state.templates.find(x=>x.id===id); if(!t)return; $('template-description').textContent=t.description; const currentRoles=collectRows('roles','selected'); const currentUnits=collectRows('units','included'); const merge=(current,suggestions,key)=>[...current,...suggestions.filter(label=>!current.some(item=>item.label.toLowerCase()===label.toLowerCase())).map(label=>({label,[key]:key==='included'}))]; rows('roles',merge(currentRoles,t.roles,'selected'),'selected','role'); rows('units',merge(currentUnits,t.units,'included'),'included','unit'); persistDraft(); }
-function collectRows(id,key) { return [...$(id).children].map(x=>{const value={label:x.querySelector('input[type=text]').value.trim(),[key]:x.querySelector('input[type=checkbox]').checked};const brief=x.querySelector('.role-brief');if(brief)value.brief=brief.value.trim();return value;}).filter(x=>x.label); }
-function collectAlternatives(){return [...$('alternatives').children].map(item=>Object.fromEntries([...item.querySelectorAll('[data-key]')].map(input=>[input.dataset.key,input.dataset.key==='content'?input.value:input.value.trim()]))).filter(item=>item.label||item.sourceRef||item.content.trim());}
-function collect() { return {version:1,baseRevision:state.revision,mode:$('mode').value,templateId:$('template').value,title:$('title').value.trim(),question:$('question').value.trim(),sourceRefs:$('sources').value.split('\n').map(x=>x.trim()).filter(Boolean),roles:collectRows('roles','selected'),alternatives:collectAlternatives(),comparisonUnits:collectRows('units','included'),notes:$('notes').value.trim()}; }
+function countRoles(){ $('role-count').textContent=`${$('roles').querySelectorAll('input:checked').length} reviewers selected`; }
+function row(container,label='',checked=false,kind='role',brief='') {
+  const item=document.createElement('div'); item.className='row';
+  const toggle=document.createElement('input');toggle.type='checkbox';toggle.checked=checked;
+  const input=document.createElement('input');input.type='text';input.value=label;input.maxLength=kind==='role'?120:160;input.setAttribute('aria-label',kind==='role'?'Reviewer role':'Comparison criterion');
+  const remove=document.createElement('button');remove.type='button';remove.className='secondary remove';remove.textContent='Remove';
+  const details=document.createElement('textarea');details.className='role-brief';details.maxLength=1000;details.value=brief;details.placeholder='Optional: what should this reviewer focus on?';
+  const names=()=>{const name=input.value.trim()||'untitled';toggle.setAttribute('aria-label',`${kind==='role'?'Select reviewer':'Include criterion'}: ${name}`);remove.setAttribute('aria-label',`Remove ${kind==='role'?'reviewer':'criterion'}: ${name}`);details.setAttribute('aria-label',`Review brief: ${name}`);};names();input.addEventListener('input',names);
+  remove.addEventListener('click',()=>{const next=item.nextElementSibling||item.previousElementSibling;item.remove();(next?.querySelector('input[type=text]')||$(kind==='role'?'add-role':'add-unit')).focus();persistDraft();});
+  item.append(toggle,input,remove);if(kind==='role')item.append(details);container.append(item);
+}
+function rows(id,values,key,kind){$(id).replaceChildren();values.forEach(v=>row($(id),typeof v==='string'?v:v.label,typeof v==='string'?false:v[key],kind,v.brief||''));}
+function alternative(value={}) {
+  const item=document.createElement('fieldset');item.className='rows';item.style.cssText='padding:14px;border:1px solid var(--line);border-radius:8px';
+  item.innerHTML='<legend>Alternative</legend><label>Option name<input type="text" data-key="label" maxlength="160"></label><label>Source reference<input type="text" data-key="sourceRef" maxlength="2000" placeholder="File path or URL"></label><label>Pasted text<textarea data-key="content" maxlength="50000" placeholder="Paste the option here, or provide its source above"></textarea></label>';
+  for(const key of ['label','sourceRef','content'])item.querySelector(`[data-key="${key}"]`).value=value[key]||'';
+  const remove=document.createElement('button');remove.type='button';remove.className='secondary remove';remove.textContent='Remove option';
+  const name=item.querySelector('[data-key=label]');const names=()=>{const title=name.value.trim()||'Untitled option';item.querySelector('legend').textContent=title;remove.setAttribute('aria-label',`Remove option: ${title}`);};names();name.addEventListener('input',names);
+  remove.addEventListener('click',()=>{item.remove();$('add-alternative').focus();persistDraft();});item.append(remove);$('alternatives').append(item);
+}
+function setMode(mode){const existing=mode==='compare-existing';$('roles-section').hidden=existing;$('alternatives-section').hidden=!existing;$('mode-description').textContent=existing?'Bring two or more options. Your agent will compare them using your criteria.':'Choose two or more roles to review the same material independently.';$('save').textContent=existing?'Save comparison request':'Save review request';}
+function applyTemplate(id){const t=state.templates.find(x=>x.id===id);if(!t)return;$('template-description').textContent=t.description+' Suggestions are added to your current choices.';const merge=(current,suggestions,key)=>[...current,...suggestions.filter(label=>!current.some(item=>item.label.toLowerCase()===label.toLowerCase())).map(label=>({label,[key]:key==='included'}))];rows('roles',merge(collectRows('roles','selected'),t.roles,'selected'),'selected','role');rows('units',merge(collectRows('units','included'),t.units,'included'),'included','unit');persistDraft();}
+function collectRows(id,key){return [...$(id).children].map(x=>{const v={label:x.querySelector('input[type=text]').value.trim(),[key]:x.querySelector('input[type=checkbox]').checked};const brief=x.querySelector('.role-brief');if(brief)v.brief=brief.value.trim();return v;}).filter(x=>x.label);}
+function collectAlternatives(){return [...$('alternatives').children].map(item=>Object.fromEntries([...item.querySelectorAll('[data-key]')].map(input=>[input.dataset.key,input.dataset.key==='content'?input.value:input.value.trim()]))).filter(x=>x.label||x.sourceRef||x.content.trim());}
+function collect(){return {version:1,baseRevision:state.revision,mode:$('mode').value,templateId:$('template').value,title:$('title').value.trim(),question:$('question').value.trim(),sourceRefs:$('sources').value.split('\n').map(x=>x.trim()).filter(Boolean),roles:collectRows('roles','selected'),alternatives:collectAlternatives(),comparisonUnits:collectRows('units','included'),notes:$('notes').value.trim()};}
 function readDraft(key='decision-studio-draft-v1'){try{return JSON.parse(localStorage.getItem(key)||'null');}catch{return null;}}
 function writeStorage(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
-function persistDraft(){ if(!state.applying) writeStorage('decision-studio-draft-v1',collect()); }
-function apply(data){ state.applying=true; state.revision=data.revision??data.baseRevision??0; $('mode').value=data.mode||'request-reviews'; setMode($('mode').value); $('template').value=data.templateId||'custom'; $('title').value=data.title||''; $('question').value=data.question||''; $('sources').value=(data.sourceRefs||[]).join('\n'); $('notes').value=data.notes||''; rows('roles',data.roles||[],'selected','role'); rows('units',data.comparisonUnits||[],'included','unit'); $('alternatives').replaceChildren(); (data.alternatives||[]).forEach(alternative); const t=state.templates.find(x=>x.id===$('template').value); $('template-description').textContent=t?t.description:''; state.applying=false; persistDraft(); }
-function setStatus(message,error=false){ $('status').textContent=message; $('status').className=error?'error':''; }
-async function loadSaved(explicit=false){ setStatus('Loading saved request…'); try { const res=await fetch('/api/request'); if(!res.ok)throw Error(); const data=await res.json(); const draft=readDraft(); if(explicit){writeStorage('decision-studio-draft-backup-v1',collect());apply(data);setStatus(Object.keys(data).length?'Saved request loaded. Your prior browser draft is backed up.':'No saved request yet.');}else if(draft){apply(draft);setStatus(Object.keys(data).length?'Browser draft restored. Reload to replace it with the saved request.':'Browser draft restored.');}else{apply(data);setStatus(Object.keys(data).length?'Saved request loaded.':'No saved request yet.');} } catch { setStatus('Could not load the saved request. Your current edits remain.',true); } }
-function setBusy(busy){[...$('form').elements].forEach(control=>control.disabled=busy);}
+function persistDraft(){countRoles();if(!state.applying){$('receipt').hidden=true;if(!writeStorage('decision-studio-draft-v1',collect()))setStatus('Browser draft storage is unavailable. Save your request before leaving.',true);}}
+function apply(data){state.applying=true;state.revision=data.revision??data.baseRevision??0;$('mode').value=data.mode||'request-reviews';setMode($('mode').value);$('template').value=data.templateId||'custom';$('title').value=data.title||'';$('question').value=data.question||'';$('sources').value=(data.sourceRefs||[]).join('\n');$('notes').value=data.notes||'';rows('roles',data.roles||[],'selected','role');rows('units',data.comparisonUnits||[],'included','unit');$('alternatives').replaceChildren();(data.alternatives||[]).forEach(alternative);const t=state.templates.find(x=>x.id===$('template').value);$('template-description').textContent=t?.description||'';state.applying=false;persistDraft();}
+function setBusy(busy){state.loading=busy;document.querySelectorAll('input,textarea,select,button').forEach(control=>control.disabled=busy);}
+async function history(){try{const res=await fetch('/api/history');if(!res.ok)throw Error();const data=await res.json();$('history').replaceChildren(new Option('Choose a saved version',''));data.requests.forEach(r=>$('history').append(new Option(`${r.title} · version ${r.revision}`,r.revision)));return data;}catch{setStatus('Saved history is unavailable. Your current draft remains.',true);return null;}}
+async function loadSaved(explicit=false,revision=''){
+  setStatus('Loading saved request…');setBusy(true);
+  try{const res=await fetch('/api/request'+(revision?'?revision='+encodeURIComponent(revision):''));if(!res.ok)throw Error();const data=await res.json();const draft=readDraft();
+    if(explicit){const current=collect();if(revision){const latest=await fetch('/api/request');if(!latest.ok)throw Error();data.revision=(await latest.json()).revision||0;}writeStorage('decision-studio-draft-backup-v1',current);apply(data);setStatus(revision?'Saved version opened. Save to keep your changes as a new version.':'Latest saved version loaded. Undo last load restores your prior draft.');}
+    else if(draft){apply(draft);setStatus('Browser draft restored.');}else{apply(data);setStatus(data.revision?'Saved request loaded.':'Start with a decision you want to make.');}
+  }catch{setStatus('Could not load the saved request. Your current edits remain.',true);}finally{setBusy(false);}
+}
+function receipt(data){const url=new URL('/api/request',location.href);url.searchParams.set('revision',data.revision);$('receipt-summary').textContent=`${data.title} · saved version ${data.revision}`;$('handoff').value=`Read my saved Decision Studio request at ${url.href}. ${data.mode==='compare-existing'?'Compare the supplied alternatives using my selected criteria.':'Run independent reviews using my selected roles and briefs.'} Build a comparison dashboard so I can choose what to keep.`;$('saved-link').href=url.href;$('receipt').hidden=false;$('receipt').focus();}
 $('template').addEventListener('change',e=>applyTemplate(e.target.value));
-$('mode').addEventListener('change',e=>{setMode(e.target.value);persistDraft();});
-$('add-role').addEventListener('click',()=>{row($('roles'),' ',false,'role'); $('roles').lastElementChild.querySelector('input[type=text]').focus();});
-$('add-unit').addEventListener('click',()=>{row($('units'),' ',true,'unit'); $('units').lastElementChild.querySelector('input[type=text]').focus();});
+$('mode').addEventListener('change',e=>{setMode(e.target.value);if(e.target.value==='compare-existing'&&!$('alternatives').children.length){alternative();alternative();}persistDraft();});
+$('add-role').addEventListener('click',()=>{row($('roles'));$('roles').lastElementChild.querySelector('input[type=text]').focus();});
+$('add-unit').addEventListener('click',()=>{row($('units'),'',true,'unit');$('units').lastElementChild.querySelector('input[type=text]').focus();});
 $('add-alternative').addEventListener('click',()=>{alternative();$('alternatives').lastElementChild.querySelector('input').focus();});
-$('restore').addEventListener('click',()=>{const draft=readDraft('decision-studio-draft-backup-v1');if(!draft){setStatus('No prior browser draft is available.');return;}const current=collect();apply(draft);writeStorage('decision-studio-draft-backup-v1',current);setStatus('Prior browser draft restored.');});
-$('reload').addEventListener('click',()=>loadSaved(true));
+$('restore').addEventListener('click',()=>{const draft=readDraft('decision-studio-draft-backup-v1');if(!draft){setStatus('No previous draft is available.');return;}const current=collect();apply(draft);writeStorage('decision-studio-draft-backup-v1',current);setStatus('Previous browser draft restored.');});
+$('new-decision').addEventListener('click',async()=>{let created=false;setBusy(true);try{const res=await fetch('/api/request');if(!res.ok)throw Error();const latest=await res.json();writeStorage('decision-studio-draft-backup-v1',collect());apply({revision:latest.revision||0});created=true;setStatus('New decision started. Undo last load restores your prior draft.');}catch{setStatus('Could not start a new decision. Your draft remains.',true);}finally{setBusy(false);if(created)$('title').focus();}});
+$('reload').addEventListener('click',()=>loadSaved(true));$('open-history').addEventListener('click',()=>{if($('history').value)loadSaved(true,$('history').value);else setStatus('Choose a saved version first.',true);});
 $('form').addEventListener('input',persistDraft);
-$('form').addEventListener('submit',async e=>{e.preventDefault(); const data=collect(); const selected=data.roles.filter(x=>x.selected).map(x=>x.label.toLowerCase()); if(data.mode==='request-reviews'&&(selected.length<2||new Set(selected).size!==selected.length)){setStatus('Select at least two unique reviewer roles.',true);return;} if(data.mode==='compare-existing'&&(data.alternatives.length<2||data.alternatives.some(x=>!x.label||(!x.sourceRef&&!x.content.trim())))){setStatus('Add at least two named options with a source reference or pasted text.',true);return;} setStatus('Saving…');setBusy(true); try { const res=await fetch('/api/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); const reply=await res.json(); if(res.status===409){setStatus('A newer request is saved. Your edits remain. Reload when you are ready.',true);return;} if(!res.ok)throw Error(); apply(reply.request); setStatus(data.mode==='compare-existing'?'Comparison request saved. The current agent can read it on your next turn.':'Review request saved. The current agent can read it on your next turn.'); } catch { setStatus('Save failed. Your edits remain in this browser. Try again.',true); } finally {setBusy(false);} });
-(async()=>{ try { const response=await fetch('/api/templates'); const payload=await response.json(); state.templates=payload.templates; payload.templates.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.label;$('template').append(o);}); await loadSaved(); if(!$('roles').children.length&&!$('units').children.length) applyTemplate('custom'); } catch { setStatus('Decision Studio could not load its templates.',true); } })();
+$('form').addEventListener('submit',async e=>{
+  e.preventDefault();const data=collect();const selected=data.roles.filter(x=>x.selected).map(x=>x.label.toLowerCase());
+  if(data.mode==='request-reviews'&&(selected.length<2||new Set(selected).size!==selected.length)){setStatus('Select at least two reviewers with different role names.',true);return;}
+  if(data.mode==='compare-existing'&&(data.alternatives.length<2||data.alternatives.some(x=>!x.label||(!x.sourceRef&&!x.content.trim()))||new Set(data.alternatives.map(x=>x.label.toLowerCase())).size!==data.alternatives.length)){setStatus('Add at least two differently named options, each with a source or pasted text.',true);return;}
+  setStatus('Saving…');setBusy(true);let saved=null;
+  try{const res=await fetch('/api/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const reply=await res.json();if(res.status===409){setStatus('A newer version is saved. Load it from Saved decisions and recovery, or keep editing this draft.',true);return;}if(!res.ok){setStatus(reply.error||'Check the request and try again.',true);return;}apply(reply.request);saved=reply.request;setStatus('Saved. Send the message below to your agent.');await history();}
+  catch{setStatus('Save failed. Your draft remains open. Try again.',true);}finally{setBusy(false);if(saved)receipt(saved);}
+});
+(async()=>{try{const response=await fetch('/api/templates');if(!response.ok)throw Error();const payload=await response.json();state.templates=payload.templates;payload.templates.forEach(t=>$('template').append(new Option(t.label,t.id)));await loadSaved();if(!$('roles').children.length&&!$('units').children.length)applyTemplate('custom');await history();}catch{setStatus('Decision Studio could not load its templates.',true);}})();
+
 </script>
 </body>
 </html>
