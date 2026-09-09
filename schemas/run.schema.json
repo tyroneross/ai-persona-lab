@@ -55,6 +55,19 @@
         "project": {
           "type": "string",
           "description": "Project or category this artifact belongs to. Lets a persona with recall scope \"project\" carry context across artifacts in the same ongoing effort."
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "manifest": {
+          "type": "object"
+        },
+        "integrity": {
+          "type": "string",
+          "enum": [
+            "snapshot",
+            "declared"
+          ]
         }
       }
     },

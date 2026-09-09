@@ -66,3 +66,63 @@ calls the CLI to persist and recall. No API key is needed by the CLI.
 - `high` — 6–8 lenses, independent passes + adversarial verification of critical
   findings + measurement rigor.
 
+
+## Freeze a source review and save its evidence
+
+These commands prepare durable source reviews without calling a model. The web Council API retains its separate run contract.
+
+```sh
+persona artifact freeze --root /absolute/repo --files src/card.ts,docs/product.md --output /absolute/new-snapshot
+persona artifact verify /absolute/new-snapshot/manifest.json
+persona run new "Check positioning and source accuracy" --artifact product --version review-v1 --personas persona_saved --manifest /absolute/new-snapshot/manifest.json
+persona run packet RUN_ID persona_saved --owns src/card.ts,docs/product.md --budget-minutes 10
+```
+
+Use canonical filesystem paths and a new destination outside the source root. The explicit file list preserves relative directories, records source Git commit and dirty-status identity when available, and hashes copied bytes. Symlinks, traversal, nonregular inputs, and output collisions are refused. The snapshot is not a signature or secret scanner. After moving it, update `snapshot_root` in both the stored manifest and the run manifest; verification reports missing or changed evidence rather than silently trusting a version name.
+
+`run new` without `--manifest` remains compatible, labeled a declared freeze. `run packet` requires a verified byte snapshot. Its JSON contains a saved profile and hash, packet hash, explicit scope, one-pass budget, source-only conditions and an encounter template. Replace the template reaction with the actual reaction; findings and decisions begin empty. A decision is an object with `action` and `rationale`. The host executes the saved packet; when using Rally, use the packet as the task payload. Keep other reviews out of a blind review's context.
+
+Record dispatch after the host supplies a child ID and prompt hash:
+
+```json
+{
+  "run_id": "RUN_ID",
+  "persona_id": "persona_saved",
+  "artifact_version": "review-v1",
+  "child_id": "actual-host-child-id",
+  "context_mode": "fresh",
+  "prompt_sha256": "SHA256_OF_ACTUAL_HOST_PROMPT",
+  "profile_sha256": "SHA256_FROM_PACKET",
+  "packet_sha256": "SHA256_FROM_PACKET",
+  "prior_encounters_shown": [],
+  "started_at": null,
+  "ended_at": null,
+  "model": null,
+  "usage": null,
+  "provenance": "orchestrator-declared",
+  "activity": "review"
+}
+```
+
+Run `persona run dispatch receipt.json`. Replace digest placeholders with actual 64-character hexadecimal SHA256 values. Optional `encounter_id` links a completed review; append a second receipt with `correction_of` to update the earlier receipt. Activities are `review`, `source-verification`, and `integration`. `host-receipt` provenance requires `evidence_locator`; it records a claimed source, not cryptographic host authentication. Usage accepts nonnegative `input_tokens`, `output_tokens`, `total_tokens`, `cached_input_tokens`, `cost_usd`, and `latency_ms`; unknowns remain null. Do not invent unavailable telemetry or treat these records as proof of savings.
+
+Append adjudication with `persona run adjudicate decision.json`:
+
+```json
+{
+  "run_id": "RUN_ID",
+  "encounter_id": "ENCOUNTER_ID",
+  "finding_id": "finding-1",
+  "artifact_version": "review-v1",
+  "author": "reviewer-name",
+  "disposition": "source-confirmed",
+  "evidence_locator": "snapshot/files/docs/product.md:12",
+  "verification_note": "The named source contradicts the quoted local-only claim."
+}
+```
+
+`source-confirmed`, `refuted`, and `reclassified` require a source locator and note naming the exact claim checked. Preferences, praise and requests use `editorial-accepted` or `deferred`. Existing findings use their explicit `finding_id` or a one-based fallback such as `finding-1`. Optional `accepted_changes` is a list of `{path,before_sha256,after_sha256}` linking the accepted finding to file edits. Corrections name `correction_of` and append a new record. No command overwrites the raw encounter or an existing evidence record.
+
+`persona run evidence RUN_ID` lists adjudications and dispatch receipts. `persona run report RUN_ID` shows raw reviewer assertions, adjudication history, accepted edit hashes and dispatch lineage. A legacy `verified: confirmed` enum alone does not establish a verified defect or human outcome. Attachment refuses different artifact versions, slugs, snapshot digests, personas or lanes; incompatible CLI saves are preserved explicitly unlinked.
+
+Local writes serialize encounter saves and run mutations with bounded lock files. A crashed writer can leave a lock: inspect the named writer/process before removing that exact stale lock and retrying. The CLI never steals a lock automatically.

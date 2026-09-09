@@ -47,9 +47,8 @@ over the council API.
    - Abstain ("cannot judge from available evidence") rather than fabricate.
    - Ensure at least one pass takes an adversarial / red-team stance.
    - Return a structured finding, or none if there is genuinely no concern.
-   - Ask everything in this dispatch: a pass is unreachable ~30s after it
-     finishes, so anything it cannot settle goes into `unanswered`, not into a
-     follow-up turn.
+   - Ask the needed questions in this dispatch and persist its encounter. Host
+     follow-up availability varies; preserve unresolved questions in `unanswered`.
    - If the persona exists in the library, write an encounter file BEFORE
      returning (`persona encounter new <persona_id> --artifact <slug> --version
      <frozen-version>`, fill it in, `persona encounter save -`) and return the
@@ -74,3 +73,9 @@ over the council API.
 7. **Report** the bottom line, priority findings (severity + evidence +
    provenance), preserved conflicts, and the run URL
    `{base}/councils/{run_id}`. Stamp the output "hypothesis, not validation".
+
+For durable source-only CLI/plugin reviews, use `persona artifact freeze`,
+`persona run new --manifest`, and `persona run packet` before dispatch. Send the
+saved packet through the host or Rally and record actual dispatch receipts.
+Append evidence through `persona run adjudicate`; never rewrite the raw review
+to replace a preference with a verified defect. See `docs/cli.md` for formats.

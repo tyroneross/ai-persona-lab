@@ -5,12 +5,11 @@ follow-up interviews were lost because the agent sessions had already been evict
 
 ## The failure that forced this
 
-Personas were run as subagents. They reported, then became unreachable. A subagent becomes
-eviction-eligible **30 seconds after it finishes** (`pbe = 30000` in the Claude Code binary).
-The transcript survives on disk; the ability to reach it does not. There is no supported path
-back.
-
-So a persona held in an agent process has a memory measured in seconds.
+In the August 21, 2026 study, five planned follow-ups became unreachable.
+An approximately thirty-second eviction interpretation was attributed to that
+host's binary; it has not been re-verified as current behavior. Other hosts can
+support follow-up turns. Durable files preserve continuity independently of
+host session lifetime.
 
 ## The rule that follows
 
@@ -108,8 +107,12 @@ Collapsing either into a panel view would have destroyed the finding.
 
 1. **Freeze the artifact.** Snapshot it and record `artifact.version`. Builder edits racing
    participant sessions produce findings about a page that never existed.
-2. **Ask everything in the first dispatch.** There is no reliable second turn.
+2. **Ask everything in the first dispatch.** Follow-up availability is host-dependent.
 3. **Run blind by default.** Compare rounds at the analyst level, where both are visible,
    rather than by showing a persona its own history.
 4. **Have each persona write its encounter before returning.**
 5. **Verify defects against the artifact** before treating any as real.
+
+## Evidence after a review
+
+Saved raw encounters are retained. New adjudication records carry author, version, source locator, disposition and optional accepted edit hashes; they do not rewrite the persona reaction. Reports treat legacy `verified` labels as reviewer assertions. Source confirmation is narrower than validation of user impact. Snapshot and dispatch commands are documented in `docs/cli.md`.

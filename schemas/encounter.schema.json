@@ -18,7 +18,9 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["1.0.0"]
+      "enum": [
+        "1.0.0"
+      ]
     },
     "encounter_id": {
       "type": "string",
@@ -57,6 +59,9 @@
         "project": {
           "type": "string",
           "description": "Project or category this artifact belongs to. Lets a persona with recall scope \"project\" carry context across artifacts in the same ongoing effort."
+        },
+        "sha256": {
+          "type": "string"
         }
       }
     },
@@ -164,6 +169,9 @@
           },
           "verification_note": {
             "type": "string"
+          },
+          "finding_id": {
+            "type": "string"
           }
         }
       }
@@ -227,6 +235,12 @@
     "run_id": {
       "type": "string",
       "description": "The persona run (panel) this encounter belonged to. Lets a run resolve its encounters and a persona resolve every panel it sat on."
+    },
+    "unlinked_run_id": {
+      "type": "string"
+    },
+    "unlinked_reason": {
+      "type": "string"
     }
   }
 }

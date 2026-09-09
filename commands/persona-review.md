@@ -48,8 +48,8 @@ Execution rules:
 - Define measurements and per-persona anti-goals before launching the reviews.
 - Freeze the artifact and record a `version` before any persona sees it. Passes
   that race builder edits produce findings about something that never existed.
-- Ask everything in the first dispatch. A persona subagent is unreachable about
-  thirty seconds after it finishes; there is no reliable follow-up turn.
+- Ask the necessary questions in the first dispatch and save before returning.
+  Follow-up availability depends on the host; durable records preserve continuity.
 - Run blind by default. An informed pass must name the prior `encounter_id`s the
   persona was shown; never mix blind and informed silently.
 - Have each persona write its encounter before returning

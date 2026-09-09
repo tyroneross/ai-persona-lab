@@ -32,9 +32,8 @@ import {
 } from "../lib/encounters.mjs";
 import {
   createRun, readRun, listRuns, attachEncounter, closeRun, validateRun,
-  runEncounters, writeReport, runDir, runsDir, recordOutcome, provenRosters,
+  encounterMembershipProblem, runEncounters, writeReport, runDir, runsDir, recordOutcome, provenRosters,
 } from "../lib/runs.mjs";
-import { unlinkEncounterRun } from "../lib/encounters.mjs";
 import {
   checkRecallRequest, buildRecallBriefing, renderRecallBriefing,
   personaRecall, personaLifespan, permittedEncounters,
@@ -43,6 +42,10 @@ import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversa
 import { ARCHETYPE_CATALOG, composePersona, planConsultation } from "../lib/archetypes.mjs";
 import { ingestCorpus, scanCorpus, searchSources, verifyPrinciples, reviewedPrinciples, registeredCorpus } from "../lib/sources.mjs";
 import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
+
+import { freezeArtifact, verifyArtifact } from "../lib/artifacts.mjs";
+import { createReviewPacket } from "../lib/review-packets.mjs";
+import { saveAdjudication, listAdjudications, saveDispatchReceipt, listDispatchReceipts } from "../lib/review-evidence.mjs";
 
 // --- arg parsing -----------------------------------------------------------
 
@@ -532,7 +535,7 @@ function cmdEncounter(positional, flags) {
       "\nFill this in and pipe it back BEFORE you return:\n" +
       "  persona encounter save -\n" +
       "`verbatim` is authoritative and is never summarised. Anything you could not settle\n" +
-      "goes in `unanswered` — there is no reliable second turn.\n"
+      "goes in `unanswered` — follow-up availability depends on the host.\n"
     );
     return;
   }
@@ -574,6 +577,16 @@ function cmdEncounter(positional, flags) {
             if (!v.ok) die(`recall refused for ${e.encounter_id}:\n- ${v.errors.join("\n- ")}`);
           }
         }
+        if (e.run_id) {
+          const target = readRun(e.run_id);
+          const reason = !target ? 'run not found' : target.status !== 'open' ? 'run is closed' : encounterMembershipProblem(target, e);
+          if (reason) {
+            e.unlinked_run_id = e.run_id;
+            e.unlinked_reason = reason;
+            delete e.run_id;
+            process.stderr.write(`persona: saved unlinked — ${reason}\n`);
+          }
+        }
         const rec = saveEncounter(e);
         // An encounter that names a run joins that run's lane automatically —
         // otherwise the link exists only in the direction nobody reads.
@@ -586,10 +599,11 @@ function cmdEncounter(positional, flags) {
             // encounter is kept. But it must not be silently absorbed into a
             // panel that already closed: demote the pointer so the run_id
             // backlink cannot pull it into that run's report.
-            unlinkEncounterRun(rec.path, linkErr.message);
+            // Preserve raw bytes if a concurrent close raced this save.
+            // Closed runs resolve explicit memberships only.
             process.stderr.write(
               `persona: NOT part of ${rec.encounter.run_id} — ${linkErr.message}\n` +
-              `persona: the encounter was kept and its run pointer demoted to unlinked_run_id.\n`
+              `persona: the raw encounter was kept unchanged; attachment was refused.\n`
             );
           }
         }
@@ -648,7 +662,7 @@ function cmdRun(positional, flags) {
     try {
       run = createRun({
         request,
-        artifact: { slug: flags.artifact, label: flags.label || flags.artifact, url: flags.url, version: flags.version, frozen: true },
+        artifact: { slug: flags.artifact, label: flags.label || flags.artifact, url: flags.url, version: flags.version, frozen: true, ...(flags.manifest ? {manifest: JSON.parse(readInputFile(flags.manifest))} : {}) },
         roster,
         level: flags.level,
       });
@@ -658,6 +672,20 @@ function cmdRun(positional, flags) {
     if (flags.json) return out(run, true);
     process.stdout.write(`opened ${run.run_id}\n  ${runDir(run.run_id)}\n  ${roster.length} personas on ${run.artifact.label} @ ${run.artifact.version}\n\nEach persona writes its encounter with --run ${run.run_id}\n`);
     return;
+  }
+
+  if (sub === "packet") {
+    const split = value => value ? String(value).split(",").map(x=>x.trim()).filter(Boolean) : [];
+    const result = createReviewPacket({run_id:rest[0],persona_id:rest[1],owns:split(flags.owns),excludes:split(flags.excludes),budget_minutes:flags["budget-minutes"]===undefined ? 10 : Number(flags["budget-minutes"])});
+    return out(result, true);
+  }
+  if (sub === "adjudicate" || sub === "dispatch") {
+    const input = JSON.parse(readInputFile(rest[0]));
+    return out(sub === "adjudicate" ? saveAdjudication(input) : saveDispatchReceipt(input), true);
+  }
+  if (sub === "evidence") {
+    if (!readRun(rest[0])) throw new Error('run not found');
+    return out({adjudications:listAdjudications(rest[0]),dispatches:listDispatchReceipts(rest[0])},true);
   }
 
   if (sub === "list") {
@@ -782,6 +810,10 @@ function usage() {
       "persona — task-specific persona panels + a recallable persona library",
       "Planning commands prepare text/JSON; the LLM host executes reviews. This CLI makes no model calls.",
       "",
+      '  persona artifact freeze --root <dir> --files <paths> --output <new-dir>',
+      '  persona artifact verify <manifest.json>',
+      '  persona run packet <run_id> <persona_id> --owns <scopes> [--budget-minutes 10]',
+      '  persona run adjudicate <record.json> | dispatch <receipt.json> | evidence <run_id>',
       '  persona brief <handoff|interface|decision> --artifact <locator@version> --question <text>',
       '    [--constraints text] [--mode single|panel] [--personas id1,id2] [--json]',
       '    Default: one reviewer; panel: three. Saved references never add reviewers. No writes.',
@@ -848,6 +880,17 @@ function main() {
     case "panel": return cmdPanel(positional, flags);
     case "encounter": return cmdEncounter(positional, flags);
     case "run": return cmdRun(positional, flags);
+    case "artifact": {
+      if (positional[0] === 'freeze') {
+        if (!flags.root || !flags.files || !flags.output) throw new Error('usage: persona artifact freeze --root <directory> --files <relative-paths-comma-separated> --output <new-snapshot-directory>');
+        return out(freezeArtifact({root:String(flags.root),files:String(flags.files).split(',').map(x=>x.trim()),destination:String(flags.output)}),true);
+      }
+      if (positional[0] === 'verify') {
+        const result=verifyArtifact(JSON.parse(readInputFile(positional[1])));
+        out(result,true); if (!result.ok) process.exitCode=1; return;
+      }
+      throw new Error('usage: persona artifact <freeze|verify>');
+    }
     case "recall": return cmdRecall(positional, flags);
     case undefined:
     case "help":

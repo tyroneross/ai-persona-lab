@@ -32,16 +32,20 @@ turn the first into the second, or to explain why it is not one.
    persona encounter show <encounter_id>
    ```
 
-2. **Verify every reported defect against the artifact itself.** Open the file,
-   read the code, load the page at the stated viewport. Then set `verified` on
-   each finding:
+2. **Check every reported defect against the artifact itself.** Open the source,
+   or inspect the rendered behavior when available. Keep the raw encounter
+   unchanged. Append `persona run adjudicate <record.json>` with the run,
+   encounter, finding ID, artifact version, author, evidence locator and note:
 
-   - `confirmed` — you reproduced it.
-   - `refuted` — you could not, and you can say why.
-   - `reclassified` — the symptom is real but the cause reported is wrong. This
-     is the most common outcome and the most valuable. Requires a
-     `verification_note` naming the actual cause.
-   - `unverified` — you could not check it. Say so; do not upgrade it.
+   - `source-confirmed` — the named source or observation supports the exact claim.
+   - `refuted` — evidence contradicts the claim; inability to reproduce alone is insufficient.
+   - `reclassified` — evidence supports a different interpretation; name it.
+   - `deferred` — the available evidence cannot settle the claim.
+   - `editorial-accepted` — a preference adopted by the editor, without claiming a defect.
+
+   Factual dispositions require `evidence_locator` and `verification_note`.
+   Link accepted file changes using `accepted_changes` with before/after hashes.
+   Corrections append a record naming `correction_of`; never rewrite history.
 
 3. **Separate defects from preferences.** A control that will not move is a
    defect. A metaphor someone dislikes is a preference. Both are worth knowing;
@@ -57,16 +61,14 @@ turn the first into the second, or to explain why it is not one.
 
 5. **Collect what went unanswered.** Pool every `unanswered` item across the
    panel. These are the questions the next dispatch must ask up front, because
-   there is no second turn with the personas who raised them.
+   follow-up availability depends on the host.
 
 ## What grades you
 
-Nothing does. You set `verified` and no independent check reviews that call — an
-LLM marking an LLM's homework. This is the single most likely place in the method
-for a confident wrong call to get laundered into a "verified finding"
-(`docs/LIMITATIONS.md` §4). So prefer `unverified` over a guess, name the exact
-evidence you checked for every `confirmed`, and treat your own certainty as the
-weakest signal in the room.
+The CLI checks record identity, evidence fields and disposition rules. It cannot
+judge whether your evidence supports your conclusion. Independent review or a
+reproduction must do that. Prefer `deferred` over a guess, distinguish source
+wording from user impact, and preserve conflicting evidence.
 
 ## What you refuse
 

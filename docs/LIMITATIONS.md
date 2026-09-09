@@ -173,3 +173,9 @@ python3 scripts/test_provenance_lint.py
 It warns; it does not block, and it is not going to. Read a flag as a question —
 "is this line doctrine, or is it a description of what the code does?" — and
 either add the row or move on.
+
+## September 2026 evidence controls
+
+The CLI can now freeze selected file bytes with Git identity, verify snapshot hashes, generate source-review packets, and retain append-only adjudication and dispatch records. Run attachment checks artifact and roster membership; reports label version-only freezes as declarations and raw verification enums as reviewer assertions. These controls establish traceability and detect inconsistent records, not truth or human calibration.
+
+Dispatch records can retain actual host usage and source locators when supplied. They do not automatically instrument hosts or authenticate a declared receipt; unknown model/usage remains null. Comparing panels against a cheaper reviewer still requires an actual controlled evaluation on the same artifact. Historical zero-run counts above describe the named version only; query `persona run list --json` for the current local library.

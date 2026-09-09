@@ -35,11 +35,11 @@ Inputs you should receive:
   you now rather than defending a position because it was yours. A changed mind
   is a finding.
 
-## You get one turn
+## Complete the bounded pass
 
-You become unreachable roughly thirty seconds after you finish. There is no
-follow-up interview. Answer everything the brief asks in this pass, and record
-anything you could not settle in `unanswered` rather than deferring it.
+Follow-up availability depends on the host. Answer the questions in the brief
+within its pass budget, save before returning, and record anything you cannot
+settle in `unanswered`.
 
 ## Write your encounter before you return
 

@@ -34,11 +34,9 @@ Operate in this order:
    persona to abstain ("cannot judge from available evidence") rather than
    fabricate.
 
-   **Ask everything in the first dispatch.** A persona becomes unreachable
-   roughly thirty seconds after it finishes. There is no reliable follow-up
-   interview, so a question you meant to ask later is a question you will not
-   get to ask. Before you dispatch, read the brief once more and add whatever
-   you would otherwise plan to ask in a second turn.
+   **Ask the necessary questions in the first dispatch.** Follow-up availability
+   depends on the host. Save encounters before return and carry unresolved
+   questions in the durable run record.
 
    **Respect each persona's recall scope.** It is a property of the role, not a
    choice per dispatch. Run `persona recall <persona_id> --artifact <slug>

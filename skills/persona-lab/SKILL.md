@@ -10,8 +10,9 @@ description: Use when an agent or user needs professional expertise for planning
 > "a first impression is non-renewable". That is a design stance stated plainly
 > so it can be followed consistently and argued with. It is **not** a report of
 > validated findings. Nearly all of it rests on a single six-persona study on one
-> artifact on one day, the live library has recorded zero real runs to date, and
-> the method has never been calibrated against how actual humans reacted to the
+> artifact on one day. Library counts are historical; use `persona run list --json`
+> for current local records.
+> The method has never been calibrated against how actual humans reacted to the
 > same artifact. The schemas will enforce these opinions against you; that is
 > consistency, not evidence. Treat the enforcement as this project's position and
 > say so when you report results.
@@ -185,11 +186,10 @@ half the time instead of admitting uncertainty. A persona that cannot judge a
 point from the available evidence must answer "cannot judge from available
 evidence" or "no concern" honestly, rather than invent a finding.
 
-**Ask everything in the first dispatch.** A persona subagent becomes
-eviction-eligible roughly thirty seconds after it finishes. There is no reliable
-follow-up interview. A question you plan to ask in a second turn is a question
-you will not get to ask, so put it in the brief now. Anything a persona cannot
-settle goes into its `unanswered` list rather than into a follow-up.
+**Ask the necessary questions in the first dispatch and save before returning.**
+Follow-up availability varies by host. The approximately thirty-second eviction
+observation came from the dated study in `docs/persona-memory.md` and has not
+been established as a current cross-host rule. Persist encounters regardless.
 
 **Run blind by default.** A blind pass asks "does this work". An informed pass
 asks "is this better than before" and must name the exact prior `encounter_id`s
@@ -551,3 +551,13 @@ and preserve conflicts as `dissent_map` in the synthesis.
 Hard budget gate: `total_passes = personas x runs_per_persona`. If it exceeds 20,
 stop and get explicit confirmation before spawning subagents — each pass is a
 real LLM call. Output is hypothesis, not validation.
+
+## Preserve auditable source reviews
+
+Use `persona artifact freeze --root <repo> --files <explicit,relative,paths> --output <new-snapshot-dir>` before reviewers start. Pass its `manifest.json` to `persona run new ... --manifest <path>`; version-only runs remain declared freezes. `persona artifact verify <manifest.json>` checks bytes. Do not include secrets or unrelated files in the explicit selection.
+
+For each saved persona, run `persona run packet <run_id> <persona_id> --owns <scope> --budget-minutes 10`. This saves one bounded source-only packet containing profile, profile hash, snapshot identity, valid encounter template and packet hash. Send that packet through the host or as Rally's task payload; the CLI prepares it and does not launch models. The separate web Council planner remains unchanged.
+
+Record actual host dispatch through `persona run dispatch <receipt.json>`. Preserve unavailable model/usage as null and distinguish declared provenance from host evidence. Link the encounter when known with an appended correction receipt. JSON repairs do not count as additional review passes.
+
+Keep raw encounters immutable. Use `persona run adjudicate <record.json>` for later evidence, author, exact version, disposition and accepted edit hashes. `source-confirmed` verifies only the named source claim; preferences use `editorial-accepted`. Raw `verified` enums do not establish verified impact. `persona run report <run_id>` shows both raw observations and adjudication history. See `docs/cli.md` for exact record formats.
