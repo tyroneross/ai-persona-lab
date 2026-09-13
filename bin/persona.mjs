@@ -34,12 +34,15 @@ import {
   createRun, readRun, listRuns, attachEncounter, closeRun, validateRun,
   encounterMembershipProblem, runEncounters, writeReport, runDir, runsDir, recordOutcome, provenRosters,
 } from "../lib/runs.mjs";
+import { saveRecommendationPacket, listRecommendationPackets, latestRecommendationPacket, validateRecommendationPacket } from "../lib/recommendations.mjs";
 import {
   checkRecallRequest, buildRecallBriefing, renderRecallBriefing,
   personaRecall, personaLifespan, permittedEncounters,
 } from "../lib/recall.mjs";
 import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversarial } from "../lib/roles.mjs";
 import { ARCHETYPE_CATALOG, composePersona, planConsultation } from "../lib/archetypes.mjs";
+import { listLanes, findLane, resolveLane, planOrchestration } from "../lib/orchestrator.mjs";
+import { GUEST_REGISTRY, listGuests, findGuest } from "../lib/guests.mjs";
 import { ingestCorpus, scanCorpus, searchSources, verifyPrinciples, reviewedPrinciples, registeredCorpus } from "../lib/sources.mjs";
 import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
 
@@ -84,6 +87,9 @@ function readInputFile(ref) {
   return readFileSync(ref, "utf8");
 }
 
+const LANE_CATALOG_VERSION = "1";
+const LANE_CATALOG_POLICY = "Lanes select an orchestrator, not a taxonomy of work. The highest-scoring lane leads; alternatives are reported so a human can override with --lane.";
+
 const LEVELS = {
   low: { min: 3, max: 4, note: "one independent pass per reviewer, cheap first look" },
   medium: { min: 4, max: 6, note: "independent passes + synthesis, red-team required" },
@@ -106,7 +112,8 @@ function cmdArchetypes(positional, flags) {
 
 function cmdCompose(positional, flags) {
   const result = composePersona({ archetypes: positional[0] || flags.archetypes,
-    specialties: flags.specialties || [], task: flags.task || '', name: flags.name });
+    specialties: flags.specialties || [], task: flags.task || '', name: flags.name,
+    guests: flags.guest && flags.guest !== true ? String(flags.guest) : [] });
   if (flags.save) {
     result.persona = savePersona(result.persona);
     result.saved = true;
@@ -121,6 +128,101 @@ function cmdConsult(positional, flags) {
     count: flags.count === undefined ? 5 : Number(flags.count), mode: flags.mode || 'consultant',
     artifact: flags.artifact, project: flags.project,
   }), true);
+}
+
+function cmdGuests(positional, flags) {
+  let guests;
+  try {
+    guests = listGuests({ query: positional.join(' '),
+      category: flags.category === true ? undefined : flags.category,
+      assists: flags.assists === true ? undefined : flags.assists });
+  } catch (e) {
+    die(e.message);
+  }
+  if (flags.json) return out({ version: GUEST_REGISTRY.version, policy: GUEST_REGISTRY.policy,
+    source_note: GUEST_REGISTRY.source_note, categories: GUEST_REGISTRY.categories, count: guests.length, guests }, true);
+  process.stdout.write(`${GUEST_REGISTRY.policy}\n\n`);
+  if (!guests.length) return process.stdout.write('No guest matches that filter.\n');
+  for (const g of guests) {
+    process.stdout.write(
+      `${g.name} (${g.slug})\n  Category: ${g.expert_category}\n  Assists with: ${g.assists_with.join(', ')}\n` +
+      `  Reviewed principles: ${g.principle_ids.length}\n  Source: ${g.source_note}\n`
+    );
+  }
+}
+
+function laneLine(l) {
+  return `${l.id}${l.fallback ? ' (fallback)' : ''}: ${l.title}\n  ${l.orchestrator}\n  Triggers: ${(l.keywords || []).slice(0, 8).join(', ') || 'none — resolved only when nothing else matches'}\n  Agent: ${l.agent_file}\n`;
+}
+
+function cmdOrchestrate(positional, flags) {
+  if (positional.length === 1 && positional[0] === 'lanes') {
+    const lanes = listLanes();
+    if (flags.json) return out({ version: LANE_CATALOG_VERSION, policy: LANE_CATALOG_POLICY, count: lanes.length, lanes }, true);
+    process.stdout.write(`${LANE_CATALOG_POLICY}\n\n`);
+    for (const l of lanes) process.stdout.write(laneLine(l));
+    return;
+  }
+  const task = positional.join(' ').trim();
+  if (!task) die('usage: persona orchestrate "<task>" [--lane <id>] [--artifact <slug>] [--project <name>] [--count N] [--json]\n       persona orchestrate lanes [--json]');
+  let plan;
+  try {
+    plan = planOrchestration(task, { lane: flags.lane, artifact: flags.artifact, project: flags.project,
+      count: flags.count === undefined ? 5 : Number(flags.count),
+      specialties: flags.specialties || [], archetypes: flags.archetypes || [] });
+  } catch (e) {
+    die(e.message);
+  }
+  if (flags.json) return out(plan, true);
+
+  const L = [];
+  L.push(`Orchestrator: ${plan.lane.title} (${plan.lane.id})`);
+  L.push(`  ${plan.lane.orchestrator}`);
+  L.push(`  Resolved by ${plan.lane.resolution.source}${plan.lane.resolution.matched.length ? ` on: ${plan.lane.resolution.matched.join(', ')}` : ''}.`);
+  if (plan.lane.resolution.alternatives.length) {
+    L.push(`  Also matched: ${plan.lane.resolution.alternatives.map(a => `${a.id} (${a.score})`).join(', ')} — override with --lane <id>.`);
+  }
+  L.push(`  Agent: ${plan.lane.agent_file}`);
+  L.push('');
+  L.push('Answer these before selecting a single persona:');
+  for (const q of plan.outcome_frame.questions) L.push(`  - ${q}`);
+  L.push(`  ${plan.outcome_frame.instruction}`);
+  L.push('');
+  L.push('Best outcome in this lane means:');
+  for (const c of plan.outcome_criteria) L.push(`  - ${c}`);
+  L.push('');
+  L.push('Persona selection technique:');
+  L.push(`  ${plan.persona_selection.technique}`);
+  L.push(`  Required lenses: ${plan.persona_selection.required_lenses.join(', ')}`);
+  L.push('');
+  L.push('Proposed seats:');
+  for (const a of plan.persona_plan.assignments) {
+    L.push(`  - ${a.archetype_id} (${a.review_lens}) — ${a.name}`);
+    L.push(`    ${a.selection_reason}`);
+    if (a.informed_by?.length) L.push(`    Informed by: ${a.informed_by.map(i => `${i.name} (${i.principle_ids.length})`).join(', ')}`);
+  }
+  L.push('');
+  if (plan.recommended_guests.length) {
+    L.push('Reviewed sources worth consulting:');
+    for (const g of plan.recommended_guests) {
+      L.push(`  - ${g.name} — ${g.expert_category}${g.in_lane_category ? '' : ' (outside this lane, matched the task)'}`);
+      L.push(`    Assists with: ${g.assists_with.join(', ')}`);
+      if (g.matched_areas.length) L.push(`    Matched: ${g.matched_areas.join(', ')}`);
+    }
+    L.push(`  ${plan.guest_use_note}`);
+    L.push('');
+  }
+  L.push('Recommendation consumers:');
+  for (const c of plan.recommendation_packet_template.consumers) L.push(`  - ${c.kind}:${c.name} — ${c.receives}`);
+  L.push('');
+  L.push('Re-run a round when:');
+  for (const t of plan.iteration_plan.triggers) L.push(`  - ${t}`);
+  L.push('');
+  L.push('Document:');
+  for (const step of plan.documentation_plan.order) L.push(`  - ${step}`);
+  L.push('');
+  L.push(`Plan only — this CLI makes no model calls. ${plan.reminder}.`);
+  process.stdout.write(`${L.join('\n')}\n`);
 }
 
 function cmdSources(positional, flags) {
@@ -305,11 +407,14 @@ function cmdList(flags) {
   if (flags.status) filters.status = String(flags.status).split(",");
   if (flags.role) filters.role = flags.role;
   if (flags.tag) filters.tag = flags.tag;
+  if (flags.assists && flags.assists !== true) filters.assists = flags.assists;
   const rows = listPersonas(filters);
   if (flags.json) return out({ count: rows.length, personas: rows }, true);
   if (!rows.length) return process.stdout.write("No saved personas. Generate with `persona new`.\n");
   for (const p of rows) {
     process.stdout.write(`${p.id}\n  ${p.name} — ${p.role} [${p.status}] conf ${p.confidence}\n  ${p.summary.slice(0, 100)}\n`);
+    if (p.assists_with?.length) process.stdout.write(`  Assists with: ${p.assists_with.join(", ")}\n`);
+    if (p.informed_by?.length) process.stdout.write(`  Informed by: ${p.informed_by.map((i) => i.name).join(", ")}\n`);
   }
 }
 
@@ -683,6 +788,52 @@ function cmdRun(positional, flags) {
     const input = JSON.parse(readInputFile(rest[0]));
     return out(sub === "adjudicate" ? saveAdjudication(input) : saveDispatchReceipt(input), true);
   }
+  if (sub === "recommend") {
+    const id = rest[0];
+    if (!id) die('usage: persona run recommend <run_id> <packet.json|-> [--validate-only] [--json]');
+    let input;
+    try {
+      input = JSON.parse(readInputFile(rest[1]));
+    } catch (e) {
+      die(`recommendation packet is not valid JSON: ${e.message}`);
+    }
+    if (flags["validate-only"]) {
+      const result = validateRecommendationPacket({ ...input, run_id: input.run_id || id });
+      out(result, true);
+      if (!result.ok) process.exitCode = 1;
+      return;
+    }
+    let saved;
+    try {
+      saved = saveRecommendationPacket({ ...input, run_id: id });
+    } catch (e) {
+      die(e.message);
+    }
+    const run = readRun(id);
+    const report = run ? writeReport(run) : null;
+    if (flags.json) return out({ run_id: id, packet_id: saved.packet.packet_id, path: saved.path, report, packet: saved.packet }, true);
+    process.stdout.write(
+      `recorded ${saved.packet.packet_id} on ${id}\n  ${saved.path}\n` +
+      `  ${saved.packet.recommendations.length} recommendations, round ${saved.packet.iteration.round}\n` +
+      `  consumers: ${[...new Set(saved.packet.recommendations.map((r) => `${r.consumer.kind}:${r.consumer.name}`))].join(", ")}\n` +
+      (report ? `  ${report}\n` : "")
+    );
+    return;
+  }
+
+  if (sub === "recommendations") {
+    const id = rest[0];
+    if (!readRun(id)) die(`run not found: ${id || "(none)"}`);
+    const packets = listRecommendationPackets(id);
+    if (flags.json) return out({ run_id: id, count: packets.length, latest: latestRecommendationPacket(id), packets }, true);
+    if (!packets.length) return process.stdout.write(`No recommendation packet recorded for ${id}.\n  Write one with \`persona run recommend ${id} <packet.json|->\`.\n`);
+    for (const p of packets) {
+      process.stdout.write(`${p.packet_id}  [round ${p.iteration?.round ?? 1}] ${p.lane} — ${p.recommendations.length} recommendations\n`);
+      for (const r of p.recommendations) process.stdout.write(`  ${r.status} · ${r.severity} · ${r.consumer.kind}:${r.consumer.name} — ${r.title}\n`);
+    }
+    return;
+  }
+
   if (sub === "evidence") {
     if (!readRun(rest[0])) throw new Error('run not found');
     return out({adjudications:listAdjudications(rest[0]),dispatches:listDispatchReceipts(rest[0])},true);
@@ -779,7 +930,7 @@ function cmdRun(positional, flags) {
     return;
   }
 
-  die("usage: persona run <new|list|show|report|close|lesson|proven> ...");
+  die("usage: persona run <new|list|show|report|close|lesson|proven|recommend|recommendations> ...");
 }
 
 // --- recall: what a persona is allowed to bring with it --------------------
@@ -819,7 +970,7 @@ function usage() {
       '    Default: one reviewer; panel: three. Saved references never add reviewers. No writes.',
       '  persona new "<brief>" [--count N] [--roster <name>] [--json]',
       "  persona save <file|->            persona validate <file|-> [--strict]",
-      "  persona list [--tag t] [--role r] [--status s] [--json]",
+      "  persona list [--tag t] [--role r] [--status s] [--assists <area>] [--json]",
       '  persona show <id> [--json]       persona search "<query>" [--json]',
       "  persona rm <id>                  persona archive <id>",
       "  persona roster save <name> --lenses a,b,c [--personas ids] [--use-case ..] [--desc ..]",
@@ -831,12 +982,22 @@ function usage() {
       '  persona run new "<request>" --artifact <slug> --version <v> --personas id1,id2',
       "  persona run list | show <run_id> | report <run_id> | close <run_id> [--synthesis <file|->]",
       "  persona run lesson <run_id> --verdict valuable|mixed|wasted --changed \"..\" [--worked \"a;b\"]",
+      "  persona run recommend <run_id> <packet.json|-> [--validate-only] [--json]",
+      "    Append-only. A closed run still accepts a packet; an abandoned one does not.",
+      "  persona run recommendations <run_id> [--json]",
       "  persona run proven                 persona roster from-run <run_id> --name \"..\"",
       "  persona recall <persona_id> [--artifact <slug>] [--project <name>] [--limit N]",
       "  persona home",
       "  persona archetypes [query] [--defaults] [--json]",
-      "  persona compose <archetype,archetype> [--specialties a/b,c/d] [--task ..] [--save]",
+      "  persona compose <archetype,archetype> [--specialties a/b,c/d] [--task ..] [--guest slug,slug] [--save]",
       '  persona consult "<task>" [--mode ui-ux] [--archetypes a,b] [--specialties a/b,c/d]',
+      '  persona orchestrate "<task>" [--lane <id>] [--artifact <slug>] [--project <name>] [--count N] [--json]',
+      '    Picks the accountable orchestrator (ui-ux-design, product, strategy, engineering,',
+      '    marketing, general), states the outcome frame to answer BEFORE selecting personas,',
+      '    and names who consumes each recommendation.',
+      '  persona orchestrate lanes [--json]',
+      '  persona guests [query] [--category <id>] [--assists <area>] [--json]',
+      '    Reviewed-source registry. Reported viewpoints, never endorsement or impersonation.',
       "  persona sources <status|scan|ingest|search|verify|principles> [--root <corpus-root>]",
       "",
       `Library: ${libraryHome()}`,
@@ -860,6 +1021,8 @@ function main() {
     case "archetypes": return cmdArchetypes(positional, flags);
     case "compose": return cmdCompose(positional, flags);
     case "consult": return cmdConsult(positional, flags);
+    case "orchestrate": return cmdOrchestrate(positional, flags);
+    case "guests": return cmdGuests(positional, flags);
     case "sources": return cmdSources(positional, flags);
     case "home": return cmdHome();
     case "brief": {

@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/tyroneross/ai-persona-lab/schemas/recommendation-packet.schema.json",
+  "title": "Recommendation packet",
+  "description": "What an orchestrator hands to the agents and people who execute. A panel produces findings; this turns them into addressed work. Every recommendation names one consumer and one acceptance check, because a recommendation with no named consumer is a note and notes do not get executed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "packet_id", "run_id", "lane", "artifact", "artifact_version", "outcome_frame", "recommendations", "iteration", "reminder", "created_at"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "packet_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "lane": {
+      "type": "string",
+      "description": "The orchestrator lane that produced this packet.",
+      "enum": ["ui-ux-design", "product", "strategy", "engineering", "marketing", "general"]
+    },
+    "artifact": { "type": "string" },
+    "artifact_version": {
+      "type": "string",
+      "description": "The frozen version the panel actually judged. Must match the run."
+    },
+    "outcome_frame": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The questions the orchestrator answered before selecting personas, with its answers. An answer the request could not supply is recorded as an assumption rather than omitted.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "answer"],
+        "properties": {
+          "question": { "type": "string" },
+          "answer": { "type": "string" },
+          "assumption": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "finding_ids", "severity", "provenance", "adjudication", "recommendation", "consumer", "acceptance_check", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "finding_ids": {
+            "type": "array",
+            "description": "Encounter findings this rests on, as <encounter_id>/<finding_id>. Empty means the recommendation came from the orchestrator rather than from a persona; say so rather than inventing a source.",
+            "items": { "type": "string" }
+          },
+          "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+          "provenance": { "type": "string", "enum": ["evidence-grounded", "assumption"] },
+          "adjudication": {
+            "type": "string",
+            "description": "Carried forward from adjudication. unverified means nobody checked it against the artifact.",
+            "enum": ["source-confirmed", "reclassified", "refuted", "deferred", "editorial-accepted", "unverified"]
+          },
+          "recommendation": { "type": "string" },
+          "consumer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "name"],
+            "properties": {
+              "kind": { "type": "string", "enum": ["agent", "skill", "human"] },
+              "name": { "type": "string" },
+              "note": { "type": "string" }
+            }
+          },
+          "acceptance_check": {
+            "type": "string",
+            "description": "How the consumer proves it landed. Observable, not 'looks better'."
+          },
+          "status": { "type": "string", "enum": ["proposed", "accepted", "executed", "rejected"] }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "What this panel could not settle. Ask these in the first dispatch of the next round.",
+      "items": { "type": "string" }
+    },
+    "iteration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["round"],
+      "properties": {
+        "round": { "type": "integer" },
+        "prior_run_ids": { "type": "array", "items": { "type": "string" } },
+        "trigger": { "type": "string" }
+      }
+    },
+    "reminder": { "const": "hypothesis, not validation" },
+    "created_at": { "type": "string" }
+  }
+}

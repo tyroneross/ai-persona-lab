@@ -186,9 +186,31 @@
       ],
       "default": "none",
       "description": "How much of its OWN history this persona may READ when dispatched. none = always fresh (a first impression is non-renewable). artifact = only prior encounters with the same artifact, i.e. the same problem still ongoing. project = across artifacts in the same project or category. all = everything. Writing is never gated by this; only reading."
+    },
+    "assists_with": {
+      "type": "array",
+      "description": "Areas this persona can credibly assist with, derived from the reviewed source principles attached to it. A claim about coverage, never about validated competence. Optional: a persona saved before the guest registry existed stays valid without it.",
+      "maxItems": 24,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+    },
+    "informed_by": {
+      "type": "array",
+      "description": "Reviewed-source guests whose principles were attached to this persona. Indexes a public transcript; never endorsement, never a claim the guest reviewed anything, never a licence to impersonate.",
+      "items": { "$ref": "#/$defs/informed_by_entry" }
     }
   },
   "$defs": {
+    "informed_by_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guest_slug", "name", "principle_ids"],
+      "properties": {
+        "guest_slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "principle_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
     "composition": {
       "type": "object",
       "additionalProperties": false,

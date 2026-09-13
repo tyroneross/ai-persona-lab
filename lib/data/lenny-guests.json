@@ -1,0 +1,418 @@
+{
+  "version": "1",
+  "policy": "A guest entry indexes the principles reviewed from that speaker. It is a reading of a public transcript, never an endorsement, never a claim that the speaker validated a persona, a product or a finding. A persona informed by these principles is never named after the guest and never speaks as them.",
+  "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence",
+  "categories": [
+    {
+      "id": "positioning-and-marketing",
+      "title": "Positioning and marketing",
+      "description": "Naming the alternative a buyer actually considers, and saying why the product is different."
+    },
+    {
+      "id": "product-discovery-and-research",
+      "title": "Product discovery and research",
+      "description": "Turning an outcome into a justified feature choice through continuous customer contact."
+    },
+    {
+      "id": "product-leadership",
+      "title": "Product leadership",
+      "description": "Covering the risks a product proposal carries across value, usability, feasibility and viability."
+    },
+    {
+      "id": "engineering-leadership",
+      "title": "Engineering leadership",
+      "description": "Writing an engineering strategy people can act on, and holding a technical standard."
+    },
+    {
+      "id": "ai-and-ml-products",
+      "title": "AI and ML products",
+      "description": "Evaluating AI systems on their weak cases rather than their demos."
+    },
+    {
+      "id": "design-leadership",
+      "title": "Design leadership",
+      "description": "Connecting observed behaviour to design options, and reconciling data with what users say."
+    },
+    {
+      "id": "saas-and-go-to-market",
+      "title": "SaaS and go-to-market",
+      "description": "Matching the commercial motion to how the buyer wants to buy, and defending retention."
+    },
+    {
+      "id": "hardware-and-product-building",
+      "title": "Hardware and product building",
+      "description": "Making coupled physical and software components usable as one thing."
+    },
+    {
+      "id": "communication-and-presenting",
+      "title": "Communication and presenting",
+      "description": "Structuring an update, an answer, or a practice loop so the audience can act."
+    },
+    {
+      "id": "management-and-feedback",
+      "title": "Management and feedback",
+      "description": "Making feedback a dialogue about specific behaviour rather than a verdict about a person."
+    },
+    {
+      "id": "operations-and-scaling",
+      "title": "Operations and scaling",
+      "description": "Giving a growing organisation a cadence and written decisions it can rely on."
+    },
+    {
+      "id": "investing-and-market-timing",
+      "title": "Investing and market timing",
+      "description": "Judging durable usage and market change rather than market size alone."
+    },
+    {
+      "id": "executive-hiring-and-org-design",
+      "title": "Executive hiring and org design",
+      "description": "Hiring for the stage the company is in rather than for prestige."
+    }
+  ],
+  "guests": [
+    {
+      "slug": "april-dunford",
+      "name": "April Dunford",
+      "expert_category": "positioning-and-marketing",
+      "assists_with": [
+        "b2b-saas",
+        "category",
+        "differentiation",
+        "messaging",
+        "positioning",
+        "product-marketing",
+        "sales-narrative",
+        "target-account-profile",
+        "technical-marketing"
+      ],
+      "archetypes": [
+        "founder",
+        "marketer",
+        "product-leader",
+        "researcher",
+        "sales-leader",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-product-capability-to-value",
+        "lenny-product-competitive-alternatives",
+        "lenny-product-positioning-refresh",
+        "lenny-product-qualified-buyer-test"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "brian-halligan",
+      "name": "Brian Halligan",
+      "expert_category": "executive-hiring-and-org-design",
+      "assists_with": [
+        "executive-hiring",
+        "organizational-scaling",
+        "senior-hiring-process",
+        "stage-fit"
+      ],
+      "archetypes": [
+        "coach",
+        "consultant",
+        "executive",
+        "founder"
+      ],
+      "principle_ids": [
+        "lenny-lead-executive-work-sample",
+        "lenny-lead-stage-fit-over-prestige"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "chip-huyen",
+      "name": "Chip Huyen",
+      "expert_category": "ai-and-ml-products",
+      "assists_with": [
+        "agent-orchestration",
+        "ai-evaluation",
+        "ai-products",
+        "information-retrieval",
+        "retrieval"
+      ],
+      "archetypes": [
+        "data-practitioner",
+        "engineer",
+        "product-leader",
+        "researcher"
+      ],
+      "principle_ids": [
+        "lenny-product-eval-for-improvement",
+        "lenny-product-evaluate-intermediate-work",
+        "lenny-product-retrieval-context-preparation"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "claire-hughes-johnson",
+      "name": "Claire Hughes Johnson",
+      "expert_category": "operations-and-scaling",
+      "assists_with": [
+        "coaching",
+        "feedback",
+        "leadership-development",
+        "mission-and-strategy",
+        "operating-cadence",
+        "organizational-scaling",
+        "planning"
+      ],
+      "archetypes": [
+        "coach",
+        "consultant",
+        "executive",
+        "founder",
+        "operator",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-lead-exploratory-coaching",
+        "lenny-lead-founding-documents-for-decisions",
+        "lenny-lead-stable-operating-cadence"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "jason-lemkin",
+      "name": "Jason Lemkin",
+      "expert_category": "saas-and-go-to-market",
+      "assists_with": [
+        "b2b",
+        "b2b-saas",
+        "churn",
+        "go-to-market",
+        "investment-thesis",
+        "product-led-growth",
+        "retention",
+        "roadmap-planning",
+        "saas",
+        "sales-motion",
+        "sales-product-collaboration",
+        "self-service",
+        "technical-sales",
+        "venture-capital"
+      ],
+      "archetypes": [
+        "consultant",
+        "executive",
+        "founder",
+        "investor",
+        "marketer",
+        "operator",
+        "sales-leader",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-lead-bounded-sales-roadmap-input",
+        "lenny-lead-retention-before-short-term-extraction",
+        "lenny-lead-technical-sales-context",
+        "lenny-product-buyer-required-sales-motion",
+        "lenny-product-hybrid-commercial-motion"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "julie-zhuo",
+      "name": "Julie Zhuo",
+      "expert_category": "design-leadership",
+      "assists_with": [
+        "agent-orchestration",
+        "customer-research",
+        "design-review",
+        "experimentation",
+        "interaction-design",
+        "product-analytics",
+        "team-design"
+      ],
+      "archetypes": [
+        "data-practitioner",
+        "designer",
+        "engineer",
+        "product-leader",
+        "researcher",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-product-compose-for-needed-skills",
+        "lenny-product-data-with-context",
+        "lenny-product-diagnose-then-design"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "kim-scott",
+      "name": "Kim Scott",
+      "expert_category": "management-and-feedback",
+      "assists_with": [
+        "feedback",
+        "people-management"
+      ],
+      "archetypes": [
+        "coach",
+        "communicator",
+        "executive"
+      ],
+      "principle_ids": [
+        "lenny-lead-behavior-specific-feedback",
+        "lenny-lead-feedback-as-dialogue"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "marty-cagan",
+      "name": "Marty Cagan",
+      "expert_category": "product-leadership",
+      "assists_with": [
+        "product-discovery",
+        "product-strategy",
+        "usability-testing"
+      ],
+      "archetypes": [
+        "designer",
+        "engineer",
+        "founder",
+        "product-leader",
+        "researcher"
+      ],
+      "principle_ids": [
+        "lenny-product-shared-solution-risks",
+        "lenny-product-test-reasons-to-reject"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "matt-abrahams",
+      "name": "Matt Abrahams",
+      "expert_category": "communication-and-presenting",
+      "assists_with": [
+        "deliberate-practice",
+        "executive-communication",
+        "interviewing",
+        "public-speaking"
+      ],
+      "archetypes": [
+        "coach",
+        "communicator",
+        "consultant"
+      ],
+      "principle_ids": [
+        "lenny-lead-answer-example-relevance",
+        "lenny-lead-practice-feedback-loop",
+        "lenny-lead-structured-update"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "sarah-tavel",
+      "name": "Sarah Tavel",
+      "expert_category": "investing-and-market-timing",
+      "assists_with": [
+        "consumer-products",
+        "diligence",
+        "early-stage",
+        "market-thesis",
+        "market-timing",
+        "marketplaces",
+        "retention",
+        "venture-capital"
+      ],
+      "archetypes": [
+        "founder",
+        "investor",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-lead-cohort-core-action",
+        "lenny-lead-earned-insight-and-focus",
+        "lenny-lead-market-change-not-size-alone"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "teresa-torres",
+      "name": "Teresa Torres",
+      "expert_category": "product-discovery-and-research",
+      "assists_with": [
+        "b2b-saas",
+        "continuous-discovery",
+        "customer-research",
+        "discovery-interviews",
+        "interaction-design",
+        "product-strategy",
+        "usability"
+      ],
+      "archetypes": [
+        "designer",
+        "marketer",
+        "product-leader",
+        "researcher",
+        "sales-leader",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-product-outcome-opportunity-solutions",
+        "lenny-product-recurring-discovery-recruitment",
+        "lenny-product-situated-customer-stories",
+        "lenny-product-specific-opportunity"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "tony-fadell",
+      "name": "Tony Fadell",
+      "expert_category": "hardware-and-product-building",
+      "assists_with": [
+        "agent-orchestration",
+        "commercialization",
+        "deep-tech",
+        "deep-tech-investing",
+        "diligence",
+        "hardware",
+        "hardware-software-integration",
+        "usability-testing"
+      ],
+      "archetypes": [
+        "designer",
+        "engineer",
+        "founder",
+        "investor",
+        "product-leader",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-product-deep-tech-change-thesis",
+        "lenny-product-hardware-software-usability",
+        "lenny-product-orchestrate-coupled-components"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    },
+    {
+      "slug": "will-larson",
+      "name": "Will Larson",
+      "expert_category": "engineering-leadership",
+      "assists_with": [
+        "engineering-management",
+        "engineering-strategy",
+        "infrastructure",
+        "platform-direction",
+        "product-strategy",
+        "software-platforms"
+      ],
+      "archetypes": [
+        "engineer",
+        "founder",
+        "product-leader",
+        "strategist"
+      ],
+      "principle_ids": [
+        "lenny-product-diagnosis-policy-action",
+        "lenny-product-standard-tools-policy",
+        "lenny-product-write-the-strategy"
+      ],
+      "source_note": "reported viewpoint from a podcast transcript; not endorsement, not proof of competence"
+    }
+  ]
+}

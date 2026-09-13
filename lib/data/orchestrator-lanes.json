@@ -1,0 +1,325 @@
+{
+  "version": "1",
+  "policy": "Lanes select an orchestrator, not a taxonomy of work. A task may match several; the highest-scoring lane leads and the alternatives are reported so a human can override. The fallback lane is general, never a silent guess.",
+  "shared_outcome_frame": [
+    "Who is the end customer of this work, named specifically enough to disagree with?",
+    "What is that customer trying to accomplish, in their words rather than the product's?",
+    "What is the ultimate objective this work serves, beyond shipping the change?",
+    "What does the best outcome look like for that customer, stated as something observable?",
+    "What would count as failure, abandonment, or loss of trust?",
+    "What decision must this session enable, and who makes it?"
+  ],
+  "lanes": [
+    {
+      "id": "ui-ux-design",
+      "title": "UI/UX design orchestrator",
+      "agent_file": "agents/persona-orchestrator-ui-ux.md",
+      "orchestrator": "UI/UX design lead accountable for the end user's task success, comprehension, and trust in the interface.",
+      "keywords": ["ui", "ux", "interface", "screen", "flow", "onboarding", "dashboard", "component", "layout", "navigation", "form", "wireframe", "prototype", "usability", "accessibility", "visual design", "design system", "empty state", "mockup", "information architecture"],
+      "task_shapes": [
+        "Review a redesigned settings screen before it ships.",
+        "Judge whether a new onboarding flow gets a first-run user to first value.",
+        "Find where a dense dashboard loses a non-expert reader."
+      ],
+      "outcome_frame": [
+        "Who is the end user of this interface, and what is their expertise with this kind of product?",
+        "What task are they mid-way through when they reach this screen, and what were they doing before it?",
+        "What is the ultimate objective this interface serves for the business or the user's larger job?",
+        "What does success look like on this screen, expressed as a task the user completes without help?",
+        "What would make this user abandon the flow, mistrust the data, or quietly do it another way?",
+        "What design decision must this session enable, and who signs off on it?"
+      ],
+      "outcome_criteria": [
+        "Task completion: the user reaches the intended action without external help.",
+        "Comprehension: the user can say what the screen is for and what happens next.",
+        "Trust: nothing on screen makes the user doubt the data, the state, or the consequence of an action.",
+        "Accessibility: the path works at phone width, by keyboard, and with a screen reader.",
+        "Friction cost: every added step earns its place against the user's goal."
+      ],
+      "persona_selection": {
+        "consult_mode": "ui-ux",
+        "preferred_archetypes": ["designer", "novice", "accessibility", "researcher", "engineer"],
+        "required_lenses": ["red-team", "accessibility", "novice"],
+        "recommended_guest_categories": ["design-leadership", "product-discovery-and-research", "hardware-and-product-building"],
+        "selection_technique": "Start from the user's job-to-be-done on this surface, not from job titles. Cover the task path end to end: one persona who has never seen it, one who uses it every day, one bound by a constraint the design can break (low vision, keyboard-only, phone width, poor connection), and one who owns the downstream consequence of a mistake made here. Add the red-team lens to attack the happy path. Pick roles with decision power over generic labels, and recruit a current-research lens when platform conventions, assistive-technology behaviour, or a competitor's pattern is load-bearing."
+      },
+      "recommendation_consumers": [
+        {"kind": "agent", "name": "build-loop:implementer", "receives": "Concrete interface changes scoped to named files or components."},
+        {"kind": "agent", "name": "build-loop:design-contract-specialist", "receives": "Changes to the design contract, hierarchy registry, or token usage."},
+        {"kind": "agent", "name": "ibr:design-validator", "receives": "Claims that need a measured check: contrast, touch target, overflow, focus order."},
+        {"kind": "human", "name": "design owner", "receives": "Tradeoffs the panel preserved rather than resolved, and anything that changes the product's stance."}
+      ],
+      "iteration_triggers": [
+        "The interface changed after the panel ran; the frozen version no longer exists.",
+        "Adjudication refuted or reclassified a critical finding, so the panel judged something that was not there.",
+        "Three or more unanswered questions blocked personas from judging the task path.",
+        "The design decision this session existed to enable is still open."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with a synthesis that names the task path, where it broke, and which tradeoffs stayed unresolved.",
+        "lesson": "Record persona run lesson after the interface changes, naming what actually changed.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    },
+    {
+      "id": "product",
+      "title": "Product-manager orchestrator",
+      "agent_file": "agents/persona-orchestrator-product.md",
+      "orchestrator": "Product manager accountable for whether this change creates enough user value to earn the next release, and for the quality of the decision behind it.",
+      "keywords": ["product", "roadmap", "prioritize", "prioritization", "feature", "prd", "spec", "scope", "backlog", "launch", "discovery", "user value", "retention", "adoption", "churn", "pricing", "requirements", "tradeoff", "mvp", "product-market fit"],
+      "task_shapes": [
+        "Decide whether to build a requested feature or solve the need another way.",
+        "Cut scope on a release without losing the reason anyone wanted it.",
+        "Judge whether a PRD's stated problem is the one customers actually have."
+      ],
+      "outcome_frame": [
+        "Who is the customer this decision is for, and which segment are we willing to disappoint?",
+        "What is that customer trying to accomplish, and how do they accomplish it today without us?",
+        "What is the ultimate objective: adoption, retention, expansion, trust, or a strategic position?",
+        "What does the best outcome look like for that customer, stated as a change in their behaviour?",
+        "What would make them churn, downgrade, or route around the product?",
+        "What decision must this session enable, and what evidence would change it?"
+      ],
+      "outcome_criteria": [
+        "User value: the change removes real work or real risk from the customer's day.",
+        "Retention and adoption: the behaviour we want is one the customer would repeat unprompted.",
+        "Decision quality: the reasoning survives its strongest counter-argument, not just its supporters.",
+        "Opportunity cost: what this displaces is named, not left implicit.",
+        "Falsifiability: the bet states what would prove it wrong and when we would know."
+      ],
+      "persona_selection": {
+        "consult_mode": "consultant",
+        "preferred_archetypes": ["product-leader", "researcher", "customer-success", "data-practitioner", "sales-leader"],
+        "required_lenses": ["red-team"],
+        "recommended_guest_categories": ["product-leadership", "product-discovery-and-research", "saas-and-go-to-market", "positioning-and-marketing"],
+        "selection_technique": "Select for coverage of the opportunity, not for consensus. Seat the customer whose problem this is, the person who hears it go wrong (support, success, sales), the person who can measure whether it worked, and the person who owns the cost of building it. Add the red-team lens to argue the change is unnecessary. Prefer roles with decision power and named segments over generic labels, and trigger current research when market, pricing, competitor, or regulatory facts carry the argument."
+      },
+      "recommendation_consumers": [
+        {"kind": "skill", "name": "prd-builder", "receives": "Problem statements, scope boundaries, and acceptance criteria for a greenfield spec."},
+        {"kind": "agent", "name": "build-loop:run", "receives": "Changes that are decided and ready to implement in this repository."},
+        {"kind": "human", "name": "product owner", "receives": "Bets, tradeoffs, and anything that changes what the product is for."},
+        {"kind": "skill", "name": "research:research", "receives": "Claims about market, pricing, or competitor behaviour that no persona could ground."}
+      ],
+      "iteration_triggers": [
+        "The plan or PRD changed materially after the panel ran.",
+        "Adjudication refuted the finding the recommendation rests on.",
+        "The panel could not answer whether the customer already solves this another way.",
+        "The go or no-go decision is still open after synthesis."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with the decision, the reasoning, the strongest surviving objection, and what would reverse it.",
+        "lesson": "Record persona run lesson once the decision lands, naming what changed.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    },
+    {
+      "id": "strategy",
+      "title": "Strategist orchestrator",
+      "agent_file": "agents/persona-orchestrator-strategy.md",
+      "orchestrator": "Business strategist accountable for whether this move improves the company's position and survives a competitor who is paying attention.",
+      "keywords": ["strategy", "strategic", "business model", "market", "competition", "competitive", "competitor", "positioning", "moat", "defensibility", "unit economics", "pricing strategy", "partnership", "expansion", "investment", "fundraising", "portfolio", "differentiation", "category", "go-to-market"],
+      "task_shapes": [
+        "Judge whether entering an adjacent market strengthens or dilutes the core business.",
+        "Stress-test a pricing or packaging change against the competitive response.",
+        "Decide whether a partnership creates leverage or a dependency."
+      ],
+      "outcome_frame": [
+        "Who is the ultimate customer whose behaviour this strategy depends on, and who pays?",
+        "What is that customer trying to accomplish, and what would make them switch to or from us?",
+        "What is the ultimate objective: position, defensibility, margin, optionality, or survival?",
+        "What does the best outcome look like, stated as a position we hold that others cannot easily take?",
+        "What would count as failure: a competitor response, a margin collapse, a trust loss, or a regulatory block?",
+        "What decision must this session enable, over what time horizon, and who is accountable for it?"
+      ],
+      "outcome_criteria": [
+        "Market position: the move improves where we stand, not just what we ship.",
+        "Defensibility: the advantage compounds or is hard to copy, and we can say why.",
+        "Unit economics: the model still works at the scale the strategy assumes.",
+        "Risk: regulatory, concentration, dependency, and reputational exposure are named and sized.",
+        "Reversibility: the cost of being wrong is known before committing."
+      ],
+      "persona_selection": {
+        "consult_mode": "consultant",
+        "preferred_archetypes": ["strategist", "investor", "finance-leader", "executive", "legal-advisor"],
+        "required_lenses": ["red-team"],
+        "recommended_guest_categories": ["investing-and-market-timing", "positioning-and-marketing", "saas-and-go-to-market", "operations-and-scaling"],
+        "selection_technique": "Seat the sides of the market, not the sides of the argument. Include the buyer who must change behaviour, the competitor's point of view stated as its own seat, the person who owns the money, and the person who owns the downside (legal, compliance, security, operations). Add the red-team lens to argue the move is a distraction. Current external facts almost always carry a strategy claim, so trigger research on market size, competitor moves, pricing, and regulation, and label anything that cannot be grounded as an assumption."
+      },
+      "recommendation_consumers": [
+        {"kind": "human", "name": "decision owner", "receives": "The recommendation, the surviving objections, and the reversal conditions."},
+        {"kind": "skill", "name": "research:research", "receives": "Market, competitor, pricing, and regulatory claims that need external grounding."},
+        {"kind": "skill", "name": "prd-builder", "receives": "A strategic bet that has become a product to specify."},
+        {"kind": "agent", "name": "build-loop:run", "receives": "Only the parts already decided and scoped to this repository."}
+      ],
+      "iteration_triggers": [
+        "An external fact the recommendation rests on was refuted or has gone stale.",
+        "A competitor, pricing, or regulatory change landed after the panel ran.",
+        "The panel could not ground a load-bearing market claim in any source.",
+        "The decision this session existed to enable is still open."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with the position taken, the assumptions it rests on, and the conditions that would reverse it.",
+        "lesson": "Record persona run lesson once the decision has an observable result.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    },
+    {
+      "id": "engineering",
+      "title": "Engineering orchestrator",
+      "agent_file": "agents/persona-orchestrator-engineering.md",
+      "orchestrator": "Engineering lead accountable for whether this system keeps working for the people who depend on it, under change and under attack.",
+      "keywords": ["architecture", "refactor", "migration", "api", "schema", "database", "performance", "latency", "scalability", "reliability", "security", "authentication", "technical debt", "codebase", "infrastructure", "deployment", "observability", "runtime", "backend", "data model"],
+      "task_shapes": [
+        "Review an API contract change before consumers depend on it.",
+        "Judge whether a migration plan can be rolled back after it half-succeeds.",
+        "Find where a new service boundary will leak state or trust."
+      ],
+      "outcome_frame": [
+        "Who depends on this system, including the operator at 3am and the consumer who never reads the changelog?",
+        "What are those consumers trying to accomplish through this interface?",
+        "What is the ultimate objective: correctness, resilience, speed of future change, or cost?",
+        "What does the best outcome look like, expressed as behaviour under load, failure, and change?",
+        "What would count as failure: silent data loss, an unrollbackable migration, a broken consumer, an exposed secret?",
+        "What technical decision must this session enable, and who is accountable when it breaks?"
+      ],
+      "outcome_criteria": [
+        "Correctness: the system does the right thing at the boundaries, not only on the happy path.",
+        "Failure behaviour: partial failure degrades rather than corrupts, and can be rolled back.",
+        "Blast radius: what breaks if this is wrong is named, and it is bounded.",
+        "Changeability: the next person can modify this without reading everything.",
+        "Security and privacy: trust boundaries, authorization, and data exposure are explicit."
+      ],
+      "persona_selection": {
+        "consult_mode": "consultant",
+        "preferred_archetypes": ["engineer", "security-specialist", "operator", "data-practitioner", "product-leader"],
+        "required_lenses": ["red-team", "security-specialist"],
+        "recommended_guest_categories": ["engineering-leadership", "ai-and-ml-products", "hardware-and-product-building"],
+        "selection_technique": "Seat the lifecycle, not the diagram. Include the engineer who must consume this interface without context, the operator who is paged when it fails, the person who owns the data's integrity, and the attacker. Add the red-team lens to find the input nobody validated. Judge by what happens at the boundary, under partial failure, and one migration later, and trigger current research whenever a library, protocol, or platform behaviour carries a claim."
+      },
+      "recommendation_consumers": [
+        {"kind": "agent", "name": "build-loop:run", "receives": "Changes that are decided and scoped to this repository."},
+        {"kind": "agent", "name": "navgator:architecture-planner", "receives": "Blast-radius questions and structural changes that cross component boundaries."},
+        {"kind": "agent", "name": "build-loop:security-reviewer", "receives": "Findings that touch a trust boundary, authorization, or secret handling."},
+        {"kind": "human", "name": "engineering owner", "receives": "Tradeoffs between correctness, speed, and cost that the panel preserved rather than resolved."}
+      ],
+      "iteration_triggers": [
+        "The implementation changed after the panel ran; the frozen version no longer exists.",
+        "Adjudication reclassified a reported defect as a silent gate or a configuration state.",
+        "A finding could not be judged without running the system, and it still has not been run.",
+        "The technical decision this session existed to enable is still open."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with the failure modes found, which were confirmed against the code, and what remains unverified.",
+        "lesson": "Record persona run lesson once the change ships and its failure behaviour is observed.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    },
+    {
+      "id": "marketing",
+      "title": "Marketing orchestrator",
+      "agent_file": "agents/persona-orchestrator-marketing.md",
+      "orchestrator": "Marketing lead accountable for whether the right audience understands the offer, believes it, and acts on it.",
+      "keywords": ["marketing", "messaging", "copy", "landing page", "campaign", "launch announcement", "brand", "content", "seo", "audience", "channel", "conversion", "value proposition", "narrative", "pitch", "demand generation", "email", "social", "press", "website copy"],
+      "task_shapes": [
+        "Judge whether a landing page explains the offer to someone who has never heard of it.",
+        "Test a launch narrative against the audience it is meant to move.",
+        "Find where the messaging claims more than the product delivers."
+      ],
+      "outcome_frame": [
+        "Who is the audience, named specifically enough that someone could be excluded from it?",
+        "What are they trying to accomplish, and what do they currently use or believe instead?",
+        "What is the ultimate objective: awareness, qualified demand, trust, or repositioning?",
+        "What does the best outcome look like, stated as an action that audience takes?",
+        "What would make them distrust, ignore, or resent the message?",
+        "What decision must this session enable, and who owns the channel it runs on?"
+      ],
+      "outcome_criteria": [
+        "Comprehension: a cold reader can say what this is and who it is for in one pass.",
+        "Believability: every claim is one the product can be held to.",
+        "Differentiation: the message names the alternative the buyer actually considers.",
+        "Action: the next step is obvious and proportionate to the reader's commitment.",
+        "Integrity: nothing overstates capability, provenance, or evidence."
+      ],
+      "persona_selection": {
+        "consult_mode": "consultant",
+        "preferred_archetypes": ["marketer", "communicator", "sales-leader", "novice", "customer-success"],
+        "required_lenses": ["red-team", "novice"],
+        "recommended_guest_categories": ["positioning-and-marketing", "saas-and-go-to-market", "communication-and-presenting"],
+        "selection_technique": "Seat the audience and its gatekeepers. Include the cold reader who has never heard of the product, the buyer who must justify it to someone else, the person who hears the promise break after purchase (support, success), and the competitor whose alternative is already in the room. Add the red-team lens to attack the strongest claim. Trigger current research for competitor messaging, category language, pricing, and regulated claims, and label anything unverified as an assumption."
+      },
+      "recommendation_consumers": [
+        {"kind": "agent", "name": "spectra:marketing-planner", "receives": "Narrative, audience, and production direction for marketing assets."},
+        {"kind": "skill", "name": "my-writing-style", "receives": "Copy that must land in the owner's voice."},
+        {"kind": "human", "name": "marketing owner", "receives": "Positioning choices and claims that need someone accountable for them."},
+        {"kind": "skill", "name": "research:research", "receives": "Competitor, category, and market claims that need external grounding."}
+      ],
+      "iteration_triggers": [
+        "The copy or asset changed after the panel ran.",
+        "A claim the message rests on was refuted during adjudication.",
+        "The panel could not identify the alternative the buyer actually considers.",
+        "The positioning decision this session existed to enable is still open."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with the message tested, what a cold reader understood, and which claims could not be supported.",
+        "lesson": "Record persona run lesson once the asset ships and the audience responds.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    },
+    {
+      "id": "general",
+      "title": "General panel orchestrator",
+      "agent_file": "agents/persona-panel-orchestrator.md",
+      "fallback": true,
+      "orchestrator": "General review orchestrator accountable for naming the real end customer and the real decision before any persona is chosen.",
+      "keywords": [],
+      "task_shapes": [
+        "Review an artifact that does not sit cleanly in one discipline.",
+        "Judge a plan, document, or workflow whose audience has not been named yet.",
+        "Route a request to a lane orchestrator once the outcome frame makes the discipline obvious."
+      ],
+      "outcome_frame": [
+        "Who is the end customer of this work, named specifically enough to disagree with?",
+        "What is that customer trying to accomplish, in their words rather than the product's?",
+        "What is the ultimate objective this work serves, beyond shipping the change?",
+        "What does the best outcome look like for that customer, stated as something observable?",
+        "What would count as failure, abandonment, or loss of trust?",
+        "What decision must this session enable, and who makes it?"
+      ],
+      "outcome_criteria": [
+        "The end customer is named, not implied.",
+        "The decision this session enables is stated, along with who makes it.",
+        "Success and failure are both observable rather than rhetorical.",
+        "Findings are separated into defects, which are verified, and positions, which are decided.",
+        "Conflicts between personas are preserved as tradeoffs rather than averaged."
+      ],
+      "persona_selection": {
+        "consult_mode": "consultant",
+        "preferred_archetypes": [],
+        "required_lenses": ["red-team"],
+        "recommended_guest_categories": [],
+        "selection_technique": "Answer the outcome frame first; the discipline usually names itself once the end customer and the decision are explicit. If it does, hand off to that lane orchestrator. If it genuinely spans disciplines, cover the task path end to end: the person who uses the result, the person who pays for it, the person who maintains it, and the person who is harmed if it is wrong. Add the red-team lens in every panel."
+      },
+      "recommendation_consumers": [
+        {"kind": "human", "name": "requesting owner", "receives": "The synthesis, preserved conflicts, and anything that needs a decision before execution."},
+        {"kind": "agent", "name": "build-loop:run", "receives": "Changes that are decided and scoped to a repository."}
+      ],
+      "iteration_triggers": [
+        "The artifact changed after the panel ran.",
+        "Adjudication refuted or reclassified a critical finding.",
+        "The outcome frame could not be answered, so the panel judged an unnamed customer.",
+        "The decision this session existed to enable is still open."
+      ],
+      "documentation": {
+        "synthesis": "Close the run with the outcome frame answers, the findings, and the unresolved conflicts.",
+        "lesson": "Record persona run lesson once the artifact changes or is decided against.",
+        "packet": "Write the recommendation packet with a named consumer per item before reporting.",
+        "findings_path": "docs/reviews/<artifact-slug>-<run_id>.md"
+      }
+    }
+  ]
+}
