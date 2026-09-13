@@ -8,7 +8,11 @@
   "required": ["schema_version", "packet_id", "run_id", "lane", "artifact", "artifact_version", "outcome_frame", "recommendations", "iteration", "reminder", "created_at"],
   "properties": {
     "schema_version": { "const": "1.0.0" },
-    "packet_id": { "type": "string" },
+    "packet_id": {
+      "type": "string",
+      "description": "Writer-assigned unless supplied. Becomes a filename, so it is held to an id shape as well as to path safety.",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
     "run_id": { "type": "string" },
     "lane": {
       "type": "string",

@@ -43,13 +43,21 @@ function readBack(file) {
 }
 
 test("validator throws on an unrecognised JSON Schema keyword (self-check)", () => {
+  // The example keyword has to be one the helper does NOT implement. `pattern`
+  // used to sit here and no longer can: it was implemented when
+  // schemas/recommendation-packet.schema.json began constraining packet_id.
+  // That is the guard working — it forced the choice between implementing the
+  // keyword and dropping it — so the guarantee stays and only the example moves.
   assert.throws(
-    () => validate({ type: "string", pattern: "^a" }, "abc"),
+    () => validate({ type: "string", maxLength: 3 }, "abc"),
     (err) => {
-      assert.match(err.message, /pattern/);
+      assert.match(err.message, /maxLength/);
       return true;
     }
   );
+  // And the now-implemented keyword must actually validate rather than throw.
+  assert.deepEqual(validate({ type: "string", pattern: "^a" }, "abc"), { ok: true, errors: [] });
+  assert.equal(validate({ type: "string", pattern: "^a" }, "zzz").ok, false);
 });
 
 test("validator throws for an unsupported keyword on a property the instance omits", () => {

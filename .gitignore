@@ -10,6 +10,9 @@ encounters/**/engine/
 encounters/**/rosslabs-integration-plan.md
 .build-loop/
 .procedural/*.lock
+# Session continuity for the bookmark plugin. Holds working notes and paths from
+# whoever last worked here; this repo is public, so it stays untracked.
+.bookmark/
 
 # Internal working documents are archived before removal; current product docs stay public.
 docs/research/*-audit.md

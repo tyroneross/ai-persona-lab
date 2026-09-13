@@ -140,12 +140,25 @@ test('CLI orchestrate round-trips as JSON and lists lanes', () => {
 
     const lanes = JSON.parse(execFileSync('node', [cli, 'orchestrate', 'lanes', '--json'], { env, encoding: 'utf8' }));
     assert.deepEqual(lanes.lanes.map((l) => l.id), listLanes().map((l) => l.id));
+    // The CLI must report the registry's own policy, not a second copy of it.
+    assert.equal(lanes.policy, LANE_CATALOG.policy);
+    assert.equal(lanes.version, LANE_CATALOG.version);
 
     const human = execFileSync('node', [cli, 'orchestrate', 'Redesign the onboarding screen'], { env, encoding: 'utf8' });
     assert.match(human, /Answer these before selecting a single persona/);
     assert.match(human, /Recommendation consumers/);
     assert.match(human, /hypothesis, not validation/);
   });
+});
+
+test('the recommendation schema lane enum is not a second copy of the registry', async () => {
+  const { readFileSync } = await import('node:fs');
+  const schema = JSON.parse(readFileSync(path.join(root, 'schemas/recommendation-packet.schema.json'), 'utf8'));
+  // The writer derives lanes from listLanes(); the published schema hardcodes
+  // them. Without this, a new lane is accepted by the CLI and rejected by the
+  // schema every consumer is told to validate against.
+  assert.deepEqual(schema.properties.lane.enum, listLanes().map((l) => l.id),
+    'schemas/recommendation-packet.schema.json lane enum has drifted from lib/data/orchestrator-lanes.json');
 });
 
 test('every lane points at an agent file that exists on disk', () => {

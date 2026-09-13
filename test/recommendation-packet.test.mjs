@@ -26,8 +26,8 @@ import { composePersona } from '../lib/archetypes.mjs';
 import { savePersona } from '../lib/library.mjs';
 import { createRun, closeRun, readRun, writeReport, runDir } from '../lib/runs.mjs';
 import {
-  RECOMMENDATION_PACKET_SCHEMA_VERSION, saveRecommendationPacket, listRecommendationPackets,
-  latestRecommendationPacket, validateRecommendationPacket,
+  RECOMMENDATION_PACKET_SCHEMA_VERSION, saveRecommendationPacket, prepareRecommendationPacket,
+  listRecommendationPackets, latestRecommendationPacket, validateRecommendationPacket,
 } from '../lib/recommendations.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -219,4 +219,97 @@ test('CLI run recommend validates, writes, and lists', () => {
 test.after(() => {
   const home = process.env.PERSONA_LAB_HOME;
   if (home && home.includes('persona-recommend-')) rmSync(home, { recursive: true, force: true });
+});
+
+test('the dry run predicts the write, on the packet shape the docs tell authors to write', () => {
+  const home = freshHome();
+  const run = openRun();
+  const env = { ...process.env, PERSONA_LAB_HOME: home };
+  const file = path.join(home, 'packet.json');
+  // Exactly what docs/orchestrators.md and the lane template ask for: no
+  // schema_version, artifact, artifact_version, reminder or created_at — the
+  // writer stamps those. A gate that fails its own documented input is no gate.
+  writeFileSync(file, JSON.stringify(validPacket()));
+
+  const dry = JSON.parse(execFileSync('node', [cli, 'run', 'recommend', run.run_id, file, '--validate-only', '--json'], { env, encoding: 'utf8' }));
+  assert.equal(dry.ok, true, `dry run rejected a packet that saves: ${dry.errors?.join('; ')}`);
+  assert.ok(dry.would_write.endsWith('.json'));
+  // The prediction has to hold: the very same file must now save.
+  const saved = JSON.parse(execFileSync('node', [cli, 'run', 'recommend', run.run_id, file, '--json'], { env, encoding: 'utf8' }));
+  assert.equal(saved.packet.recommendations.length, 1);
+
+  // And it must predict failure too, not just success.
+  const wrongVersion = path.join(home, 'wrong-version.json');
+  writeFileSync(wrongVersion, JSON.stringify({ ...validPacket(), artifact_version: 'v9' }));
+  assert.throws(() => execFileSync('node', [cli, 'run', 'recommend', run.run_id, wrongVersion, '--validate-only', '--json'], { env, encoding: 'utf8', stdio: 'pipe' }));
+  const prepared = prepareRecommendationPacket({ ...validPacket(), artifact_version: 'v9', run_id: run.run_id });
+  assert.equal(prepared.ok, false);
+  assert.ok(prepared.errors.some((e) => /artifact_version does not match/.test(e)));
+
+  // A missing run is reported, never thrown, so the dry run can say why.
+  const missing = prepareRecommendationPacket({ ...validPacket(), run_id: 'run_missing_2026-01-01_aaaaaa' });
+  assert.equal(missing.ok, false);
+  assert.ok(missing.errors.some((e) => /run not found/.test(e)));
+});
+
+test('a packet the writer accepts always validates against the schema the CLI publishes', () => {
+  freshHome();
+  const run = openRun();
+  // Unknown keys at each of the four levels the schema closes. Writing one and
+  // then failing our own published schema is how a consumer gets handed a record
+  // it is told to validate and cannot.
+  const levels = [
+    [{ owner: 'me' }, /^packet contains an unknown field: owner$/],
+    [{ iteration: { round: 1, cadence: 'weekly' } }, /^iteration contains an unknown field: cadence$/],
+  ];
+  for (const [mutation, pattern] of levels) {
+    assert.throws(() => saveRecommendationPacket({ ...validPacket(), ...mutation, run_id: run.run_id }),
+      (e) => pattern.test(e.message.split('\n- ')[1] || ''), JSON.stringify(mutation));
+  }
+  const nestedFrame = validPacket();
+  nestedFrame.outcome_frame[0].source = 'guessed';
+  assert.throws(() => saveRecommendationPacket({ ...nestedFrame, run_id: run.run_id }), /outcome_frame\[0\] contains an unknown field: source/);
+
+  const nestedRec = validPacket();
+  nestedRec.recommendations[0].bogus = 1;
+  assert.throws(() => saveRecommendationPacket({ ...nestedRec, run_id: run.run_id }), /recommendations\[0\] contains an unknown field: bogus/);
+
+  const nestedConsumer = validPacket();
+  nestedConsumer.recommendations[0].consumer.team = 'x';
+  assert.throws(() => saveRecommendationPacket({ ...nestedConsumer, run_id: run.run_id }), /recommendations\[0\].consumer contains an unknown field: team/);
+
+  // The positive half: everything the suite writes must pass the published schema.
+  const { packet } = saveRecommendationPacket({ ...validPacket(), run_id: run.run_id });
+  assert.deepEqual(validate(schema, packet), { ok: true, errors: [] });
+});
+
+test('packet_id is held to a filename shape and to path safety, and never overwrites', () => {
+  freshHome();
+  const run = openRun();
+  // Path safety: these must never reach the filesystem.
+  for (const bad of ['../escape', 'a/b', '.hidden', '..']) {
+    assert.throws(() => saveRecommendationPacket({ ...validPacket(), run_id: run.run_id, packet_id: bad }),
+      /packet_id/, `accepted unsafe packet_id ${JSON.stringify(bad)}`);
+  }
+  // Shape: safe as a path segment, still a bad filename.
+  assert.throws(() => saveRecommendationPacket({ ...validPacket(), run_id: run.run_id, packet_id: 'has space ok?' }),
+    /packet_id must be alphanumeric/);
+
+  // Append-only is the 'wx' flag, not the id generator. Asserting that two
+  // auto-generated ids differ would still pass if the flag were 'w'.
+  const first = saveRecommendationPacket({ ...validPacket(), run_id: run.run_id, packet_id: 'packet_fixed' });
+  assert.throws(() => saveRecommendationPacket({ ...validPacket(), run_id: run.run_id, packet_id: 'packet_fixed' }),
+    /already recorded on this run/);
+  assert.equal(JSON.parse(readFileSync(first.path, 'utf8')).packet_id, 'packet_fixed', 'round one must survive byte-for-byte');
+  assert.equal(listRecommendationPackets(run.run_id).length, 1);
+
+  // The check above is satisfied by prepare()'s existsSync, which runs BEFORE the
+  // write. That leaves a window: between the check and the write, another process
+  // can create the file. Flag 'wx' is what closes it, and no deterministic unit
+  // test can lose that race on purpose — so it is pinned at the source. Verified
+  // by planted defect: changing 'wx' to 'w' passes every behavioural test in this
+  // file and fails only this one.
+  const writer = readFileSync(new URL('../lib/recommendations.mjs', import.meta.url), 'utf8');
+  assert.match(writer, /writeFileSync\(file,[\s\S]*?\{ flag: 'wx' \}\);/,
+    "the packet write must use flag 'wx' — it is the only guard against a concurrent writer erasing a recorded round");
 });

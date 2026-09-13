@@ -158,11 +158,15 @@ the guest endorsed the work, and never establish real user behaviour. See
    lanes carry: `id`, `title`, `agent_file`, `orchestrator`, `keywords`, `task_shapes`,
    `outcome_frame`, `outcome_criteria`, `persona_selection`, `recommendation_consumers`,
    `iteration_triggers`, `documentation`.
-2. Run `node scripts/sync-orchestrator-agents.mjs` to render its agent.
-3. Run `npm test`. The suite asserts the lane carries every required field, that its
-   agent file exists, and that the file on disk byte-matches what the generator would
-   write now. `node scripts/sync-orchestrator-agents.mjs --check` reports drift without
-   writing.
+2. Add the lane id to the `lane` enum in `schemas/recommendation-packet.schema.json`.
+   The writer derives lanes from the registry, but the published schema carries its own
+   copy, and a packet naming a lane the schema does not list is written by the CLI and
+   rejected by every consumer validating against it.
+3. Run `node scripts/sync-orchestrator-agents.mjs` to render its agent.
+4. Run `npm test`. The suite asserts the lane carries every required field, that its
+   agent file exists, that the file on disk byte-matches what the generator would write
+   now, and that the schema enum still equals the registry.
+   `node scripts/sync-orchestrator-agents.mjs --check` reports drift without writing.
 
 The fallback lane's agent (`agents/persona-panel-orchestrator.md`) is hand-written on
 purpose: it routes between lanes rather than describing one discipline.

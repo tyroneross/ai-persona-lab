@@ -27,6 +27,7 @@ const IMPLEMENTED_KEYWORDS = new Set([
   "const",
   "items",
   "minItems",
+  "pattern",
 ]);
 
 const IGNORED_KEYWORDS = new Set([
@@ -112,6 +113,12 @@ function validateNode(schema, value, instancePath, schemaPath, errors) {
 
   if (schema.enum !== undefined && !schema.enum.some((e) => deepEqual(e, value))) {
     errors.push(`${instancePath || "/"}: value ${JSON.stringify(value)} is not in enum ${JSON.stringify(schema.enum)}`);
+  }
+
+  // Only applies to strings, per draft-07: a non-string instance is not a
+  // pattern failure, it is a type failure, and `type` already reported it.
+  if (schema.pattern !== undefined && typeof value === "string" && !new RegExp(schema.pattern).test(value)) {
+    errors.push(`${instancePath || "/"}: value ${JSON.stringify(value)} does not match pattern ${JSON.stringify(schema.pattern)}`);
   }
 
   const isPlainObject = value !== null && typeof value === "object" && !Array.isArray(value);

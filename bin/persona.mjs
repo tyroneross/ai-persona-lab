@@ -34,14 +34,14 @@ import {
   createRun, readRun, listRuns, attachEncounter, closeRun, validateRun,
   encounterMembershipProblem, runEncounters, writeReport, runDir, runsDir, recordOutcome, provenRosters,
 } from "../lib/runs.mjs";
-import { saveRecommendationPacket, listRecommendationPackets, latestRecommendationPacket, validateRecommendationPacket } from "../lib/recommendations.mjs";
+import { saveRecommendationPacket, prepareRecommendationPacket, listRecommendationPackets, latestRecommendationPacket } from "../lib/recommendations.mjs";
 import {
   checkRecallRequest, buildRecallBriefing, renderRecallBriefing,
   personaRecall, personaLifespan, permittedEncounters,
 } from "../lib/recall.mjs";
 import { ROLE_LIBRARY, DEFAULT_CRITIQUE_LENSES, selectRoles, findRole, isAdversarial } from "../lib/roles.mjs";
 import { ARCHETYPE_CATALOG, composePersona, planConsultation } from "../lib/archetypes.mjs";
-import { listLanes, findLane, resolveLane, planOrchestration } from "../lib/orchestrator.mjs";
+import { LANE_CATALOG, listLanes, findLane, resolveLane, planOrchestration } from "../lib/orchestrator.mjs";
 import { GUEST_REGISTRY, listGuests, findGuest } from "../lib/guests.mjs";
 import { ingestCorpus, scanCorpus, searchSources, verifyPrinciples, reviewedPrinciples, registeredCorpus } from "../lib/sources.mjs";
 import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
@@ -86,9 +86,6 @@ function readInputFile(ref) {
   if (ref === "-" || ref === undefined) return readFileSync(0, "utf8");
   return readFileSync(ref, "utf8");
 }
-
-const LANE_CATALOG_VERSION = "1";
-const LANE_CATALOG_POLICY = "Lanes select an orchestrator, not a taxonomy of work. The highest-scoring lane leads; alternatives are reported so a human can override with --lane.";
 
 const LEVELS = {
   low: { min: 3, max: 4, note: "one independent pass per reviewer, cheap first look" },
@@ -158,8 +155,8 @@ function laneLine(l) {
 function cmdOrchestrate(positional, flags) {
   if (positional.length === 1 && positional[0] === 'lanes') {
     const lanes = listLanes();
-    if (flags.json) return out({ version: LANE_CATALOG_VERSION, policy: LANE_CATALOG_POLICY, count: lanes.length, lanes }, true);
-    process.stdout.write(`${LANE_CATALOG_POLICY}\n\n`);
+    if (flags.json) return out({ version: LANE_CATALOG.version, policy: LANE_CATALOG.policy, count: lanes.length, lanes }, true);
+    process.stdout.write(`${LANE_CATALOG.policy}\n\n`);
     for (const l of lanes) process.stdout.write(laneLine(l));
     return;
   }
@@ -798,7 +795,15 @@ function cmdRun(positional, flags) {
       die(`recommendation packet is not valid JSON: ${e.message}`);
     }
     if (flags["validate-only"]) {
-      const result = validateRecommendationPacket({ ...input, run_id: input.run_id || id });
+      // Dry run: same defaults, same run checks, same collision check as the
+      // write, so "validate-only passed" actually predicts "save will succeed".
+      let result;
+      try {
+        const prepared = prepareRecommendationPacket({ ...input, run_id: id });
+        result = { ok: prepared.ok, errors: prepared.errors, would_write: prepared.ok ? prepared.file : null };
+      } catch (e) {
+        result = { ok: false, errors: [e.message], would_write: null };
+      }
       out(result, true);
       if (!result.ok) process.exitCode = 1;
       return;
