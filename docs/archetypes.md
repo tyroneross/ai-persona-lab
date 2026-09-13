@@ -86,6 +86,83 @@ API. The CLI itself does not spawn agents, call models, or write encounters.
 Transcript knowledge is background evidence. It is never a fabricated encounter
 and does not permit bypassing first-use or scoped recall rules.
 
+## Lenny's Podcast guest registry
+
+`lib/data/lenny-guests.json` makes the reviewed speakers first class. Before it, a guest
+was implicit: you could read a principle and see who said it in `source.speaker`, but you
+could not ask "who informs a positioning seat" or "which areas does this source actually
+cover".
+
+```bash
+persona guests [query] [--category <id>] [--assists <area>] [--json]
+persona compose engineer --guest will-larson --json     # only this speaker's principles
+persona list --assists positioning                      # saved personas by area
+```
+
+| Guest | Expert category | Assists with |
+|---|---|---|
+| April Dunford (`april-dunford`) | positioning-and-marketing | b2b-saas, category, differentiation, messaging, positioning, product-marketing, sales-narrative, target-account-profile, technical-marketing |
+| Brian Halligan (`brian-halligan`) | executive-hiring-and-org-design | executive-hiring, organizational-scaling, senior-hiring-process, stage-fit |
+| Chip Huyen (`chip-huyen`) | ai-and-ml-products | agent-orchestration, ai-evaluation, ai-products, information-retrieval, retrieval |
+| Claire Hughes Johnson (`claire-hughes-johnson`) | operations-and-scaling | coaching, feedback, leadership-development, mission-and-strategy, operating-cadence, organizational-scaling, planning |
+| Jason Lemkin (`jason-lemkin`) | saas-and-go-to-market | b2b, b2b-saas, churn, go-to-market, investment-thesis, product-led-growth, retention, roadmap-planning, saas, sales-motion, sales-product-collaboration, self-service, technical-sales, venture-capital |
+| Julie Zhuo (`julie-zhuo`) | design-leadership | agent-orchestration, customer-research, design-review, experimentation, interaction-design, product-analytics, team-design |
+| Kim Scott (`kim-scott`) | management-and-feedback | feedback, people-management |
+| Marty Cagan (`marty-cagan`) | product-leadership | product-discovery, product-strategy, usability-testing |
+| Matt Abrahams (`matt-abrahams`) | communication-and-presenting | deliberate-practice, executive-communication, interviewing, public-speaking |
+| Sarah Tavel (`sarah-tavel`) | investing-and-market-timing | consumer-products, diligence, early-stage, market-thesis, market-timing, marketplaces, retention, venture-capital |
+| Teresa Torres (`teresa-torres`) | product-discovery-and-research | b2b-saas, continuous-discovery, customer-research, discovery-interviews, interaction-design, product-strategy, usability |
+| Tony Fadell (`tony-fadell`) | hardware-and-product-building | agent-orchestration, commercialization, deep-tech, deep-tech-investing, diligence, hardware, hardware-software-integration, usability-testing |
+| Will Larson (`will-larson`) | engineering-leadership | engineering-management, engineering-strategy, infrastructure, platform-direction, product-strategy, software-platforms |
+
+`assists_with` is derived from that guest's own principles and is checked by test: every
+area must either appear in one of the guest's `specialties` or be present in the text of
+its own principles. `archetypes` must equal the union across those principles. Coverage is
+asserted in both directions — every `source.speaker` in the evidence files has a registry
+entry, and every `principle_ids` entry resolves to a principle that speaker actually said.
+
+### Expert categories
+
+| Category | What it covers |
+|---|---|
+| `positioning-and-marketing` | Naming the alternative a buyer actually considers, and saying why the product is different. |
+| `product-discovery-and-research` | Turning an outcome into a justified feature choice through continuous customer contact. |
+| `product-leadership` | Covering the risks a product proposal carries across value, usability, feasibility and viability. |
+| `engineering-leadership` | Writing an engineering strategy people can act on, and holding a technical standard. |
+| `ai-and-ml-products` | Evaluating AI systems on their weak cases rather than their demos. |
+| `design-leadership` | Connecting observed behaviour to design options, and reconciling data with what users say. |
+| `saas-and-go-to-market` | Matching the commercial motion to how the buyer wants to buy, and defending retention. |
+| `hardware-and-product-building` | Making coupled physical and software components usable as one thing. |
+| `communication-and-presenting` | Structuring an update, an answer, or a practice loop so the audience can act. |
+| `management-and-feedback` | Making feedback a dialogue about specific behaviour rather than a verdict about a person. |
+| `operations-and-scaling` | Giving a growing organisation a cadence and written decisions it can rely on. |
+| `investing-and-market-timing` | Judging durable usage and market change rather than market size alone. |
+| `executive-hiring-and-org-design` | Hiring for the stage the company is in rather than for prestige. |
+
+
+### What this is not
+
+A guest entry indexes a public transcript. It is not endorsement, not proof of competence,
+and never a licence to impersonate. A composed persona records `informed_by` (which guests,
+which exact principle ids) and `assists_with` (the areas those principles support, narrowed
+to the archetypes in play), and is named for its lens — "Marketer — positioning" — never for
+the person who said them. A test asserts no composed persona from any archetype carries a
+guest's name.
+
+### Adding a guest
+
+1. Add the reviewed principles to `lib/data/lenny-product-evidence.json` or
+   `lib/data/lenny-leadership-evidence.json`, each with speaker, source-relative path,
+   SHA-256, and inclusive line range.
+2. Add the registry entry to `lib/data/lenny-guests.json`: `slug`, `name`,
+   `expert_category` (from the enumerated set above), `assists_with`, `archetypes`,
+   `principle_ids`, `source_note`.
+3. Run `npm test`. Coverage, category, assists-with support and archetype union are all
+   asserted; a speaker with no registry entry fails, and so does a registry entry claiming
+   a principle that does not exist.
+4. Run `persona sources verify --root <corpus-root>` when the corpus is available locally,
+   to confirm the line spans and hashes still resolve.
+
 ## Corpus ingestion and reviewed evidence
 
 The local source is `lenny-podcast-transcripts/transcripts/raw`. It already had

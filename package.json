@@ -21,6 +21,7 @@
     "!scripts/**/*.pyc",
     "schemas",
     "docs/archetypes.md",
+    "docs/orchestrators.md",
     "README.md",
     "docs/installation.md",
     "docs/cli.md",

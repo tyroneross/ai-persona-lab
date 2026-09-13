@@ -12,6 +12,18 @@ $ARGUMENTS
 
 Execution rules:
 
+- **Resolve the orchestrator first.** Run `persona orchestrate "<task>" --json`. It
+  returns the accountable lane (ui-ux-design, product, strategy, engineering,
+  marketing, general), the outcome frame to answer before selecting any persona, the
+  proposed seats, the reviewed sources worth consulting, and who consumes each
+  recommendation. Hand off to the lane's agent when the host supports subagents;
+  otherwise continue as that lane. `--lane <id>` overrides the resolution when the
+  user named the discipline. The eleven-step protocol is
+  `skills/persona-lab/references/orchestrator-protocol.md`.
+- **Answer the outcome frame in writing before choosing personas.** Who the end
+  customer is, what they are trying to accomplish, the ultimate objective, what the
+  best outcome looks like, what counts as failure, and what decision this session
+  must enable. Record an explicit assumption where the request cannot answer one.
 - Honor an explicit user or workspace/CLI brief first: preserve its artifact,
   version, question, scope, reviewer count, pass budget, and recall restrictions.
   A single-reviewer brief uses multiple lenses as a checklist; it does not launch
@@ -67,6 +79,14 @@ Execution rules:
   one pass per persona; if not, run separate sequential passes with independent
   notes.
 - Label each finding's provenance: evidence-grounded or assumption.
+- **Write the recommendation packet before reporting**: `persona run recommend
+  <run_id> <packet.json|->`. Every recommendation names one consumer (`agent` /
+  `skill` / `human`, by name) and one observable acceptance check. Use the lane's
+  `recommendation_consumers` as the default routing table. A refuted finding cannot
+  be marked accepted, and an assumption cannot claim `source-confirmed`.
+- **Decide whether to iterate** against the lane's `iteration_triggers`. If none
+  fired, say so and stop. If one did, open a second run rather than editing the
+  first, keep recall intact, and compare rounds at the orchestrator level.
 - Report back with the bottom line first, then findings, evidence, assumptions,
   and next actions. Preserve conflicts as tradeoffs rather than averaging them.
   Stamp the report "hypothesis, not validation"; persona output is synthetic

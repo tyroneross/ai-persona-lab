@@ -61,7 +61,8 @@ Saved personas, rosters, and encounters let you reuse a perspective or revisit a
 ## Explore the capabilities
 
 - [CLI reference](docs/cli.md): generate, save, recall, and plan reviews.
-- [Professional archetypes](docs/archetypes.md): compose specialty perspectives and inspect the source evidence informing consultation plans.
+- [Orchestrators](docs/orchestrators.md): pick the lead by task type, settle who the end customer is before choosing personas, and address every recommendation to a named consumer.
+- [Professional archetypes](docs/archetypes.md): compose specialty perspectives, browse the reviewed Lenny's Podcast guest registry, and inspect the source evidence informing consultation plans.
 - [Persona memory](docs/persona-memory.md): understand identity, recall, and encounter contracts.
 - [Review workspace](docs/review-workspace.md): prepare a bounded product-decision, interface, or handoff review.
 - [Agent workflow](skills/persona-lab/SKILL.md): select reviewers and execute the workflow.

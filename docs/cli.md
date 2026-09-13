@@ -24,6 +24,27 @@ persona panel --roster "Enterprise rollout review" --level high
 
 persona home        # print the library path
 
+# who runs this panel, and what it must settle before choosing a persona
+persona orchestrate "redesign the onboarding screen" --json
+persona orchestrate "should we raise prices to defend the moat" --lane strategy
+persona orchestrate lanes                  # every lane, its triggers and its agent
+#   Resolves the accountable orchestrator (ui-ux-design, product, strategy,
+#   engineering, marketing, general), emits the outcome frame to answer BEFORE
+#   selecting personas, the persona plan, the reviewed sources worth consulting,
+#   and who consumes each recommendation. Plan-only; no model calls.
+
+# the reviewed-source guest registry
+persona guests --category positioning-and-marketing
+persona guests --assists retention --json
+persona compose engineer --guest will-larson    # restrict a seat to one speaker
+persona list --assists positioning              # saved personas by area
+
+# turn a closed panel into addressed work
+persona run recommend <run_id> <packet.json|-> [--validate-only] [--json]
+persona run recommendations <run_id> [--json]
+#   Append-only. Every recommendation names one consumer and one acceptance
+#   check. A closed run still accepts a packet; an abandoned one does not.
+
 # judge the panel after the fact, and reuse what worked
 persona run lesson <run_id> --verdict valuable --changed "..." --worked "a;b"
 persona run proven                 persona roster from-run <run_id> --name "..."
@@ -40,6 +61,22 @@ persona encounter new <persona_id> --artifact <slug> --label ".." --version ".."
 persona encounter save <file|->   |  validate <file|->
 persona encounter list [<persona_id>] [--artifact <slug>]  |  show <encounter_id>
 ```
+
+### Orchestrators
+
+`persona orchestrate` selects the lane, states the outcome frame the orchestrator
+answers before any persona is chosen, and names who executes each recommendation.
+Lane resolution is deterministic: highest keyword score wins, ties break on registry
+order, `--lane` overrides, and a task matching nothing falls back to `general` rather
+than guessing. The runner-up lane is reported so a near-tie stays visible.
+
+The recommendation packet (`schemas/recommendation-packet.schema.json`) requires a
+named consumer and an observable acceptance check per item, refuses to mark a refuted
+finding as accepted work, refuses to let an assumption claim `source-confirmed`, and
+refuses a version the run never judged.
+
+Full reference: `docs/orchestrators.md`. The shared eleven-step protocol every
+orchestrator runs: `skills/persona-lab/references/orchestrator-protocol.md`.
 
 ### Encounter memory
 

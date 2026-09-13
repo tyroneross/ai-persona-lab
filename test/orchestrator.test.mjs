@@ -182,3 +182,34 @@ test('every orchestrator agent references the shared protocol rather than restat
     assert.ok(body.includes('hypothesis, not validation'), `${lane.agent_file} must carry the stamp`);
   }
 });
+
+test('the shipped docs name every lane and every guest, and npm packages what agents are told to read', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { GUEST_REGISTRY } = await import('../lib/guests.mjs');
+  const read = (rel) => readFileSync(path.join(root, rel), 'utf8');
+
+  // A doc that silently loses a lane sends a reader looking for an orchestrator
+  // that the CLI will happily resolve to.
+  const orchestrators = read('docs/orchestrators.md');
+  for (const lane of listLanes()) {
+    assert.ok(orchestrators.includes(lane.id), `docs/orchestrators.md does not mention lane ${lane.id}`);
+  }
+  const archetypes = read('docs/archetypes.md');
+  for (const guest of GUEST_REGISTRY.guests) {
+    assert.ok(archetypes.includes(guest.name), `docs/archetypes.md does not list ${guest.name}`);
+  }
+  for (const category of GUEST_REGISTRY.categories) {
+    assert.ok(archetypes.includes(category.id), `docs/archetypes.md does not list category ${category.id}`);
+  }
+
+  // Docs an agent is instructed to open must ship in the package, or the
+  // instruction resolves to nothing once installed from npm.
+  const pkg = JSON.parse(read('package.json'));
+  const shipped = (rel) => pkg.files.some((entry) => entry === rel || rel.startsWith(`${entry}/`));
+  for (const rel of ['docs/orchestrators.md', 'docs/archetypes.md', 'docs/cli.md', 'docs/LIMITATIONS.md',
+    'skills/persona-lab/references/orchestrator-protocol.md', 'schemas/recommendation-packet.schema.json',
+    'lib/data/orchestrator-lanes.json', 'lib/data/lenny-guests.json', 'scripts/sync-orchestrator-agents.mjs',
+    ...listLanes().map((l) => l.agent_file)]) {
+    assert.ok(shipped(rel), `package.json files does not ship ${rel}`);
+  }
+});

@@ -32,6 +32,49 @@ for validation. Every panel output is a hypothesis, not real-user evidence.
 Stamp the report as "hypothesis, not validation" and never present a persona
 finding as proof of real user behavior.
 
+## Orchestrators
+
+Every panel is run by an orchestrator selected by task type. Resolve it first:
+
+```bash
+persona orchestrate "<task>" --json          # lane, outcome frame, seats, consumers
+persona orchestrate lanes                    # ui-ux-design, product, strategy, engineering, marketing, general
+```
+
+The orchestrator holds the end-to-end vision. Before a single persona is chosen it
+answers the lane's **outcome frame** in writing — who the end customer is, what they are
+trying to accomplish, what the best result for them looks like, what counts as failure,
+and what decision this session must enable. Where the request cannot answer a question,
+it records the assumption it is proceeding on and marks it as an assumption. A panel
+convened for an unnamed customer produces findings nobody can act on.
+
+From there: select personas by the lane's technique rather than a headcount, freeze and
+open the run, measure against the lane's outcome criteria, run independent blind passes,
+adjudicate, synthesize preserving conflicts, then write a **recommendation packet** where
+every item names one consumer (`agent` / `skill` / `human`) and one observable acceptance
+check. A recommendation with no named consumer is a note, and notes do not get executed.
+
+```bash
+persona run recommend <run_id> <packet.json|->    # append-only; a closed run still accepts one
+```
+
+Each lane declares the triggers that owe a second round. If none fired, say so and stop.
+If one did, open a **second run** — never an edit of the first — keep recall intact, and
+compare rounds at the orchestrator level where both are visible.
+
+When the outcome frame names an area a reviewed source covers, consult the guest registry
+before composing seats: `persona guests --category <category> --json`, or
+`persona guests --assists <area>`. `persona orchestrate` already returns
+`recommended_guests` ranked against the task's own words, including sources outside the
+lane's categories when the task matches them strongly. Those principles inform a seat;
+they never impersonate the guest, never claim the guest endorsed the work, and never
+establish real user behaviour.
+
+The eleven-step protocol every orchestrator runs is defined once in
+`references/orchestrator-protocol.md`. Lane agents (`agents/persona-orchestrator-*.md`)
+are generated from `lib/data/orchestrator-lanes.json` and carry only lane-specific
+content. Full reference: `docs/orchestrators.md`.
+
 ## Professional task consultation
 
 Agents can call `persona consult "<task>" --json` before choosing a panel or
@@ -199,9 +242,11 @@ level, where both are visible, not by showing a persona its own history.
 
 Preferred launch path when subagents are available:
 
-0. Open the run: `persona run new ... --version <frozen>`. Pass the `run_id` to
-   every persona so its encounter joins the panel.
-1. Use `persona-panel-orchestrator` to select personas and measurement.
+0. Resolve the orchestrator: `persona orchestrate "<task>" --json`, then open the
+   run: `persona run new ... --version <frozen>`. Pass the `run_id` to every
+   persona so its encounter joins the panel.
+1. Use the lane's orchestrator agent — or `persona-panel-orchestrator`, which routes
+   — to answer the outcome frame, then select personas and measurement.
 2. Launch `persona-perspective-reviewer` once per persona, each with the
    assigned persona, frozen artifact version, and measurement criteria, and no
    knowledge of the other personas or their findings.
