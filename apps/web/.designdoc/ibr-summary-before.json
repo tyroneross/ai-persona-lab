@@ -1,0 +1,125 @@
+{
+  "host": "http://localhost:3000",
+  "note": "Focus indicators are NOT graded by ibr scan's default presets (touch-targets, wcag-contrast, calm-precision); a 0 here means no rule reported one, not that focus was measured. Focus was verified separately by reading the served stylesheet.",
+  "phase": "before",
+  "routes": {
+    "councils-desktop": {
+      "calm_precision_errors": {},
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 8,
+      "layout_collisions": 0,
+      "touch_target_mobile": 0,
+      "url": "http://localhost:3000/councils",
+      "verdict": "ISSUES",
+      "viewport_name": "desktop",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 8
+    },
+    "councils-mobile": {
+      "calm_precision_errors": {
+        "calm-precision/content-chrome-ratio": 1
+      },
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 11,
+      "layout_collisions": 0,
+      "touch_target_mobile": 1,
+      "url": "http://localhost:3000/councils",
+      "verdict": "FAIL",
+      "viewport_name": "mobile",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 8
+    },
+    "home-desktop": {
+      "calm_precision_errors": {
+        "calm-precision/gestalt-grouping": 2,
+        "calm-precision/signal-noise-status": 1
+      },
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 78,
+      "layout_collisions": 5,
+      "touch_target_mobile": 0,
+      "url": "http://localhost:3000/",
+      "verdict": "FAIL",
+      "viewport_name": "desktop",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 75
+    },
+    "home-mobile": {
+      "calm_precision_errors": {
+        "calm-precision/gestalt-grouping": 2,
+        "calm-precision/signal-noise-status": 1
+      },
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 78,
+      "layout_collisions": 1,
+      "touch_target_mobile": 0,
+      "url": "http://localhost:3000/",
+      "verdict": "FAIL",
+      "viewport_name": "mobile",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 75
+    },
+    "persona-detail-desktop": {
+      "calm_precision_errors": {
+        "calm-precision/gestalt-grouping": 2
+      },
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 24,
+      "layout_collisions": 0,
+      "touch_target_mobile": 0,
+      "url": "http://localhost:3000/personas/<persona-id>",
+      "verdict": "ISSUES",
+      "viewport_name": "desktop",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 22
+    },
+    "persona-detail-mobile": {
+      "calm_precision_errors": {
+        "calm-precision/content-chrome-ratio": 1,
+        "calm-precision/gestalt-grouping": 2
+      },
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 27,
+      "layout_collisions": 0,
+      "touch_target_mobile": 1,
+      "url": "http://localhost:3000/personas/<persona-id>",
+      "verdict": "FAIL",
+      "viewport_name": "mobile",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 22
+    },
+    "personas-new-desktop": {
+      "calm_precision_errors": {},
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 40,
+      "layout_collisions": 0,
+      "touch_target_mobile": 0,
+      "url": "http://localhost:3000/personas/new",
+      "verdict": "ISSUES",
+      "viewport_name": "desktop",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 39
+    },
+    "personas-new-mobile": {
+      "calm_precision_errors": {},
+      "console_errors": 0,
+      "focus_indicator": 0,
+      "issues_total": 44,
+      "layout_collisions": 0,
+      "touch_target_mobile": 2,
+      "url": "http://localhost:3000/personas/new",
+      "verdict": "FAIL",
+      "viewport_name": "mobile",
+      "wcag_aa_failures": 0,
+      "wcag_aaa_warnings": 39
+    }
+  },
+  "tool": "ibr scan 1.5.0"
+}

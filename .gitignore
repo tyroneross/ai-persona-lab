@@ -26,3 +26,11 @@ apps/web/src/UI_PLAN.md
 # Rally runtime state — only manifest.json ships (mirrors agent-rally-point convention)
 .rally/*
 !.rally/manifest.json
+
+# Design walk evidence. The emitted token file and the two before/after IBR
+# summaries are the committed record; raw scans, screenshots and the interview
+# transcript stay local.
+apps/web/.designdoc/evidence/
+apps/web/.designdoc/color-session.json
+apps/web/.designdoc/.designer-state.json
+apps/web/.designdoc/.visual-bootstrap.json
