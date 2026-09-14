@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0](https://github.com/tyroneross/ai-persona-lab/compare/persona-lab-v0.7.2...persona-lab-v0.8.0) (2026-09-14)
+
+
+### Features
+
+* compose source-informed professional personas and task consultations ([58779b3](https://github.com/tyroneross/ai-persona-lab/commit/58779b34b2ccff9cd8adfcfa73730cd396271cce))
+* consolidate the web app into persona-lab with shared plugin source ([fc781b1](https://github.com/tyroneross/ai-persona-lab/commit/fc781b1c48add5934a10f2d8472b3445ac0a67ca))
+* rename product and plugin to AI Persona Lab ([6856275](https://github.com/tyroneross/ai-persona-lab/commit/6856275a1e54512801d9dccbbac38c51d27a5359))
+* run every persona panel through an outcome-first orchestrator ([b9bd929](https://github.com/tyroneross/ai-persona-lab/commit/b9bd9293bc982b7d210ec4967bc62d67341eb107))
+* **web:** apply the owner's revealed design preferences ([653e79f](https://github.com/tyroneross/ai-persona-lab/commit/653e79fc9da68c28c09966605db9a69af3c5eabb))
+
+
+### Bug Fixes
+
+* close five audit findings on the orchestrator build ([eacf8df](https://github.com/tyroneross/ai-persona-lab/commit/eacf8dfb48f51b5afff9349f59b605c59c46b9c2))
+
 ## 0.7.2
 
 A lint for the rule 0.7.1 could only state.
