@@ -17,38 +17,38 @@ export default async function NewCouncilRunPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-md border border-line bg-surface p-5">
-        <h2 className="text-sm font-semibold text-ink">Build a roster from your saved personas</h2>
-        <p className="mt-1 text-sm text-muted">
-          Turn personas from your shared library (<code className="text-xs">~/.persona-lab</code>)
+      <section className="glass p-6">
+        <h2 className="text-section text-ink">Build a roster from your saved personas</h2>
+        <p className="mt-3 text-body text-muted">
+          Turn personas from your shared library (<code className="font-mono text-meta">~/.persona-lab</code>)
           into a council roster. Councils are the large-panel review; you have{" "}
           <span className="font-medium text-ink">{count}</span>{" "}
           {count === 1 ? "persona" : "personas"} saved.
         </p>
         {canBuild ? (
-          <form action={createRosterFromLibraryAction} className="mt-4 flex flex-wrap items-end gap-3">
+          <form action={createRosterFromLibraryAction} className="mt-5 flex flex-wrap items-end gap-4">
             <label className="block">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+              <span className="field-label">
                 Roster name (optional)
               </span>
               <input
                 name="roster_name"
                 placeholder="Enterprise rollout review"
-                className="mt-1 w-64 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                className="review-field mt-2 w-64"
               />
             </label>
             <button
               type="submit"
-              className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft transition"
+              className="btn btn-primary"
             >
               Build roster from {count} personas
             </button>
           </form>
         ) : (
-          <p className="mt-3 text-xs text-warn" role="status">
+          <p className="mt-4 text-meta font-medium text-warn" role="status">
             Councils need at least {MIN_LIBRARY_PERSONAS_FOR_ROSTER} saved personas for the high
-            level. Generate more with the persona CLI (<code className="text-xs">persona new</code>),
-            or use <code className="text-xs">persona panel</code> for a lighter 3-6 lens critique.
+            level. Generate more with the persona CLI (<code className="font-mono text-meta">persona new</code>),
+            or use <code className="font-mono text-meta">persona panel</code> for a lighter 3-6 lens critique.
           </p>
         )}
       </section>

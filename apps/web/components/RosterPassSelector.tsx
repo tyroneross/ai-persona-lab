@@ -32,22 +32,25 @@ export default function RosterPassSelector({
   }
 
   return (
-    <aside className="rounded-md border border-line bg-surface p-4">
-      <h2 className="text-sm font-semibold text-ink">Roster</h2>
-      <div className="mt-4 space-y-3">
+    <aside className="glass p-5">
+      <h2 className="text-section text-ink">Roster</h2>
+      <div className="mt-5 space-y-4">
         {personas.map((persona) => (
-          <label key={persona.id} className="flex gap-3 text-sm text-ink-soft">
+          <label
+            key={persona.id}
+            className="choice-target flex gap-3 text-body text-ink-soft"
+          >
             <input
               type="checkbox"
               name="persona_ids"
               value={persona.id}
               checked={selected.has(persona.id)}
               onChange={(e) => toggle(persona.id, e.target.checked)}
-              className="mt-1"
+              className="mt-1.5"
             />
             <span>
               <span className="block font-medium text-ink">{persona.name}</span>
-              <span className="block text-xs text-muted">
+              <span className="block text-meta text-muted">
                 {persona.lens} / {persona.role}
               </span>
             </span>
@@ -55,9 +58,9 @@ export default function RosterPassSelector({
         ))}
       </div>
 
-      <div className="mt-5 border-t border-line pt-4">
+      <div className="mt-8">
         <label className="block">
-          <span className="text-sm font-medium text-ink">Runs per persona</span>
+          <span className="text-body font-medium text-ink">Runs per persona</span>
           <input
             type="number"
             name="runs_per_persona"
@@ -68,16 +71,16 @@ export default function RosterPassSelector({
               const n = Math.round(Number(e.target.value) || 1);
               setRuns(Math.min(Math.max(n, runsPerPersonaBounds.min), runsPerPersonaBounds.max));
             }}
-            className="mt-2 w-24 rounded-md border border-line bg-white px-3 py-2 text-sm text-ink"
+            className="review-field mt-2 w-24"
           />
         </label>
-        <p className="mt-2 text-xs text-muted">
+        <p className="mt-3 text-meta text-muted">
           {selected.size} {selected.size === 1 ? "persona" : "personas"} x {runs}{" "}
           {runs === 1 ? "pass" : "passes"} = <span className="font-medium text-ink">{totalPasses}</span>{" "}
           total reviews. Up to {runsPerPersonaBounds.max} per persona.
         </p>
         {overBudget && (
-          <p className="mt-2 text-xs text-warn" role="status">
+          <p className="mt-3 text-meta font-medium text-warn" role="status">
             {totalPasses} passes exceeds {runsPerPersonaBounds.warnAbove}. Expect significant token
             usage; reduce personas or runs per persona to lower cost.
           </p>

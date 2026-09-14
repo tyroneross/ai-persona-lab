@@ -247,19 +247,19 @@ export default function PersonaForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl" noValidate>
       <header>
-        <h1 className="text-2xl font-semibold text-ink">
+        <h1 className="text-title text-ink">
           {mode === "create" ? "New persona" : `Edit ${initial?.name ?? "persona"}`}
         </h1>
-        <p className="text-sm text-muted mt-1">
+        <p className="text-body text-muted mt-2">
           Required fields are validated against{" "}
-          <code className="text-xs">schemas/persona.schema.json</code>.
+          <code className="font-mono text-meta">schemas/persona.schema.json</code>.
         </p>
       </header>
 
       {mode === "create" && (
-        <section className="rounded-md border border-line bg-surface p-4">
+        <section className="glass p-5">
           <label className="block">
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+            <span className="field-label">
               Generate from an instruction
             </span>
             <textarea
@@ -270,25 +270,25 @@ export default function PersonaForm({
               placeholder="e.g. a skeptical enterprise security admin reviewing an SSO login flow"
             />
           </label>
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-4">
             <button
               type="button"
               onClick={handleGenerate}
               disabled={generating || instruction.trim().length < 4}
               className={
                 generating || instruction.trim().length < 4
-                  ? "rounded-md bg-line px-4 py-2 text-sm font-medium text-muted cursor-not-allowed"
-                  : "rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft transition"
+                  ? "btn btn-disabled"
+                  : "btn btn-primary"
               }
             >
               {generating ? "Generating…" : "Generate & prefill"}
             </button>
-            <span className="text-xs text-muted">
+            <span className="text-meta text-muted">
               Runs a local model via the agent harness. You edit before saving.
             </span>
           </div>
           {genNote && (
-            <p className="mt-2 text-xs text-muted" role="status">
+            <p className="mt-3 text-meta text-muted" role="status">
               {genNote}
             </p>
           )}
@@ -406,7 +406,7 @@ export default function PersonaForm({
       </Field>
 
       <fieldset className="rounded-md border border-line p-4 space-y-4">
-        <legend className="text-xs font-semibold uppercase tracking-wide text-muted px-1">
+        <legend className="eyebrow px-1">
           Evidence (at least one required)
         </legend>
         <Field label="Evidence summary" error={showError("evidence_summary")}>
@@ -441,7 +441,7 @@ export default function PersonaForm({
             ))}
           </select>
           {state.evidence_source === "synthetic" && (
-            <p className="text-xs text-warn mt-1" role="status">
+            <p className="text-meta font-medium text-warn mt-2" role="status">
               Synthetic evidence will be visually flagged in the UI.
             </p>
           )}
@@ -504,19 +504,19 @@ export default function PersonaForm({
       </Field>
 
       {submitError && (
-        <div className="rounded-md border border-warn/40 bg-warn/5 p-3 text-sm text-warn">
+        <div className="glass border-l-4 border-l-error p-4 text-body font-medium text-error">
           {submitError}
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex flex-wrap items-center gap-4 pt-2">
         <button
           type="submit"
           disabled={!canSubmit}
           className={
             canSubmit
-              ? "rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft transition"
-              : "rounded-md bg-line px-4 py-2 text-sm font-medium text-muted cursor-not-allowed"
+              ? "btn btn-primary"
+              : "btn btn-disabled"
           }
         >
           {mode === "create" ? "Create persona" : "Save changes"}
@@ -524,7 +524,7 @@ export default function PersonaForm({
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex items-center rounded-md border border-line bg-surface px-4 py-2 text-sm font-medium text-muted hover:text-ink hover:border-line-strong transition"
+          className="btn btn-secondary"
         >
           Cancel
         </button>
@@ -546,12 +546,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+      <span className="field-label">
         {label}
       </span>
       <div className="mt-1">{children}</div>
-      {hint && !error && <p className="text-xs text-muted mt-1">{hint}</p>}
-      {error && <p className="text-xs text-error mt-1">{error}</p>}
+      {hint && !error && <p className="text-meta text-muted mt-2">{hint}</p>}
+      {error && <p className="text-meta font-medium text-error mt-2">{error}</p>}
     </label>
   );
 }
@@ -581,6 +581,6 @@ function ListField({
 
 function inputClass(error: string | undefined): string {
   const base =
-    "w-full rounded-md border bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40";
+    "review-field";
   return error ? `${base} border-error` : `${base} border-line`;
 }

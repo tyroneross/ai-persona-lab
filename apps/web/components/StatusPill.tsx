@@ -1,6 +1,7 @@
 import type { PersonaStatus } from "@lib/persona";
 import { statusLabel } from "@lib/format";
 
+// Status is text colour only — never a filled badge.
 export default function StatusPill({ status }: { status: PersonaStatus }) {
   const tone =
     status === "active"
@@ -10,7 +11,7 @@ export default function StatusPill({ status }: { status: PersonaStatus }) {
         : "text-muted";
   return (
     <span
-      className={`text-xs font-medium uppercase tracking-wide ${tone}`}
+      className={`text-meta font-semibold uppercase tracking-wide ${tone}`}
       aria-label={`Status: ${statusLabel(status)}`}
     >
       {statusLabel(status)}

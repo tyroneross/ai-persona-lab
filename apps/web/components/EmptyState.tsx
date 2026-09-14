@@ -12,13 +12,13 @@ export default function EmptyState({
   ctaLabel: string;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-line-strong bg-surface px-8 py-16 text-center">
-      <h1 className="text-xl font-semibold text-ink">{title}</h1>
-      <p className="text-sm text-muted mt-2 max-w-md mx-auto">{body}</p>
-      <Link
-        href={ctaHref}
-        className="inline-flex mt-6 rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft transition"
-      >
+    <div className="glass px-8 py-16 text-center">
+      <p aria-hidden="true" className="accent-icon text-title leading-none">
+        ◎
+      </p>
+      <h1 className="mt-4 text-title text-ink">{title}</h1>
+      <p className="text-body text-muted mt-3 max-w-md mx-auto">{body}</p>
+      <Link href={ctaHref} className="btn btn-primary mt-8">
         {ctaLabel}
       </Link>
     </div>

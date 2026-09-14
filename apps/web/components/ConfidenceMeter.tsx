@@ -10,11 +10,12 @@ export default function ConfidenceMeter({
   showLabel?: boolean;
 }) {
   const conf = confidenceLabel(value);
+  // Fills use the walk's saturated status hexes; label text uses the AA-safe tokens.
   const fill =
     conf.tone === "high"
-      ? "var(--color-success)"
+      ? "var(--color-success-fill)"
       : conf.tone === "med"
-        ? "var(--color-warn)"
+        ? "var(--color-warn-fill)"
         : "var(--color-muted)";
   const tone =
     conf.tone === "high"
@@ -31,7 +32,7 @@ export default function ConfidenceMeter({
           style={{ width: `${Math.round(value * 100)}%`, background: fill }}
         />
       </div>
-      {showLabel && <span className={`text-xs ${tone}`}>{conf.label}</span>}
+      {showLabel && <span className={`text-meta ${tone}`}>{conf.label}</span>}
     </div>
   );
 }

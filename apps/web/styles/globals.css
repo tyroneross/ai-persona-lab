@@ -1,29 +1,113 @@
 @import "tailwindcss";
 
+/*
+ * Design system: revealed-preference walk 2026-09-13
+ * Source of truth: apps/web/.designdoc/design-tokens.md (front-matter is canonical).
+ * Picks: top nav · expressive accent spread · custom brand display font ·
+ *        glass/frosted depth · whitespace-only list separators.
+ *
+ * COLOUR RULE. The walk's status hexes (#1E874B / #C2410C / #FF3B30) are tuned for
+ * fills and icons, not for text. #FF3B30 reads 3.55:1 on white — below WCAG AA.
+ * Each status colour therefore ships as a pair: `*-fill` keeps the walk hex for
+ * non-text use, and the plain token is a darkened text-safe variant.
+ *
+ * MEASURED SURFACE SET. Text tokens are measured against every surface that
+ * actually renders text here, including the accent surfaces this file introduces:
+ *   white #FFFFFF · card #F5F5F7 · glass over canvas · `.hero-band` at its
+ *   deepest stack (body radial 0.07 + hero 0.09 = #E7E6FB).
+ * The hero stack is the darkest of those, so it sets the floor. Measured there:
+ *   ink 13.86 · ink-soft 9.25 · warn 5.29 · brand-text 5.40 · muted 5.15 ·
+ *   success 5.00 · error 4.60.
+ * WORST CASE IS 4.60:1 — every text token clears AA on every surface. The accent
+ * alphas below are chosen to hold that floor; raising them breaks `--color-error`
+ * on a hero band first.
+ *
+ * DECLARED DEVIATIONS from the canonical front matter, all deliberate:
+ *   1. Status hexes split into text/fill pairs (see COLOUR RULE above).
+ *   2. `typography.fontFamily: 'Custom Brand'` resolves to Bricolage Grotesque
+ *      (display) + Geist (body), both self-hosted by next/font.
+ *   3. `typography.tracking: normal` is overridden to -0.015em on h1/h2 only;
+ *      a 31px grotesque display face sets loose at default tracking.
+ *   4. The pack asks for a 3-step ladder (title/body/meta). This app needs a
+ *      fourth, `--text-section`, for h2 in a workspace with nested sections.
+ *      Four steps, no fifth.
+ *   5. `--text-title` is a clamp() rather than a fixed step, so a three-line
+ *      persona name does not consume half of a 390px viewport. One ladder step,
+ *      sized fluidly.
+ *   6. `nav.tabStyle: icon-label` ships label-only; this nav has never had icons
+ *      and adding them is a content change, not a visual-system change.
+ *   7. 8pt grid with 4px half-steps inside controls, so a 44px touch target can
+ *      hold 14px text.
+ */
+
 @theme {
   --color-white: #ffffff;
   --color-black: #000000;
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  --color-ink: #0f172a;
-  --color-ink-soft: #1e293b;
-  --color-muted: #64748b;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
-  --color-canvas: #f8fafc;
-  --color-surface: #ffffff;
-  --color-brand: #4f46e5;
-  --color-accent: #0ea5e9;
-  --color-accent-strong: #0284c7;
-  --color-warn: #9a5312;
-  --color-warn-soft: #fef3c7;
-  --color-error: #b91c1c;
-  --color-success: #15803d;
+  /* Text — measured on white / card #F5F5F7 / accent tint #EFEEFB */
+  --color-ink: #1c1c1e;          /* 17.01 / 15.63 / 14.82 */
+  --color-ink-soft: #3a3a3c;     /* 11.35 / 10.42 /  9.89 */
+  --color-muted: #5f5f68;        /*  6.32 /  5.80 /  5.15 */
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  /* Structure */
+  --color-line: #e5e5ea;
+  --color-line-strong: #d3d3da;
+  --color-surface: #ffffff;
+  --color-card: #f5f5f7;
+
+  /* Accent */
+  --color-brand: #5e5ce6;          /* fills, icons, indicators; white on it = 5.06 */
+  --color-brand-text: #4a48d4;     /* accent as text: 6.63 / 6.09 / 5.77 */
+  --color-brand-deep: #3f3dbd;
+
+  /* Review-template tones. Deliberately NOT the status hexes: a decorative tone
+     that equals `--color-warn` teaches the wrong thing about rust text. */
+  --color-tone-handoff: #4a48d4;   /* white on it 6.63 */
+  --color-tone-interface: #7142a2; /* white on it 6.99 */
+  --color-tone-decision: #1a6a72;  /* white on it 6.27 */
+
+  /* Status — text token first, walk fill second */
+  --color-success: #15703e;      /* 6.14 / 5.64 / 5.00 */
+  --color-success-fill: #1e874b;
+  --color-warn: #a8380a;         /* 6.49 / 5.96 / 5.29 */
+  --color-warn-fill: #c2410c;
+  --color-error: #c42b22;        /* 5.65 / 5.19 / 4.60 */
+
+  /* Type — display for h1/h2 and page titles, body font everywhere else */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, SFMono-Regular, "SF Mono",
+    Menlo, Consolas, monospace;
+
+  /* Ladder: title -> body -> meta, ratio 1.25 off a 14px body */
+  /* One ladder step, sized fluidly: 31px on desktop, ~25px on a 390px phone,
+     so a three-line persona name does not eat half the first viewport. */
+  --text-title: clamp(1.5rem, 1.15rem + 1.6vw, 1.9375rem);
+  --text-title--line-height: 1.15;
+  --text-section: 1.25rem;
+  --text-section--line-height: 1.3;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.6;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.45;
+
+  --radius-button: 8px;
+  --radius-card: 10px;
+}
+
+/* Not Tailwind tokens — glass + motion primitives. */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-tint: rgba(94, 92, 230, 0.05);
+  --glass-blur: blur(18px) saturate(1.35);
+  --glass-line: rgba(94, 92, 230, 0.16);
+  --press-opacity: 0.72;
+  --motion-push: 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
@@ -38,12 +122,32 @@
     height: 100%;
   }
 
+  /* The header is sticky from 640px up, so the skip link must not drop its
+     target underneath it. */
+  html {
+    scroll-padding-top: 5.5rem;
+  }
+
   body {
     margin: 0;
-    background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
     -webkit-font-smoothing: antialiased;
+    /* Expressive accent spread: the canvas itself carries the brand, softly. */
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(1100px 620px at 8% -12%, rgba(94, 92, 230, 0.07), transparent 62%),
+      radial-gradient(900px 520px at 98% -4%, rgba(94, 92, 230, 0.055), transparent 58%),
+      radial-gradient(1000px 800px at 50% 108%, rgba(94, 92, 230, 0.04), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.015em;
   }
 
   button {
@@ -61,12 +165,357 @@
     color: inherit;
     text-decoration: none;
   }
+
+  /* Numeric display style: tabular. */
+  dd,
+  table,
+  time,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(a, button, input, textarea, select, summary, details):focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Opacity-dim press, per the walk's motion pick. */
+  :where(a, button, summary, label.choice-target):active {
+    opacity: var(--press-opacity);
+  }
 }
 
 @layer components {
+  /* ---------- Glass / frosted surfaces ---------- */
+  .glass {
+    background-color: var(--glass-bg);
+    background-image: linear-gradient(180deg, var(--glass-tint), transparent 70%);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--radius-card);
+  }
+
+  .glass-strong {
+    background-color: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(22px) saturate(1.5);
+    backdrop-filter: blur(22px) saturate(1.5);
+  }
+
+  /* A card in a multi-column grid earns its outline. The same card stacked
+     single-column is a row, and the pick says rows separate by space. */
+  .glass-card {
+    border-color: transparent;
+  }
+
+  @media (min-width: 640px) {
+    .glass-card {
+      border-color: var(--glass-line);
+    }
+  }
+
+  /* Always single-column: a run row never gets an outline. */
+  .glass-row {
+    border-color: transparent;
+  }
+
+  .glass-sunken {
+    background-color: rgba(94, 92, 230, 0.045);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-card);
+  }
+
+  /* Solid fallback wherever the compositor cannot blur. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background-color: #ffffff;
+      background-image: none;
+      border-color: var(--color-line);
+    }
+    .glass-strong {
+      background-color: #ffffff;
+    }
+    .glass-sunken {
+      background-color: var(--color-card);
+    }
+    .app-header {
+      background-color: #ffffff;
+    }
+    .hero-band {
+      background-image: linear-gradient(118deg, #eeedfd, #f6f5fb 68%, #fbfaff);
+    }
+    .btn-primary {
+      background-color: var(--color-brand-text);
+      background-image: none;
+    }
+  }
+
+  /* ---------- Expressive accent spread ---------- */
+  .app-header {
+    background-color: rgba(255, 255, 255, 0.7);
+    background-image: linear-gradient(
+      104deg,
+      rgba(94, 92, 230, 0.09),
+      rgba(94, 92, 230, 0.04) 52%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    -webkit-backdrop-filter: blur(22px) saturate(1.5);
+    backdrop-filter: blur(22px) saturate(1.5);
+    border-bottom: 1px solid var(--glass-line);
+  }
+
+  .hero-band {
+    position: relative;
+    border-radius: var(--radius-card);
+    padding: 1.25rem;
+    background-image: linear-gradient(
+      118deg,
+      rgba(94, 92, 230, 0.09),
+      rgba(94, 92, 230, 0.045) 62%,
+      rgba(94, 92, 230, 0.015) 100%
+    );
+    border: 1px solid var(--glass-line);
+  }
+
+  @media (min-width: 640px) {
+    .hero-band {
+      padding: 2rem 2.25rem;
+    }
+  }
+
+  .accent-icon {
+    color: var(--color-brand);
+  }
+
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.6rem;
+    background-color: var(--color-brand-deep);
+    background-image: linear-gradient(140deg, #5250dc, #3f3dbd);
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: var(--text-section);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* Section kicker above a title. Accent lives on SECTION headers, gradients,
+     backgrounds and icon fills — not on every form label, or "do something
+     here" stops meaning anything. */
+  .eyebrow {
+    font-size: var(--text-meta);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-text);
+  }
+
+  /* Heading semantics at meta size: keep the h2, drop the display face. */
+  .section-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-meta);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-text);
+  }
+
+  /* Same treatment, neutral colour: labels name a field, they do not call an
+     action. */
+  .field-label {
+    display: block;
+    font-size: var(--text-meta);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* ---------- Buttons: glass depth, 44px targets ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-button);
+    font-size: var(--text-body);
+    font-weight: 500;
+    line-height: 1.2;
+    transition: background-color var(--motion-push), border-color var(--motion-push),
+      opacity 120ms linear;
+  }
+
+  /* Opaque on purpose. A translucent primary over a near-white canvas cannot
+     hold 4.5:1 with white text — the lighter base measured 4.36:1. The frosted
+     read stays on the surfaces that can afford it (.glass, .app-header).
+     White on #5250dc is 5.93:1, on #3f3dbd 8.03:1. */
+  .btn-primary {
+    background-color: #4a48d4;
+    background-image: linear-gradient(140deg, #5250dc, #3f3dbd);
+    border: 1px solid #3f3dbd;
+    color: #ffffff;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-image: linear-gradient(140deg, #4341c8, #34329f);
+  }
+
+  .btn-secondary {
+    background-color: var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-line);
+    color: var(--color-ink);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--color-brand);
+  }
+
+  .btn-disabled,
+  .btn:disabled {
+    background-color: rgba(94, 92, 230, 0.08);
+    background-image: none;
+    border: 1px solid var(--color-line);
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+
+  /* ---------- Whitespace-only separation ---------- */
+  .stack-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .stack-list-tight {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .stack-rows > tr > td {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* ---------- Navigation ---------- */
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5rem 0.25rem;
+    font-size: var(--text-body);
+    font-weight: 500;
+    color: var(--color-ink-soft);
+    transition: color var(--motion-push);
+  }
+
+  .nav-link:hover {
+    color: var(--color-brand-text);
+  }
+
+  .nav-link[aria-current="page"] {
+    color: var(--color-brand-text);
+    font-weight: 600;
+  }
+
+  .nav-link[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    right: 0.25rem;
+    bottom: 0.25rem;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--color-brand);
+  }
+
+  /* ---------- Form controls ---------- */
+  .review-field {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-button);
+    background-color: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem 1rem;
+    color: var(--color-ink);
+    font-weight: 400;
+    font-size: var(--text-body);
+  }
+
+  .review-field::placeholder {
+    color: var(--color-muted);
+  }
+
+  .review-field:focus-visible {
+    border-color: var(--color-brand);
+  }
+
+  .review-field[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    accent-color: var(--color-brand);
+  }
+
+  .choice-target,
+  .quiet-action {
+    min-height: 44px;
+  }
+
+  .quiet-action {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-button);
+  }
+
+  .quiet-action:hover {
+    background-color: rgba(94, 92, 230, 0.07);
+  }
+
+  .skip-link {
+    position: fixed;
+    top: -100px;
+    left: 1rem;
+    z-index: 50;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    color: var(--color-brand-text);
+    border: 1px solid var(--color-brand);
+    border-radius: var(--radius-button);
+  }
+
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  /* ---------- Confidence meter ---------- */
   .confidence-track {
     height: 4px;
-    background: var(--color-line);
+    background: rgba(94, 92, 230, 0.14);
     border-radius: 9999px;
     overflow: hidden;
   }
@@ -75,68 +524,44 @@
     height: 100%;
     border-radius: 9999px;
   }
-}
 
-@layer base {
-  :where(a, button, input, textarea, select):focus-visible {
-    outline: 2px solid var(--color-ink);
-    outline-offset: 4px;
+  /* ---------- Review templates: accent-tinted grouped sections ---------- */
+  [data-tone="handoff"] {
+    --tone: var(--color-tone-handoff);
+    --tone-wash: rgba(74, 72, 212, 0.07);
   }
-}
-@layer components {
-  .review-field {
-    display: block;
-    width: 100%;
-    border: 1px solid var(--color-line-strong);
-    border-radius: 0.5rem;
-    background: var(--color-surface);
-    padding: 0.7rem 0.8rem;
-    color: var(--color-ink);
-    font-weight: 400;
-    font-size: 0.875rem;
+  [data-tone="interface"] {
+    --tone: var(--color-tone-interface);
+    --tone-wash: rgba(113, 66, 162, 0.07);
   }
-  .review-field::placeholder { color: var(--color-muted); }
-}
+  [data-tone="decision"] {
+    --tone: var(--color-tone-decision);
+    --tone-wash: rgba(26, 106, 114, 0.07);
+  }
 
-/* Color adds recognition to the existing layout without adding controls. */
-@layer components {
-  .workspace-intro {
-    padding: 1.5rem;
-    border-radius: 1rem;
-    background: linear-gradient(115deg, #eef2ff, #f4f1fb 72%, #fbf5eb);
-  }
-  .brand-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.8rem;
-    height: 1.8rem;
-    border-radius: 0.6rem;
-    background: #4f46e5;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-  .brand-button { background: #4f46e5; }
-  .brand-button:hover:not(:disabled) { background: #4338ca; }
-  .workspace-intro,
-  .template-card { --color-muted: #556275; }
-  .library-count { background: #f3effb; border-color: #ddd3f3; color: #684299; }
-  [data-tone="handoff"] { --tone: #4f46e5; --tone-wash: #eef2ff; --tone-line: #c7d2fe; }
-  [data-tone="interface"] { --tone: #7142a2; --tone-wash: #f5effc; --tone-line: #d4bfe9; }
-  [data-tone="decision"] { --tone: #9a5312; --tone-wash: #fdf4e7; --tone-line: #e9c99d; }
   .template-card {
-    border-color: var(--tone-line);
-    background: var(--tone-wash);
+    background-color: var(--tone-wash);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--radius-card);
     color: var(--color-ink);
-    box-shadow: inset 0 3px 0 var(--tone-line);
+    transition: border-color var(--motion-push), background-color var(--motion-push);
   }
-  .template-card:hover { border-color: var(--tone); }
+
+  .template-card:hover {
+    border-color: var(--tone);
+  }
+
   .template-card[aria-pressed="true"] {
     border-color: var(--tone);
-    box-shadow: inset 0 3px 0 var(--tone), 0 0 0 1px var(--tone);
+    box-shadow: 0 0 0 1px var(--tone);
   }
-  .template-eyebrow { color: var(--tone); }
+
+  .template-eyebrow {
+    color: var(--tone);
+  }
+
   .template-indicator {
     display: inline-flex;
     align-items: center;
@@ -145,29 +570,58 @@
     width: 1.2rem;
     height: 1.2rem;
     border-radius: 50%;
-    color: white;
+    color: #ffffff;
   }
-  .template-card[aria-pressed="true"] .template-indicator { background: var(--tone); }
-  .review-panel { border-top: 3px solid var(--tone-line); }
-  .lens-number { color: var(--tone); background: var(--tone-wash); }
-  .persona-card { border-top: 3px solid #c7d2fe; }
-  .review-field:focus-visible { border-color: #4f46e5; }
-  input[type="radio"], input[type="checkbox"] { accent-color: #4f46e5; }
+
+  .template-card[aria-pressed="true"] .template-indicator {
+    background: var(--tone);
+  }
+
+  .lens-number {
+    color: #ffffff;
+    background-color: var(--tone, var(--color-brand-deep));
+    background-image: linear-gradient(
+      140deg,
+      var(--tone, #5250dc),
+      color-mix(in srgb, var(--tone, #5250dc) 72%, #000000)
+    );
+  }
+
+  .library-count {
+    background-color: rgba(94, 92, 230, 0.08);
+    border-color: var(--glass-line);
+    color: var(--color-brand-text);
+  }
+
+  .reference-disclosure > summary::marker {
+    color: var(--color-brand);
+  }
+}
+
+/* ---------- Motion: push-slide route entry ---------- */
+@keyframes push-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(1.5rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @layer components {
-  .choice-target, .quiet-action { min-height: 44px; }
-  .quiet-action { display: inline-flex; align-items: center; padding: 0.5rem 0.75rem; }
-  .quiet-action:hover { background: var(--color-canvas); }
-  .skip-link { position: fixed; top: -100px; left: 1rem; z-index: 50; padding: 0.75rem 1rem; background: var(--color-surface); color: var(--color-brand); border: 1px solid var(--color-brand); border-radius: 0.5rem; }
-  .skip-link:focus { top: 1rem; }
-  nav [aria-current="page"] { color: var(--color-brand); text-decoration: underline; text-underline-offset: 0.4em; }
-  .review-field[aria-invalid="true"] { border-color: var(--color-error); }
-  .review-field { min-height: 44px; }
-  .reference-disclosure > summary::marker { color: var(--color-brand); }
-  .review-panel { --color-line: var(--tone-line); }
-  .persona-card { --color-line: #c7d2fe; }
+  .route-enter {
+    animation: push-slide-in var(--motion-push) both;
+  }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
 }
