@@ -105,6 +105,18 @@
         "time_budget": {
           "type": "string",
           "description": "Stated constraint the persona worked under, e.g. four minutes"
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "navigate": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } },
+            "interact": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } },
+            "inspect": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } },
+            "viewport": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } },
+            "snapshot": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } },
+            "record": { "type": "object", "additionalProperties": false, "required": ["provider", "status"], "properties": { "provider": { "type": "string", "enum": ["computer-use", "ibr", "spectra", "screenshot"] }, "status": { "type": "string", "enum": ["unverified", "available", "unavailable"] }, "evidence": { "type": "string", "pattern": "^(cua|ibr|spectra|screenshot|file|session):" }, "attestation": { "type": "string", "enum": ["host-observed"] }, "observed_at": { "type": "string" } } }
+          }
         }
       }
     },
@@ -232,6 +244,28 @@
         }
       }
     },
+    "journey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal", "completed", "actions", "snapshots"],
+      "properties": {
+        "goal": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "stop_reason": { "type": "string" },
+        "actions": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["sequence", "action", "rationale", "result"], "properties": { "sequence": { "type": "number" }, "action": { "type": "string" }, "rationale": { "type": "string" }, "result": { "type": "string" }, "url": { "type": "string" } } } },
+        "snapshots": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["snapshot_id", "label", "locator", "viewport", "observed"], "properties": { "snapshot_id": { "type": "string" }, "label": { "type": "string" }, "locator": { "type": "string" }, "viewport": { "type": "string" }, "observed": { "type": "string" } } } }
+      }
+    },
+    "comprehension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "answers"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["procedural-closed-book"] },
+        "answers": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["question_id", "answer"], "properties": { "question_id": { "type": "string" }, "answer": { "type": "string" }, "confidence": { "type": ["number", "null"] } } } },
+        "assessment": { "type": "object", "additionalProperties": false, "required": ["assessor", "items", "total_score", "max_score", "percent"], "properties": { "assessor": { "type": "string" }, "items": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["question_id", "score", "max_score", "rationale", "concepts_present", "misconceptions"], "properties": { "question_id": { "type": "string" }, "score": { "type": "number" }, "max_score": { "type": "number" }, "rationale": { "type": "string" }, "concepts_present": { "type": "array", "items": { "type": "string" } }, "misconceptions": { "type": "array", "items": { "type": "string" } } } } }, "total_score": { "type": "number" }, "max_score": { "type": "number" }, "percent": { "type": "number" } } }
+      }
+    },
     "run_id": {
       "type": "string",
       "description": "The persona run (panel) this encounter belonged to. Lets a run resolve its encounters and a persona resolve every panel it sat on."
@@ -242,5 +276,39 @@
     "unlinked_reason": {
       "type": "string"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "required": ["journey"], "properties": { "journey": { "type": "object", "required": ["completed"], "properties": { "completed": { "const": true } } } } },
+      "then": {
+        "properties": {
+          "conditions": {
+            "required": ["capabilities"],
+            "properties": {
+              "capabilities": {
+                "required": ["navigate", "interact", "inspect", "viewport", "snapshot"],
+                "properties": {
+                  "navigate": { "required": ["provider", "status", "evidence", "attestation", "observed_at"], "properties": { "status": { "const": "available" } } },
+                  "interact": { "required": ["provider", "status", "evidence", "attestation", "observed_at"], "properties": { "status": { "const": "available" } } },
+                  "inspect": { "required": ["provider", "status", "evidence", "attestation", "observed_at"], "properties": { "status": { "const": "available" } } },
+                  "viewport": { "required": ["provider", "status", "evidence", "attestation", "observed_at"], "properties": { "status": { "const": "available" } } },
+                  "snapshot": { "required": ["provider", "status", "evidence", "attestation", "observed_at"], "properties": { "status": { "const": "available" } } }
+                }
+              }
+            }
+          },
+          "journey": {
+            "properties": {
+              "actions": { "minItems": 1 },
+              "snapshots": { "minItems": 1 }
+            }
+          },
+          "comprehension": {
+            "required": ["answers"],
+            "properties": { "answers": { "minItems": 1, "items": { "type": "object", "required": ["question_id", "answer"], "properties": { "answer": { "type": "string", "pattern": "\\S" } } } } }
+          }
+        }
+      }
+    }
+  ]
 }

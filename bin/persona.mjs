@@ -48,6 +48,7 @@ import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
 
 import { freezeArtifact, verifyArtifact } from "../lib/artifacts.mjs";
 import { createReviewPacket } from "../lib/review-packets.mjs";
+import { createJourneyPacket } from "../lib/journey-packets.mjs";
 import { saveAdjudication, listAdjudications, saveDispatchReceipt, listDispatchReceipts } from "../lib/review-evidence.mjs";
 
 // --- arg parsing -----------------------------------------------------------
@@ -767,6 +768,7 @@ function cmdRun(positional, flags) {
         artifact: { slug: flags.artifact, label: flags.label || flags.artifact, url: flags.url, version: flags.version, frozen: true, ...(flags.manifest ? {manifest: JSON.parse(readInputFile(flags.manifest))} : {}) },
         roster,
         level: flags.level,
+        ...(flags.study ? { study: JSON.parse(readInputFile(flags.study)) } : {}),
       });
     } catch (e) {
       die(e.message);
@@ -779,6 +781,21 @@ function cmdRun(positional, flags) {
   if (sub === "packet") {
     const split = value => value ? String(value).split(",").map(x=>x.trim()).filter(Boolean) : [];
     const result = createReviewPacket({run_id:rest[0],persona_id:rest[1],owns:split(flags.owns),excludes:split(flags.excludes),budget_minutes:flags["budget-minutes"]===undefined ? 10 : Number(flags["budget-minutes"])});
+    return out(result, true);
+  }
+  if (sub === "journey") {
+    const split = (value, fallback) => value ? String(value).split(",").map((x) => x.trim()).filter(Boolean) : fallback;
+    let result;
+    try {
+      result = createJourneyPacket({
+        run_id: rest[0], persona_id: rest[1],
+        viewports: split(flags.viewports, ["390x844"]),
+        tools: split(flags.tools, ["computer-use", "screenshot"]),
+        budget_minutes: flags["budget-minutes"] === undefined ? 10 : Number(flags["budget-minutes"]),
+      });
+    } catch (e) {
+      die(e.message);
+    }
     return out(result, true);
   }
   if (sub === "adjudicate" || sub === "dispatch") {
@@ -935,7 +952,7 @@ function cmdRun(positional, flags) {
     return;
   }
 
-  die("usage: persona run <new|list|show|report|close|lesson|proven|recommend|recommendations> ...");
+  die("usage: persona run <new|packet|journey|list|show|report|close|lesson|proven|recommend|recommendations> ...");
 }
 
 // --- recall: what a persona is allowed to bring with it --------------------
@@ -969,6 +986,7 @@ function usage() {
       '  persona artifact freeze --root <dir> --files <paths> --output <new-dir>',
       '  persona artifact verify <manifest.json>',
       '  persona run packet <run_id> <persona_id> --owns <scopes> [--budget-minutes 10]',
+      '  persona run journey <run_id> <persona_id> [--viewports 390x844] [--tools computer-use,screenshot]',
       '  persona run adjudicate <record.json> | dispatch <receipt.json> | evidence <run_id>',
       '  persona brief <handoff|interface|decision> --artifact <locator@version> --question <text>',
       '    [--constraints text] [--mode single|panel] [--personas id1,id2] [--json]',
@@ -984,7 +1002,7 @@ function usage() {
       '    Counts: low 3–4, medium 4–6, high 6–8; incompatible explicit counts are rejected.',
       "  persona encounter new <persona_id> --artifact <slug> [--label ..] [--version ..] [--informed ids]",
       "  persona encounter save <file|-> | validate <file|-> | list [<persona_id>] | show <encounter_id>",
-      '  persona run new "<request>" --artifact <slug> --version <v> --personas id1,id2',
+      '  persona run new "<request>" --artifact <slug> --version <v> --personas id1,id2 [--study study.json]',
       "  persona run list | show <run_id> | report <run_id> | close <run_id> [--synthesis <file|->]",
       "  persona run lesson <run_id> --verdict valuable|mixed|wasted --changed \"..\" [--worked \"a;b\"]",
       "  persona run recommend <run_id> <packet.json|-> [--validate-only] [--json]",

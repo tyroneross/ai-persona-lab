@@ -119,6 +119,19 @@ Use canonical filesystem paths and a new destination outside the source root. Th
 
 `run new` without `--manifest` remains compatible, labeled a declared freeze. `run packet` requires a verified byte snapshot. Its JSON contains a saved profile and hash, packet hash, explicit scope, one-pass budget, source-only conditions and an encounter template. Replace the template reaction with the actual reaction; findings and decisions begin empty. A decision is an object with `action` and `rationale`. The host executes the saved packet; when using Rally, use the packet as the task payload. Keep other reviews out of a blind review's context.
 
+## Run a visual comprehension journey
+
+Use a study file when the question is whether a new visitor can navigate the rendered product and explain what it taught them. This is separate from the source-only packet above.
+
+```sh
+persona run new "Can a new visitor learn RAG and assess the product?" \
+  --artifact product-site --url https://example.test --version production-2026-09-21 \
+  --personas persona_one,persona_two --study study.json
+persona run journey RUN_ID persona_one --viewports 390x844 --tools computer-use,screenshot --budget-minutes 10
+```
+
+The journey directory contains `USER.md`, `SOUL.md`, `GOAL.md`, `CAPABILITIES.md`, `packet.json`, `encounter.json`, and assessor-only `ASSESSOR.json`. The persona-visible files define identity, behavior, goal, executable capability preflight, tasks, snapshot checkpoints, and teach-back questions. Expected concepts and scoring rubrics exist only in `ASSESSOR.json`. The host must attach and exercise real navigation, interaction, interface inspection, viewport, and snapshot capabilities; a declared tool name or Persona Lab UI is not proof. The persona must stop browsing before answering, but this is procedural closed-book: an LLM still retains prior context, so the result tests synthesis rather than human memory.
+
 Record dispatch after the host supplies a child ID and prompt hash:
 
 ```json

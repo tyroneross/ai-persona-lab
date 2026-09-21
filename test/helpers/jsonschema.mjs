@@ -28,6 +28,9 @@ const IMPLEMENTED_KEYWORDS = new Set([
   "items",
   "minItems",
   "pattern",
+  "allOf",
+  "if",
+  "then",
 ]);
 
 const IGNORED_KEYWORDS = new Set([
@@ -97,9 +100,18 @@ function assertSchemaSupported(schema, schemaPath) {
     assertSchemaSupported(subschema, `${schemaPath}/properties/${key}`);
   }
   if (schema.items) assertSchemaSupported(schema.items, `${schemaPath}/items`);
+  for (const [i, subschema] of (schema.allOf || []).entries()) assertSchemaSupported(subschema, `${schemaPath}/allOf/${i}`);
+  if (schema.if) assertSchemaSupported(schema.if, `${schemaPath}/if`);
+  if (schema.then) assertSchemaSupported(schema.then, `${schemaPath}/then`);
 }
 
 function validateNode(schema, value, instancePath, schemaPath, errors) {
+  for (const [i, subschema] of (schema.allOf || []).entries()) validateNode(subschema, value, instancePath, `${schemaPath}/allOf/${i}`, errors);
+  if (schema.if && schema.then) {
+    const conditionErrors = [];
+    validateNode(schema.if, value, instancePath, `${schemaPath}/if`, conditionErrors);
+    if (conditionErrors.length === 0) validateNode(schema.then, value, instancePath, `${schemaPath}/then`, errors);
+  }
   if (schema.type !== undefined) {
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
     if (!types.some((t) => matchesType(value, t))) {

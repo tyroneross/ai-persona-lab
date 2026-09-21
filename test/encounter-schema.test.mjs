@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import { validate } from "./helpers/jsonschema.mjs";
-import { saveEncounter, scaffoldEncounter, ENCOUNTER_SCHEMA_VERSION } from "../lib/encounters.mjs";
+import { saveEncounter, scaffoldEncounter, validateEncounter, ENCOUNTER_SCHEMA_VERSION } from "../lib/encounters.mjs";
 
 const schema = JSON.parse(
   readFileSync(new URL("../schemas/encounter.schema.json", import.meta.url), "utf8")
@@ -118,6 +118,13 @@ test("maximal encounter, exercising every optional property, round-trips and val
       viewports: ["desktop-1440", "phone-390"],
       driver: "real browser session",
       time_budget: "four minutes",
+      capabilities: {
+        navigate: { provider: "computer-use", status: "available", evidence: "session:navigate", attestation: "host-observed", observed_at: "2026-08-31T00:01:00.000Z" },
+        interact: { provider: "computer-use", status: "available", evidence: "session:interact", attestation: "host-observed", observed_at: "2026-08-31T00:01:00.000Z" },
+        inspect: { provider: "computer-use", status: "available", evidence: "session:inspect", attestation: "host-observed", observed_at: "2026-08-31T00:01:00.000Z" },
+        viewport: { provider: "computer-use", status: "available", evidence: "session:viewport", attestation: "host-observed", observed_at: "2026-08-31T00:01:00.000Z" },
+        snapshot: { provider: "screenshot", status: "available", evidence: "screenshot:start", attestation: "host-observed", observed_at: "2026-08-31T00:01:00.000Z" }
+      },
     },
     findings: [
       {
@@ -140,6 +147,17 @@ test("maximal encounter, exercising every optional property, round-trips and val
       would_recommend: false,
       score: 2.5,
       verdict: "fails",
+    },
+    journey: {
+      goal: "Understand the checkout",
+      completed: true,
+      actions: [{ sequence: 1, action: "Opened checkout", rationale: "Start task", result: "Checkout visible", url: "https://example.test/checkout" }],
+      snapshots: [{ snapshot_id: "start", label: "Starting state", locator: "screens/start.png", viewport: "desktop-1440", observed: "Checkout form visible" }],
+    },
+    comprehension: {
+      mode: "procedural-closed-book",
+      answers: [{ question_id: "q1", answer: "It collects shipping and payment.", confidence: 0.8 }],
+      assessment: { assessor: "independent-reviewer", items: [{ question_id: "q1", score: 2, max_score: 2, rationale: "Correct", concepts_present: ["shipping", "payment"], misconceptions: [] }], total_score: 2, max_score: 2, percent: 100 },
     },
   });
 
@@ -179,4 +197,22 @@ test("validator rejects a mutated encounter (negative control)", () => {
   const badExtraKey = { ...saved, nonsense: true };
   const extraKeyResult = validate(schema, badExtraKey);
   assert.equal(extraKeyResult.ok, false, "an unknown top-level key must fail validation under additionalProperties: false");
+});
+
+test("runtime validator rejects malformed journey evidence and unsupported completion claims", () => {
+  const base = scaffoldEncounter({ persona_id: "persona_test_ab12cd34", artifact: { slug: "site", label: "Site" } });
+  base.verbatim = "I tried the visible journey.";
+  base.findings = [];
+  base.journey = { goal: "Learn", completed: true, actions: [{ sequence: "first" }], snapshots: [] };
+  base.comprehension = { mode: "procedural-closed-book", answers: [{ question_id: "q1", answer: "" }] };
+  const result = validateEncounter(base);
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join("\n"), /sequence must be a number/);
+  assert.match(result.errors.join("\n"), /completed journey requires at least one visual checkpoint/);
+  assert.match(result.errors.join("\n"), /completed journey requires every comprehension answer/);
+  assert.match(result.errors.join("\n"), /requires host-attested navigate capability/);
+  const schemaResult = validate(schema, base);
+  assert.equal(schemaResult.ok, false);
+  assert.match(schemaResult.errors.join("\n"), /capabilities/);
+  assert.match(schemaResult.errors.join("\n"), /fewer than minItems 1/);
 });
