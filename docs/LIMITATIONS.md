@@ -68,15 +68,20 @@ personas could be wrong in a consistent direction — over-indexing on things
 models notice, blind to things people trip on — and every control in this repo
 would still pass. This is the foundational gap; everything below is secondary.
 
-**2. No baseline.** The method has never been run against a cheaper alternative
+**2. No observed baseline result.** The method has never been run against a cheaper alternative
 on the same artifact: a heuristic checklist, a single strong reviewer, or one
 model asked for six perspectives in one pass. "Findings no checklist would have"
 is asserted in the method assessment and was never tested against a checklist.
+`persona evaluate` can compare adjudicated baseline and panel findings; it does
+not supply the missing observations or execute either review.
 
-**3. Nothing measures whether personas actually diverge.** Independence is
+**3. Persona contribution is unmeasured in real studies.** Independence is
 engineered (separate contexts, no shared transcript) but never verified. Two
-personas could return near-identical findings and nothing would flag it. A
-simple distinctness metric over encounter findings would catch it.
+personas could return near-identical findings without adding coverage.
+Different conclusions are also a natural result of different roles and
+priorities, so disagreement alone is not a failure. The evaluator preserves
+each persona's findings and matched observed issues; real studies must still
+judge whether the differences are useful.
 
 **4. The adjudicator is un-adjudicated.** `persona-research-adjudicator` sets
 `verified: confirmed | refuted | reclassified` and no independent check grades
@@ -91,9 +96,11 @@ worse before it gets better.
 **6. Panel size has no basis.** 3–6 lenses recommended, 10 used once. The numbers
 came from judgment, not from a curve of findings versus panel size.
 
-**7. No cost accounting.** Every pass is a real LLM call. Nothing tracks tokens
-per run or findings per token, so "was this panel worth it" can only be answered
-by feel. `persona run lesson` records a verdict but not a cost.
+**7. No measured value per cost.** Every executed pass is a real LLM call.
+Dispatch receipts can record reported usage and `persona evaluate` can compare
+supplied baseline and panel cost, but neither establishes whether the additional
+findings changed a human decision or justified that cost. Missing usage stays
+unknown. `persona run lesson` records a verdict, not a cost-benefit study.
 
 **8. Encounters have no retention policy.** They accumulate forever. A persona
 with `recall: all` and 200 encounters will overflow any dispatch context, and

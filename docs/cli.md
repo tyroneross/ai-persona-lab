@@ -22,6 +22,8 @@ persona roster list | show <name> | rm <name> | lenses
 persona panel "review the settings redesign" --level medium
 persona panel --roster "Enterprise rollout review" --level high
 
+persona evaluate assessment.json --json  # compare adjudicated baseline and panel findings
+
 persona home        # print the library path
 
 # who runs this panel, and what it must settle before choosing a persona
@@ -95,6 +97,60 @@ The CLI is the deterministic substrate: it owns the library, schema validation,
 lens selection, and review planning. Generating persona *content* and running
 the review are done by the LLM host (a coding agent, the skill, or Codex), which
 calls the CLI to persist and recall. No API key is needed by the CLI.
+
+### Compare a baseline with a persona panel
+
+Use `persona evaluate` after reviewing the **same versioned artifact and question**
+once with a single reviewer and once with a persona panel. The first suggested
+artifact is Persona Lab's decision brief workflow:
+
+```sh
+persona brief decision --artifact persona-brief-decision@02ac76b --question "Can a user select appropriate decision reviewers and see what each contributed?" --mode single
+persona brief decision --artifact persona-brief-decision@02ac76b --question "Can a user select appropriate decision reviewers and see what each contributed?" --mode panel
+```
+
+Those commands prepare briefs; the host must execute the reviews. The workflow
+locator labels the version and does not freeze its bytes; use
+`persona artifact freeze` for an auditable source snapshot. Use the same artifact
+version, review question and access conditions for both. Observe real users or
+obtain an independent domain expert review before claiming calibration.
+Record each observed issue with a stable ID. A reviewer then adjudicates every
+baseline and panel finding, records its evidence, and explicitly links supported
+findings to observed issue IDs. Do not infer matches from wording alone.
+
+The assessment file has this shape; this template contains **no observations or
+review results** and therefore reports calibration as unavailable:
+
+```json
+{
+  "schema_version": "1",
+  "artifact": "persona-brief-decision@02ac76b",
+  "question": "Can a user select appropriate decision reviewers and see what each contributed?",
+  "reference": { "kind": "none", "issues": [] },
+  "review_status": { "baseline": "pending", "panel": "pending" },
+  "personas": ["new-user", "decision-owner", "skeptic"],
+  "findings": [],
+  "usage": {}
+}
+```
+
+Set `reference.kind` to `human-observation` or `expert-review` when such
+observations exist, and add `issues` with `id` and `summary`. A finding needs a
+unique `id`, `method` (`baseline` or `panel`), `summary`, and `status`
+(`supported`, `refuted`, or `unresolved`). Panel findings also need a listed
+`persona_id`. Supported or refuted findings need an `evidence` locator or note.
+Only supported findings may carry `reference_issue_ids`; every ID must name an
+issue in the reference. Optional `usage.baseline` and `usage.panel` accept
+`cost_usd` and `total_tokens` from actual receipts. Missing cost stays unknown.
+Set each `review_status` to `complete` only after that review has run and its
+findings have been adjudicated. A completed review may have zero findings.
+
+The result shows reference coverage, issues matched by the panel beyond the
+baseline, misses, adjudication counts, and each persona's findings. Different
+persona views remain separate; disagreement is expected and is not scored as a
+failure. The comparison does not establish causation, real user value, or cost
+savings on its own. The command reads the assessment and makes no model calls or
+writes.
 
 ### Review levels
 

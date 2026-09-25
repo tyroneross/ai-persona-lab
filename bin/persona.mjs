@@ -45,6 +45,7 @@ import { LANE_CATALOG, listLanes, findLane, resolveLane, planOrchestration } fro
 import { GUEST_REGISTRY, listGuests, findGuest } from "../lib/guests.mjs";
 import { ingestCorpus, scanCorpus, searchSources, verifyPrinciples, reviewedPrinciples, registeredCorpus } from "../lib/sources.mjs";
 import { createBriefPlan, parsePlanningArgs } from "../lib/brief-command.mjs";
+import { evaluatePanel } from "../lib/panel-evaluation.mjs";
 
 import { freezeArtifact, verifyArtifact } from "../lib/artifacts.mjs";
 import { createReviewPacket } from "../lib/review-packets.mjs";
@@ -991,6 +992,7 @@ function usage() {
       '  persona brief <handoff|interface|decision> --artifact <locator@version> --question <text>',
       '    [--constraints text] [--mode single|panel] [--personas id1,id2] [--json]',
       '    Default: one reviewer; panel: three. Saved references never add reviewers. No writes.',
+      '  persona evaluate <assessment.json|-> [--json]  Compare adjudicated baseline and panel findings; no writes.',
       '  persona new "<brief>" [--count N] [--roster <name>] [--json]',
       "  persona save <file|->            persona validate <file|-> [--strict]",
       "  persona list [--tag t] [--role r] [--status s] [--assists <area>] [--json]",
@@ -1037,7 +1039,8 @@ function main() {
   const [, , cmd, ...rest] = process.argv;
   const options = cmd === 'brief'
     ? { artifact: 'value', question: 'value', constraints: 'value', mode: 'value', personas: 'value', json: 'boolean' }
-    : cmd === 'panel' ? { roster: 'value', auto: 'boolean', level: 'value', count: 'value', json: 'boolean' } : null;
+    : cmd === 'panel' ? { roster: 'value', auto: 'boolean', level: 'value', count: 'value', json: 'boolean' }
+      : cmd === 'evaluate' ? { json: 'boolean' } : null;
   const { positional, flags } = options ? parsePlanningArgs(rest, options) : parseArgs(rest);
 
   switch (cmd) {
@@ -1052,6 +1055,13 @@ function main() {
       const plan = createBriefPlan(positional, flags);
       if (flags.json) return out(plan, true);
       process.stdout.write(`CLI prepares this brief only; the host executes reviews. No model calls or writes.\n\n${plan.brief}\n`);
+      return;
+    }
+    case "evaluate": {
+      if (positional.length !== 1) throw new Error('usage: persona evaluate <assessment.json|-> [--json]');
+      const result = evaluatePanel(JSON.parse(readInputFile(positional[0])));
+      if (flags.json) return out(result, true);
+      process.stdout.write(`Artifact: ${result.artifact}\nCalibration: ${result.calibration}\nReference issues: ${result.reference_issue_count}\nBaseline: ${result.review_status.baseline}; matched ${result.baseline.matched_issue_ids.length}\nPanel: ${result.review_status.panel}; matched ${result.panel.matched_issue_ids.length}\nNew matches from panel: ${result.incremental_issue_ids === null ? 'unavailable' : result.incremental_issue_ids.length}\nPanel extra cost: ${result.panel_extra_cost_usd === null ? 'unknown' : `$${result.panel_extra_cost_usd.toFixed(4)}`}\nPersona findings: ${result.personas.map(p => `${p.id} ${JSON.stringify(p.finding_counts)}`).join('; ')}\n${result.note}\n`);
       return;
     }
     case "new": return cmdNew(positional, flags);
