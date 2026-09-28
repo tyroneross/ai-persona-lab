@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/tyroneross/ai-persona-lab/compare/persona-lab-v0.8.0...persona-lab-v0.9.0) (2026-09-25)
+
+
+### Features
+
+* add visual comprehension journeys ([02ac76b](https://github.com/tyroneross/ai-persona-lab/commit/02ac76b797371cb7e210ccfc9ff4ad0fca3769d6))
+* compare persona panel findings with observed issues ([29b9735](https://github.com/tyroneross/ai-persona-lab/commit/29b9735dd0d423057b9cbd83ca0c175820267c23))
+
 ## [0.8.0](https://github.com/tyroneross/ai-persona-lab/compare/persona-lab-v0.7.2...persona-lab-v0.8.0) (2026-09-14)
 
 
