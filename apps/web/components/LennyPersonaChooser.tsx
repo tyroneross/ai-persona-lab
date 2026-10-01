@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { LENNY_CATALOG, browseLennyRoles, selectLennyPersonas, findLennyRole, type LennySelection } from "../../../lib/lenny-catalog.mjs";
 
 export default function LennyPersonaChooser({ question, selections, disabled, onChange }: {
@@ -9,16 +9,16 @@ export default function LennyPersonaChooser({ question, selections, disabled, on
   const [search, setSearch] = useState("");
   const [browse, setBrowse] = useState(false);
   const [limit, setLimit] = useState(6);
-  const plan = selectLennyPersonas(question);
+  const plan = useMemo(() => selectLennyPersonas(question), [question]);
   const matches = new Map(plan.results.map(item => [item.role_id, item]));
-  const roles = browseLennyRoles(search).filter(role => browse || matches.has(role.id));
+  const roles = browseLennyRoles(search).filter(role => browse || matches.has(role.id) || selections.some(item => item.role_id === role.id));
   function toggleRole(id: string) {
     onChange(selections.some(item => item.role_id === id) ? selections.filter(item => item.role_id !== id) : [...selections, { role_id: id, speaker_ids: [] }]);
   }
   function toggleSource(roleId: string, speakerId: string) {
     onChange(selections.map(item => item.role_id === roleId ? { ...item, speaker_ids: item.speaker_ids.includes(speakerId) ? item.speaker_ids.filter(id => id !== speakerId) : [...item.speaker_ids, speakerId] } : item));
   }
-  const ordered = [...roles].sort((a, b) => (matches.get(b.id)?.score || 0) - (matches.get(a.id)?.score || 0) || a.name.localeCompare(b.name));
+  const ordered = [...roles].sort((a, b) => (matches.get(b.id)?.score || 0) - (matches.get(a.id)?.score || 0) || (matches.has(a.id) && matches.has(b.id) ? a.id.localeCompare(b.id) : a.name.localeCompare(b.name)));
   return <section aria-labelledby="lenny-title" className="glass min-w-0 space-y-5 p-6 sm:p-8">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div><h2 id="lenny-title" className="text-section text-ink">Choose Lenny podcast perspectives</h2><p className="mt-2 text-body text-muted">{LENNY_CATALOG.roles.length} review roles · {LENNY_CATALOG.integrity.expert_speakers} eligible speaker sources · Index {LENNY_CATALOG.source_date}</p></div>
@@ -30,7 +30,7 @@ export default function LennyPersonaChooser({ question, selections, disabled, on
       <button type="button" className="btn btn-secondary" aria-pressed={browse} onClick={() => { setBrowse(!browse); setLimit(6); }}>{browse ? "Show question matches" : "Browse all roles"}</button>
     </div>
     {selections.length > 0 && <div className="flex flex-wrap gap-2" aria-label="Selected Lenny roles">{selections.map(item => <button key={item.role_id} disabled={disabled} type="button" className="quiet-action max-w-full rounded-full border border-line text-meta" aria-label={`Remove ${findLennyRole(item.role_id).name}`} onClick={() => toggleRole(item.role_id)}>{findLennyRole(item.role_id).name} ×</button>)}</div>}
-    {!ordered.length && <p className="glass-sunken p-4 text-body text-muted">{search ? "No roles or speakers match this search. Try another term." : plan.next_step}</p>}
+    {(!ordered.length || (!browse && !search && !plan.results.length)) && <p className="glass-sunken p-4 text-body text-muted">{search ? "No roles or speakers match this search. Try another term." : plan.next_step}</p>}
     <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
       {ordered.slice(0, limit).map(role => {
         const selected = selections.find(item => item.role_id === role.id);

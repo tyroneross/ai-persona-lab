@@ -18,7 +18,7 @@ authored review contract.
 
 The copied brief includes selected questions, responsibilities, referrals, and
 chosen source candidates with original-source codepoint locators and hashes.
-Roles add checklist context within the existing review effort, not additional
+All stored candidate passages for each chosen source are included. Roles add checklist context within the existing review effort, not additional
 reviewer passes. Selections persist in the browser tab alongside the draft.
 The chooser does not call a model or write to the saved persona library.
 
@@ -50,7 +50,7 @@ review quality. Unresolved voices, source-only roles and advertisement-only
 identities are excluded from selectable expert sources.
 
 The selector uses complete words and phrases from role keywords, names, and
-explicit task aliases. It suppresses matches based only on generic words. The
+explicit task aliases. Broad aliases such as “evaluate,” “docs,” and “cancel” require relevant domain context. It suppresses matches based only on generic words. The
 ranking has no calibrated confidence score: a higher score indicates more
 lexical matches, not more competence. Review role boundaries and source context;
 add audience, accessibility, domain and specialist perspectives when needed.

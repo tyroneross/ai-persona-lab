@@ -17,6 +17,7 @@ export function importLennyCatalog(sourceRoot) {
   const mappingsBytes = read('analysis/persona-library/speaker-mappings.jsonl');
   const taxonomy = JSON.parse(taxonomyBytes);
   const mappings = mappingsBytes.toString('utf8').trim().split(/\r?\n/).map(line => JSON.parse(line));
+  if (!Array.isArray(taxonomy.personas)) throw new Error('Taxonomy personas must be an array');
   const ids = new Set();
   const roles = taxonomy.personas.filter(role => {
     if (!role.id || ids.has(role.id)) throw new Error('Duplicate or missing role ID');
@@ -32,10 +33,12 @@ export function importLennyCatalog(sourceRoot) {
   for (const speaker of mappings) {
     if (!speaker.speaker_id || speakerIds.has(speaker.speaker_id)) throw new Error('Duplicate or missing speaker ID');
     speakerIds.add(speaker.speaker_id);
+    if (!Array.isArray(speaker.persona_assignments)) throw new Error(`Missing persona assignments: ${speaker.name}`);
     const assigned = new Set();
     for (const assignment of speaker.persona_assignments) {
       if (!ids.has(assignment.persona_id) || assigned.has(assignment.persona_id)) throw new Error('Unknown or duplicate role assignment');
       assigned.add(assignment.persona_id);
+      if (!Array.isArray(assignment.evidence)) throw new Error(`Missing assignment evidence: ${speaker.name}`);
       for (const evidence of assignment.evidence) {
         if (!files.has(evidence.source_path)) {
           const bytes = read(evidence.source_path);
@@ -51,7 +54,7 @@ export function importLennyCatalog(sourceRoot) {
         verifiedSpans++;
       }
       const role = roleById.get(assignment.persona_id);
-      if (!role || !speaker.eligible_for_expert_aggregation || speaker.source_only || speaker.identity_kind !== 'identified-person') continue;
+      if (!role || speaker.eligible_for_expert_aggregation !== true || speaker.source_only !== false || speaker.identity_kind !== 'identified-person') continue;
       if (!assignment.evidence.length) throw new Error('Expert mapping has no evidence');
       role.sources.push({ speaker_id: speaker.speaker_id, name: speaker.name,
         mapping_status: assignment.mapping_status, basis: assignment.basis, evidence: assignment.evidence });

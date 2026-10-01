@@ -100,6 +100,7 @@ const LEVELS = {
 
 function cmdLenny(positional, flags) {
   const query = positional.join(' ');
+  if (flags.count !== undefined && (!flags.select || flags.count === true)) die('Use --count <positive integer> with --select.');
   const result = flags.select ? selectLennyPersonas(query, flags.count === undefined ? {} : { limit: Number(flags.count) }) : {
     source_date: LENNY_CATALOG.source_date, policy: LENNY_CATALOG.policy, roles: browseLennyRoles(query),
   };
