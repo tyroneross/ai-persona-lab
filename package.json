@@ -22,6 +22,7 @@
     "schemas",
     "docs/archetypes.md",
     "docs/lenny-selection.md",
+    "docs/discussions.md",
     "docs/orchestrators.md",
     "README.md",
     "docs/installation.md",
@@ -40,9 +41,9 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "web:install": "npm --prefix apps/web ci",
-    "web:dev": "npm --prefix apps/web run dev",
+    "web:dev": "npm --prefix apps/web run dev -- --hostname 127.0.0.1",
     "web:build": "npm --prefix apps/web run build",
-    "web:start": "npm --prefix apps/web run start",
+    "web:start": "npm --prefix apps/web run start -- --hostname 127.0.0.1",
     "web:typecheck": "npm --prefix apps/web run typecheck",
     "web:smoke": "node scripts/web-smoke.mjs"
   },

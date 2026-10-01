@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Exercise the built app and shared CLI library using disposable data, no LLMs.
 import assert from 'node:assert/strict';
+import {request as httpRequest} from 'node:http';
 import { spawn, execFileSync } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -58,11 +59,18 @@ try {
   assert.ok(ready, `Server did not become ready: ${logs}`);
   async function request(route, method = 'GET', body) {
     const response = await fetch(base + route, { method,
-      headers: body ? { 'content-type': 'application/json' } : {},
+      headers: body ? { 'content-type': 'application/json', origin:base } : {},
       body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(10000) });
     const data = await response.json();
     assert.ok(response.ok, `${method} ${route}: ${response.status} ${JSON.stringify(data)}`);
     return data;
+  }
+  function rawRequest(route,method='GET',headers={},body='') {
+    return new Promise((resolve,reject)=>{
+      const req=httpRequest(base+route,{method,headers,timeout:10000},res=>{
+        res.resume();res.on('end',()=>resolve({status:res.statusCode}));
+      });req.on('error',reject);req.on('timeout',()=>req.destroy(new Error('HTTP test timed out')));req.end(body);
+    });
   }
   const summaries = (await request('/api/personas')).personas;
   assert.equal(summaries.length, 8);
@@ -103,12 +111,44 @@ try {
   });
   assert.ok(bundle.run.id);
   assert.equal((await request(`/api/councils/${bundle.run.id}`)).bundle.run.id, bundle.run.id);
-  for (const route of ['/', '/personas/new', `/personas/${people[0].id}`, '/councils', `/councils/${bundle.run.id}`]) {
+  const {discussion} = await request('/api/discussions', 'POST', {
+    topic:'Compare setup approaches', goal:'Choose and explain tradeoffs', mode:'vote', rounds:1,
+    options:['Wizard','Single page'], model:'smoke-no-model-calls', persona_ids:[people[0].id],
+    lenny_selections:[{role_id:'activation',speaker_ids:[]}],
+  });
+  assert.equal(discussion.participants.length,2);
+  assert.equal(discussion.messages.length,0);
+  assert.equal(discussion.status,'ready');
+  assert.equal(discussion.participants[1].id,'lenny:activation');
+  const discussionRead=(await request(`/api/discussions/${discussion.id}`)).discussion;
+  assert.deepEqual(discussionRead,discussion);
+  assert.ok((await request('/api/discussions')).discussions.some(d=>d.id===discussion.id));
+  const notes=await fetch(`${base}/api/discussions/${discussion.id}?format=markdown`);
+  assert.equal(notes.status,200);assert.match(await notes.text(),/not human preference research/);
+  const jsonExport=await fetch(`${base}/api/discussions/${discussion.id}?format=json`);
+  assert.deepEqual(await jsonExport.json(),discussion);
+  for (const bad of [{persona_ids:[people[0].id]}, {persona_ids:[people[0].id,people[0].id]}, {persona_ids:[people[0].id,people[1].id],mode:'vote',options:['Only one']}, {lenny_selections:[{role_id:'activation',speaker_ids:['unknown']},{role_id:'retention',speaker_ids:[]}]}]) {
+    const invalid=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({topic:'Invalid',goal:'Test validation',model:'smoke-no-model-calls',...bad})});
+    assert.equal(invalid.status,400);
+  }
+  const stale=await fetch(`${base}/api/discussions/${discussion.id}/advance`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({revision:99})});
+  assert.equal(stale.status,409); // Conflict must happen before any model call.
+  const crossOrigin=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json',origin:'https://example.com'},body:'{}'});
+  assert.equal(crossOrigin.status,403);
+  const noOrigin=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
+  assert.equal(noOrigin.status,403);
+  const rebind=await rawRequest('/api/discussions','POST',{'content-type':'application/json',host:'attacker.test',origin:'http://attacker.test'},'{}');
+  assert.equal(rebind.status,403);
+  for(const route of ['/api/discussions',`/api/discussions/${discussion.id}?format=json`,'/api/discussions/models']) {
+    const reboundRead=await rawRequest(route,'GET',{host:'attacker.test'});assert.equal(reboundRead.status,403);
+  }
+
+  for (const route of ['/', '/personas/new', `/personas/${people[0].id}`, '/councils', `/councils/${bundle.run.id}`, '/discussions', `/discussions/${discussion.id}`]) {
     const response = await fetch(base + route, { signal: AbortSignal.timeout(10000) });
     assert.equal(response.status, 200, route);
     assert.match(await response.text(), /<html/);
   }
-  console.log('PASS: shared planner; CLI-to-web read; web-to-CLI create/update; composition and recall preservation; invalid composition rejection; council create/read; five pages. No model calls.');
+  console.log('PASS: shared planner; CLI-to-web read; web-to-CLI create/update; composition and recall preservation; invalid composition rejection; council create/read; discussion create/read/export/validation; seven pages. No model calls.');
 } catch (error) {
   console.error(logs);
   throw error;

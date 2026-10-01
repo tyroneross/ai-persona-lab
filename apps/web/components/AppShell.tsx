@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 const NAV_ITEMS = [
   { href: "/", label: "Workspace", match: (p: string) => p === "/" },
+  { href: "/discussions", label: "Discussions", match: (p: string) => p.startsWith("/discussions") },
   { href: "/councils", label: "Councils", match: (p: string) => p.startsWith("/councils") },
   {
     href: "/competitive-research",

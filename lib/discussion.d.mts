@@ -1,0 +1,18 @@
+export type DiscussionParticipant = {id:string; name:string; brief:string};
+export type DiscussionTurn = {kind:'opening'|'reply'|'proposal'|'ballot'|'synthesis'; round:number; speaker_id:string};
+export type DiscussionMessage = DiscussionTurn & {id:string; text:string; refs:string[]; choice:string; speaker:string; created_at:string; model:string;body?:string;proposal_qualifications?:{id:string;ids:string[];speaker:string;label:string;text:string}[];assumptions?:string[];objections?:string[];conditions?:string[];reply?:{note_id:string;quote?:string;point?:string;response:string;position:string};reason?:string;counterargument?:string;synthesis?:{decision:string;sections:Record<string,string>;qualifications:{id:string;ids:string[];speaker:string;label:string;text:string}[]}};
+export type Discussion = {version:1; id:string; topic:string; goal:string; context:string; mode:'explore'|'consensus'|'vote'; rounds:number; options:{id:string;label:string}[]; model:string; participants:DiscussionParticipant[]; created_at:string; updated_at:string; revision:number; messages:DiscussionMessage[]; pending:null|{token:string;expires_at:number}; error:string|null; status:'ready'|'running'|'error'|'complete'};
+export type DiscussionInput = {topic:string;goal:string;context?:string;mode?:Discussion['mode'];rounds?:number;options?:string[];model:string;participants:DiscussionParticipant[]};
+export function localDiscussionModelNames(data:unknown):string[];
+export const DISCUSSION_MODES: string[];
+export function discussionError(message:string,status?:number): Error & {status:number};
+export function createDiscussion(input:DiscussionInput,id:string):Discussion;
+export function discussionTurnCount(room:Discussion):number;
+export function nextDiscussionTurn(room:Discussion):DiscussionTurn|null;
+export function visibleDiscussionMessages(room:Discussion,turn?:DiscussionTurn|null):DiscussionMessage[];
+export type DiscussionResult = {kind:string;label:string;total:number;cast:number;agreed?:number;objections?:number;abstentions?:number;counts?:{id:string;label:string;count:number}[];winner?:string|null};
+export function discussionResult(room:Discussion):DiscussionResult;
+export function discussionTurnPacket(room:Discussion):{turn:DiscussionTurn;schema:object;messages:{role:string;content:string}[]};
+export function validateDiscussionResponse(room:Discussion,response:unknown):DiscussionMessage;
+export function searchDiscussion(room:Discussion,query?:string,speaker?:string):DiscussionMessage[];
+export function discussionMarkdown(room:Discussion):string;

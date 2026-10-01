@@ -52,6 +52,7 @@ state created, and whether a real review ran. Start the web app only if requeste
 | --- | --- | --- |
 | Execute persona reviews | Claude Code or Codex host | Reads the artifact, uses the host's models, and returns findings. |
 | Plan and preserve reviews | `persona` CLI | Creates plan-only briefs and stores personas, rosters, encounters, and reports. It makes no model calls. |
+| Facilitate a group discussion | [Web Discussions](docs/discussions.md) | Runs selected personas locally with Ollama; records replies, ballots, dissent, and synthesis. |
 | Prepare a review visually | [Web workspace](docs/review-workspace.md) | Selects profiles and prepares a brief; it does not execute model reviews. |
 
 The CLI, plugin, and web app share this repository, while their installation and state remain distinct. Web dependencies are installed separately. The CLI persona library defaults to `~/.persona-lab` and can be moved with `PERSONA_LAB_HOME`. Web council records default to `apps/web/data` and can be moved with `PERSONA_COUNCIL_DATA_DIR`; do not run two writers against one store.
@@ -64,6 +65,7 @@ Saved personas, rosters, and encounters let you reuse a perspective or revisit a
 - [Orchestrators](docs/orchestrators.md): pick the lead by task type, settle who the end customer is before choosing personas, and address every recommendation to a named consumer.
 - [Professional archetypes](docs/archetypes.md): compose specialty perspectives, browse the reviewed Lenny's Podcast guest registry, and inspect the source evidence informing consultation plans.
 - [Persona memory](docs/persona-memory.md): understand identity, recall, and encounter contracts.
+- [Group discussions](docs/discussions.md): explore opinions, seek consensus, or vote on options with saved personas and Lenny role lenses; search and export the recorded conversation.
 - [Review workspace](docs/review-workspace.md): prepare a bounded product-decision, interface, or handoff review.
 - [Agent workflow](skills/persona-lab/SKILL.md): select reviewers and execute the workflow.
 

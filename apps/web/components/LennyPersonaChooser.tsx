@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { LENNY_CATALOG, browseLennyRoles, selectLennyPersonas, findLennyRole, type LennySelection } from "../../../lib/lenny-catalog.mjs";
 
-export default function LennyPersonaChooser({ question, selections, disabled, onChange }: {
-  question: string; selections: LennySelection[]; disabled: boolean; onChange: (value: LennySelection[]) => void;
+export default function LennyPersonaChooser({ question, selections, disabled, onChange, usage = "review" }: {
+  question: string; selections: LennySelection[]; disabled: boolean; onChange: (value: LennySelection[]) => void; usage?: "review" | "discussion";
 }) {
   const [search, setSearch] = useState("");
   const [browse, setBrowse] = useState(false);
@@ -24,7 +24,7 @@ export default function LennyPersonaChooser({ question, selections, disabled, on
       <div><h2 id="lenny-title" className="text-section text-ink">Choose Lenny podcast perspectives</h2><p className="mt-2 text-body text-muted">{LENNY_CATALOG.roles.length} review roles · {LENNY_CATALOG.integrity.expert_speakers} eligible speaker sources · Index {LENNY_CATALOG.source_date}</p></div>
       <span className="text-meta text-muted" aria-live="polite">{selections.length} roles selected</span>
     </div>
-    <p className="text-body text-muted">Suggestions use the words in your review question. Check each role’s question and responsibility, then optionally choose speakers as source context. These choices add checklist context to your brief; they do not add reviewer passes.</p>
+    <p className="text-body text-muted">Suggestions use the words in your review question. Check each role’s question and responsibility, then optionally choose speakers as source context. {usage === "discussion" ? "Each selected role becomes one synthetic discussion participant. Selected speakers supply source context for that role." : "These choices add checklist context to your brief; they do not add reviewer passes."}</p>
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
       <label className="min-w-0 flex-1 text-meta font-medium">Search roles or speakers<input type="search" className="review-field mt-1" value={search} placeholder="Pricing, Nancy Duarte, engineering…" onChange={event => { setSearch(event.target.value); setLimit(6); if (event.target.value) setBrowse(true); }} /></label>
       <button type="button" className="btn btn-secondary" aria-pressed={browse} onClick={() => { setBrowse(!browse); setLimit(6); }}>{browse ? "Show question matches" : "Browse all roles"}</button>
