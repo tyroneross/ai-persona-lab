@@ -76,3 +76,5 @@ Built by [RossLabs](https://rosslabs.ai). The [package metadata](package.json) d
 ## Method notes
 
 Synthetic personas produce hypotheses for further review and user research. Their findings depend on the artifact, brief, selected perspectives, permitted recall, and host model. Synthesize the independent reviews and test their recommendations with real users. See [method limits](docs/LIMITATIONS.md) for the evidence behind the approach.
+
+Choose from the [Lenny podcast role and speaker catalog](docs/lenny-selection.md) in the web review workspace, or run `persona lenny --select "your review question"` for suggestions with matching reasons.

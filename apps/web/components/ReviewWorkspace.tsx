@@ -4,13 +4,14 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import type { PersonaSummary } from "@lib/persona";
 import PersonaCard from "./PersonaCard";
+import LennyPersonaChooser from "./LennyPersonaChooser";
 import { useReviewDraft } from "./useReviewDraft";
 import { emptyReviewDraft, type ReviewDraft } from "../../../lib/review-draft.mjs";
 import { REVIEW_PRESETS, buildReviewBrief } from "../../../lib/review-presets.mjs";
 
 export default function ReviewWorkspace({ personas }: { personas: PersonaSummary[] }) {
   const { draft, update, setDraft, loaded, storageAvailable } = useReviewDraft();
-  const { mode, presetId, artifact, decision, constraints, selected } = draft;
+  const { mode, presetId, artifact, decision, constraints, selected, lennySelections } = draft;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("usable");
   const [limit, setLimit] = useState(6);
@@ -23,7 +24,7 @@ export default function ReviewWorkspace({ personas }: { personas: PersonaSummary
   const preset = REVIEW_PRESETS.find(item => item.id === presetId)!;
   const ready = Boolean(artifact.trim() && decision.trim());
   const references = personas.filter(p => selected.includes(p.id));
-  const brief = ready ? buildReviewBrief(preset, { artifact, decision, constraints, mode, personas: references }) : "Add an artifact and review question to preview the complete brief.";
+  const brief = ready ? buildReviewBrief(preset, { artifact, decision, constraints, mode, personas: references, lennySelections }) : "Add an artifact and review question to preview the complete brief.";
   const filtered = personas.filter(p => (status === "all" || (status === "usable" ? p.status !== "archived" : p.status === status)) && [p.name, p.role, p.archetype, p.summary, p.primary_goal, ...p.tags].join(" ").toLowerCase().includes(search.toLowerCase().trim()));
   function edit(patch: Partial<ReviewDraft>) { update(patch); setNotice(""); setUndo(null); }
   function toggle(id: string) { edit({ selected: selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id] }); }
@@ -90,6 +91,8 @@ export default function ReviewWorkspace({ personas }: { personas: PersonaSummary
           <div className="glass-sunken mt-6 p-4 text-meta text-muted">{mode === "panel" ? "Target: 150 output words per reviewer, 450 total." : "Target: one response, at most 450 words."} Input and reasoning tokens are additional. Synthetic perspectives generate hypotheses, not user validation.</div>
         </section>
       </div>
+
+      <LennyPersonaChooser question={decision} selections={lennySelections} disabled={!loaded} onChange={value => edit({ lennySelections: value })} />
 
       <details className="reference-disclosure glass">
         <summary className="choice-target cursor-pointer p-6 text-body font-semibold">Optional: attach saved personas <span className="ml-2 font-normal text-muted">{references.length} selected · {personas.length} available</span></summary>

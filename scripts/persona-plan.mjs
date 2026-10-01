@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import { selectLennyPersonas } from "../lib/lenny-catalog.mjs";
 
 const ROLE_LIBRARY = [
   {
@@ -200,6 +201,7 @@ function buildPlan(prompt, count) {
     researchRecommended: needsResearch(text),
     accessNeeds: accessNeeds(text),
     personas,
+    lennySelection: selectLennyPersonas(normalized, { limit: count }),
     measurement: [
       "Task completion",
       "Comprehension",
@@ -246,6 +248,12 @@ ${plan.researchRecommended ? "Current web research is recommended before making 
 | Persona | Perspective | Primary question | Success signal | Failure signal |
 | --- | --- | --- | --- | --- |
 ${rows}
+
+## Lenny role suggestions
+
+${plan.lennySelection.results.map(role => `- ${role.name}: ${role.reason}. Question: ${role.primary_question}`).join("\n") || plan.lennySelection.next_step}
+
+${plan.lennySelection.policy}
 
 ## Measurement
 

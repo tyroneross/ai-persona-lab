@@ -1,0 +1,11 @@
+export type LennyEvidence = { source_path: string; source_start: number; source_end: number; source_sha256: string; anchor_space: string; excerpt: string; timestamp: string; episode_publish_date: string | null };
+export type LennySource = { speaker_id: string; name: string; mapping_status: string; basis: string; evidence: LennyEvidence[] };
+export type LennyRole = { id: string; name: string; primary_question: string; owns: string; excludes: string; keywords: string[]; status: string; evidence_status: string; sources: LennySource[] };
+export type LennySelection = { role_id: string; speaker_ids: string[] };
+export type LennyMatch = { role_id: string; name: string; primary_question: string; owns: string; excludes: string; matched_terms: string[]; matched_aliases: string[]; matched_speakers: string[]; score: number; reason: string; source_count: number; mapping_status: string };
+export const LENNY_CATALOG: { version: number; source_date: string; policy: string; roles: LennyRole[]; integrity: { expert_speakers: number } };
+export function findLennyRole(id: string): LennyRole;
+export function browseLennyRoles(query?: string): LennyRole[];
+export function selectLennyPersonas(task: string, options?: { limit?: number }): { method: string; task: string; policy: string; results: LennyMatch[]; next_step: string };
+export function resolveLennySelections(selections?: LennySelection[]): { role: LennyRole; sources: LennySource[] }[];
+export function lennySelectionBrief(selections?: LennySelection[]): string[];

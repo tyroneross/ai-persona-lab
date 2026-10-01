@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { LENNY_CATALOG, browseLennyRoles, selectLennyPersonas } from '../lib/lenny-catalog.mjs';
 /**
  * persona — deterministic substrate for persona-lab.
  *
@@ -62,7 +63,7 @@ function parseArgs(argv) {
     if (a.startsWith("--")) {
       const key = a.slice(2);
       const next = argv[i + 1];
-      if (next === undefined || next.startsWith("--")) {
+      if (key === "select" || next === undefined || next.startsWith("--")) {
         flags[key] = true;
       } else {
         flags[key] = next;
@@ -96,6 +97,21 @@ const LEVELS = {
 };
 
 // --- commands --------------------------------------------------------------
+
+function cmdLenny(positional, flags) {
+  const query = positional.join(' ');
+  const result = flags.select ? selectLennyPersonas(query, flags.count === undefined ? {} : { limit: Number(flags.count) }) : {
+    source_date: LENNY_CATALOG.source_date, policy: LENNY_CATALOG.policy, roles: browseLennyRoles(query),
+  };
+  if (flags.json) return out(result, true);
+  process.stdout.write(`${LENNY_CATALOG.policy}\n\n`);
+  for (const role of result.results || result.roles) {
+    process.stdout.write(`${role.role_id || role.id}: ${role.name}\n  Question: ${role.primary_question}\n  Owns: ${role.owns}\n  Refer elsewhere: ${role.excludes}\n`);
+    if (role.reason) process.stdout.write(`  Match: ${role.reason}\n`);
+    if (role.sources) process.stdout.write(`  Source candidates: ${role.sources.map(s => `${s.name} (${s.speaker_id})`).join(', ')}\n`);
+  }
+  if (result.next_step) process.stdout.write(`${result.next_step}\n`);
+}
 
 function cmdArchetypes(positional, flags) {
   const catalog = ARCHETYPE_CATALOG;
@@ -1013,6 +1029,7 @@ function usage() {
       "  persona run proven                 persona roster from-run <run_id> --name \"..\"",
       "  persona recall <persona_id> [--artifact <slug>] [--project <name>] [--limit N]",
       "  persona home",
+      '  persona lenny [query] [--select] [--count N] [--json]',
       "  persona archetypes [query] [--defaults] [--json]",
       "  persona compose <archetype,archetype> [--specialties a/b,c/d] [--task ..] [--guest slug,slug] [--save]",
       '  persona consult "<task>" [--mode ui-ux] [--archetypes a,b] [--specialties a/b,c/d]',
@@ -1048,6 +1065,7 @@ function main() {
     case "compose": return cmdCompose(positional, flags);
     case "consult": return cmdConsult(positional, flags);
     case "orchestrate": return cmdOrchestrate(positional, flags);
+    case "lenny": return cmdLenny(positional, flags);
     case "guests": return cmdGuests(positional, flags);
     case "sources": return cmdSources(positional, flags);
     case "home": return cmdHome();
