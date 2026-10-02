@@ -17,7 +17,7 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
   const [mode,setMode] = useState<Discussion['mode']>('explore'); const [rounds,setRounds] = useState(2);
   const [optionText,setOptionText] = useState(''); const [selected,setSelected] = useState<string[]>([]);
   const [lenny,setLenny] = useState<LennySelection[]>([]); const [personaQuery,setPersonaQuery] = useState('');
-  const [model,setModel] = useState(''); const [models,setModels] = useState<string[]>([]); const [modelError,setModelError] = useState<string|null>(null);
+  const [model,setModel] = useState(''); const [models,setModels] = useState<string[]>([]); const [modelLabels,setModelLabels] = useState<Record<string,string>>({}); const [modelError,setModelError] = useState<string|null>(null);
   const [busy,setBusy] = useState(false); const [creating,setCreating] = useState(false); const [error,setError] = useState('');
   const [query,setQuery] = useState(''); const [speaker,setSpeaker] = useState(''); const [highlighted,setHighlighted] = useState(''); const [jump,setJump] = useState(0);
   const [,setTick] = useState(0); const stop = useRef(false);
@@ -25,9 +25,9 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
   async function loadModels() {
     try {
       const response = await fetch('/api/discussions/models'); const data = await response.json();
-      setModels(data.models || []); setModelError(data.error);
-      setModel(current => current || initialRoom?.model || data.default_model || '');
-    } catch {setModelError('Could not check local models. Refresh to retry.');}
+      setModels(data.models || []); setModelLabels(Object.fromEntries((data.profiles || []).map((p:{id:string;label:string}) => [p.id,p.label]))); setModelError(data.error);
+      setModel(current => data.models?.includes(current) ? current : data.models?.includes(initialRoom?.model) ? initialRoom!.model : data.default_model || '');
+    } catch {setModelError('Could not load execution choices. Refresh to retry.');}
   }
   useEffect(() => {void loadModels();}, []); // Model discovery makes no inference calls.
   useEffect(() => {
@@ -69,6 +69,7 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
   const pendingLive = Boolean(room?.pending && room.pending.expires_at > Date.now());
   const next = room && nextDiscussionTurn(room);
   const synthesis = room?.messages.find(m => m.kind === 'synthesis');
+  const unsupportedModel = Boolean(room && models.length && !models.includes(room.model));
   function refs(message:DiscussionMessage) {return message.refs.length > 0 && <div className="mt-3 flex flex-wrap gap-2 text-meta"><span className="text-muted">Recorded notes:</span>{message.refs.map(id => <button key={id} aria-label={`Jump to note ${id}`} className="min-w-11 px-2 underline text-brand-text choice-target" onClick={() => showNote(id)}>{id}</button>)}</div>;}
   return <div className="space-y-8">
     <div className="space-y-2">
@@ -90,7 +91,7 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
           <p className="text-meta text-muted">{modeHelp[mode]}</p>
           {mode === 'vote' && <label className="block">Options — one per line<textarea className="review-field mt-2 w-full" rows={4} value={optionText} onChange={e => setOptionText(e.target.value)} required placeholder={'Guided wizard\nSingle-page setup'} /><span className="block text-meta text-muted mt-1">At least two distinct options. Each persona can also abstain.</span></label>}
           <label className="block">Reply rounds<input className="review-field mt-2 w-full" type="number" min={1} step={1} value={rounds} onChange={e => setRounds(Number(e.target.value))} required /></label>
-          <p className="text-meta text-muted">One independent opening per persona, then {rounds || 0} rounds of replies. More rounds require more local model calls.</p>
+          <p className="text-meta text-muted">One independent opening per persona, then {rounds || 0} rounds of replies. More rounds require more model calls.</p>
         </section>
         <section className="rounded-card border border-line bg-surface p-5 space-y-4">
           <h2 className="font-display text-section font-bold">Participants · {participantCount} selected</h2>
@@ -105,8 +106,9 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
           <p className="text-meta text-muted">Each selected Lenny role becomes one synthetic participant. Selected guest passages inform that lens; it does not speak for the guest.</p>
         </section>
         <section className="rounded-card border border-line bg-surface p-5 space-y-4">
-          <h2 className="font-display text-section font-bold">Local execution</h2>
-          <label className="block">Ollama model{models.length ? <select className="review-field mt-2 w-full" value={model} onChange={e => setModel(e.target.value)}>{!models.includes(model) && model && <option value={model}>{model} (not installed)</option>}{models.map(m => <option key={m}>{m}</option>)}</select> : <input className="review-field mt-2 w-full" value={model} onChange={e => setModel(e.target.value)} required />}</label>
+          <h2 className="font-display text-section font-bold">Execution model</h2>
+          <label className="block">Model<select aria-label="Execution model" className="review-field mt-2 w-full" value={model} onChange={e => setModel(e.target.value)} required>{!models.includes(model) && <option value="">Choose a model</option>}{models.map(m => <option key={m} value={m}>{modelLabels[m] || m}</option>)}</select></label>
+          <p className="text-meta text-muted">Runs through your signed-in Codex or Claude CLI. The selected provider receives the participant briefs, context, and recorded conversation. Each turn starts a fresh session.</p>
           {modelError && <p className="text-meta text-muted">{modelError}</p>}
           <button type="button" className="btn btn-secondary" onClick={() => void loadModels()}>Refresh models</button>
           <p className="text-meta text-muted">Creation saves the setup. Run the room when ready. No model calls occur until you start it.</p>
@@ -120,13 +122,14 @@ export default function DiscussionWorkspace({personas,discussions,initialRoom,wa
       </aside>
     </div> : <>
       <section className="rounded-card border border-line bg-surface p-5 space-y-4">
-        <div className="flex flex-wrap gap-3 items-center"><Link className="underline text-meta inline-flex min-h-11 items-center" href="/discussions">All discussions / new room</Link><span className="text-meta text-muted">{room.mode} · {room.participants.length} personas · {room.model}</span></div>
+        <div className="flex flex-wrap gap-3 items-center"><Link className="underline text-meta inline-flex min-h-11 items-center" href="/discussions">All discussions / new room</Link><span className="text-meta text-muted">{room.mode} · {room.participants.length} personas · {modelLabels[room.model] || room.model}</span></div>
         <p aria-live="polite" className="font-semibold">{room.status === 'complete' ? 'Discussion complete' : busy || pendingLive ? `Recording ${next?.kind || 'turn'}…` : room.error ? 'Turn failed — earlier notes saved' : 'Ready to continue'} · {room.messages.length}/{discussionTurnCount(room)} recorded turns</p>
         {room.error && <p className="text-meta text-muted">{room.error}</p>}
+        {unsupportedModel && <p className="text-meta text-muted">This room uses an older execution model. Its notes remain available. Create a new room with Luna High or Sonnet to run a discussion.</p>}
         {room.pending && !pendingLive && <p className="text-meta text-muted">The previous turn expired. Resume will retry that turn and reject any late result.</p>}
         {next && <p className="text-meta text-muted">Next: {room.participants.find(p => p.id === next.speaker_id)?.name || 'Facilitator'} · {next.kind} · round {next.round}</p>}
         <div className="flex flex-wrap gap-3">
-          {room.status !== 'complete' && <><button className="btn btn-primary" disabled={busy || pendingLive} onClick={() => void run(true)}>Run / resume discussion</button><button className="btn btn-secondary" disabled={busy || pendingLive} onClick={() => void run(false)}>Record next turn</button></>}
+          {room.status !== 'complete' && <><button className="btn btn-primary" disabled={busy || pendingLive || unsupportedModel} onClick={() => void run(true)}>Run / resume discussion</button><button className="btn btn-secondary" disabled={busy || pendingLive || unsupportedModel} onClick={() => void run(false)}>Record next turn</button></>}
           {busy && <button className="btn btn-secondary" onClick={() => {stop.current = true;}}>Pause after this turn</button>}
           <button className="btn btn-secondary" disabled={busy} onClick={() => void reload()}>Refresh room</button>
           <a className="btn btn-secondary" href="#discussion-notes">Search recorded notes</a>

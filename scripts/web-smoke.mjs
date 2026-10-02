@@ -16,6 +16,9 @@ const web = path.join(root, 'apps/web');
 const temp = mkdtempSync(path.join(tmpdir(), 'persona-web-smoke-'));
 process.env.PERSONA_LAB_HOME = path.join(temp, 'library');
 process.env.PERSONA_COUNCIL_DATA_DIR = path.join(temp, 'councils');
+// An accidental valid advance must fail before reaching an authenticated model host.
+process.env.PERSONA_DISCUSSION_CODEX_BIN = path.join(temp, 'no-model-calls-codex');
+process.env.PERSONA_DISCUSSION_CLAUDE_BIN = path.join(temp, 'no-model-calls-claude');
 const { savePersona, getPersona, validatePersona } = await import('../lib/library.mjs');
 const socket = createServer();
 socket.listen(0, '127.0.0.1');
@@ -113,7 +116,7 @@ try {
   assert.equal((await request(`/api/councils/${bundle.run.id}`)).bundle.run.id, bundle.run.id);
   const {discussion} = await request('/api/discussions', 'POST', {
     topic:'Compare setup approaches', goal:'Choose and explain tradeoffs', mode:'vote', rounds:1,
-    options:['Wizard','Single page'], model:'smoke-no-model-calls', persona_ids:[people[0].id],
+    options:['Wizard','Single page'], model:'codex:luna-high', persona_ids:[people[0].id],
     lenny_selections:[{role_id:'activation',speaker_ids:[]}],
   });
   assert.equal(discussion.participants.length,2);
@@ -127,10 +130,17 @@ try {
   assert.equal(notes.status,200);assert.match(await notes.text(),/not human preference research/);
   const jsonExport=await fetch(`${base}/api/discussions/${discussion.id}?format=json`);
   assert.deepEqual(await jsonExport.json(),discussion);
-  for (const bad of [{persona_ids:[people[0].id]}, {persona_ids:[people[0].id,people[0].id]}, {persona_ids:[people[0].id,people[1].id],mode:'vote',options:['Only one']}, {lenny_selections:[{role_id:'activation',speaker_ids:['unknown']},{role_id:'retention',speaker_ids:[]}]}]) {
-    const invalid=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({topic:'Invalid',goal:'Test validation',model:'smoke-no-model-calls',...bad})});
+  for (const bad of [{model:'qwen3:8b',persona_ids:[people[0].id,people[1].id]}, {persona_ids:[people[0].id]}, {persona_ids:[people[0].id,people[0].id]}, {persona_ids:[people[0].id,people[1].id],mode:'vote',options:['Only one']}, {lenny_selections:[{role_id:'activation',speaker_ids:['unknown']},{role_id:'retention',speaker_ids:[]}]}]) {
+    const invalid=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({topic:'Invalid',goal:'Test validation',model:'codex:luna-high',...bad})});
     assert.equal(invalid.status,400);
   }
+  const {saveNewDiscussion,getDiscussion}=await import('../lib/discussion-store.mjs');
+  const legacy=saveNewDiscussion({topic:'Legacy room',goal:'Preserve existing notes',model:'qwen3:8b',participants:[{id:'old-a',name:'A',brief:'Old lens'},{id:'old-b',name:'B',brief:'Old lens'}]});
+  const oldAdvance=await fetch(`${base}/api/discussions/${legacy.id}/advance`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({revision:legacy.revision})});
+  assert.equal(oldAdvance.status,400);assert.deepEqual(getDiscussion(legacy.id),legacy);
+  const hostChoices=await request('/api/discussions/models');
+  assert.equal(hostChoices.default_model,'codex:luna-high');
+  assert.deepEqual(hostChoices.models,['codex:luna-high','claude:sonnet']);
   const stale=await fetch(`${base}/api/discussions/${discussion.id}/advance`,{method:'POST',headers:{'content-type':'application/json',origin:base},body:JSON.stringify({revision:99})});
   assert.equal(stale.status,409); // Conflict must happen before any model call.
   const crossOrigin=await fetch(`${base}/api/discussions`,{method:'POST',headers:{'content-type':'application/json',origin:'https://example.com'},body:'{}'});

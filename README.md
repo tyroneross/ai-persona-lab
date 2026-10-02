@@ -52,7 +52,7 @@ state created, and whether a real review ran. Start the web app only if requeste
 | --- | --- | --- |
 | Execute persona reviews | Claude Code or Codex host | Reads the artifact, uses the host's models, and returns findings. |
 | Plan and preserve reviews | `persona` CLI | Creates plan-only briefs and stores personas, rosters, encounters, and reports. It makes no model calls. |
-| Facilitate a group discussion | [Web Discussions](docs/discussions.md) | Runs selected personas locally with Ollama; records replies, ballots, dissent, and synthesis. |
+| Facilitate a group discussion | [Web Discussions](docs/discussions.md) | Runs selected personas with Luna High or Claude Sonnet; records replies, ballots, dissent, and synthesis. |
 | Prepare a review visually | [Web workspace](docs/review-workspace.md) | Selects profiles and prepares a brief; it does not execute model reviews. |
 
 The CLI, plugin, and web app share this repository, while their installation and state remain distinct. Web dependencies are installed separately. The CLI persona library defaults to `~/.persona-lab` and can be moved with `PERSONA_LAB_HOME`. Web council records default to `apps/web/data` and can be moved with `PERSONA_COUNCIL_DATA_DIR`; do not run two writers against one store.

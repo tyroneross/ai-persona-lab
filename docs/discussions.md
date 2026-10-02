@@ -30,26 +30,52 @@ one synthetic participant; selected guest passages inform that lens. These are
 not impersonations or claims about a guest's present opinions. Saved persona
 and role/source briefs are frozen when creating the room.
 
-## Run locally
+## Run through a host
 
-Start a local [Ollama](https://docs.ollama.com/quickstart) server with an installed
-chat model, then start the app with `npm run web:build` and `npm run web:start`.
-The root development and start commands bind the app to `127.0.0.1`; use the local HTTP app address. The model picker reads installed local models. Cloud aliases and upstream-host models are excluded and cannot execute rooms. The default prefers installed `gpt-oss:20b`, then `qwen3:8b-q4_K_M`, then `qwen2.5-coder:7b`, otherwise the first local model. Set the model explicitly for your hardware and task. Select a model capable of chat
-completion; embedding-only models cannot execute discussions.
+Install and sign in to the Codex or Claude CLI, then start the app with
+`npm run web:build` and `npm run web:start`. The app binds to `127.0.0.1`.
+The default is **Luna High** (`codex:luna-high`): Codex executes `gpt-6-luna`
+with `model_reasoning_effort="high"`. The other choice is **Claude Sonnet High**
+(`claude:sonnet`): Claude executes its `sonnet` alias with `--effort high`.
+These are supported execution choices, not a check of installation, sign-in,
+or account model access. The selected CLI must be on the server's PATH.
+The room's model label records the requested host configuration. Codex's JSONL
+completion stream does not report the resolved model or reasoning effort;
+its model and effort are pinned through native CLI arguments. Claude's receipt
+must report the Sonnet model family; its effort is also configured through the
+CLI. These receipts do not independently attest the provider's computation.
+
+Each room freezes its selected execution profile. There is no weaker-model,
+Ollama, or automatic provider fallback. Older rooms remain readable and
+exportable; create a new room to execute with a supported profile.
 
 Optional server settings:
 
-- `PERSONA_DISCUSSION_MODEL`: initial model choice. Each room freezes its model.
-- `PERSONA_DISCUSSION_OLLAMA_URL`: local HTTP server, default
-  `http://127.0.0.1:11434`. Only localhost/loopback endpoints are accepted.
+- `PERSONA_DISCUSSION_CODEX_BIN` and `PERSONA_DISCUSSION_CLAUDE_BIN`: paths to
+  the respective host executables when they are not on PATH.
 - `PERSONA_LAB_HOME`: shared library root, default `~/.persona-lab`.
 
-Execution uses Ollama's documented [`/api/chat`](https://docs.ollama.com/api/chat)
-with JSON schema output and streaming disabled. Required synthesis fields keep agreement, downsides, evidence gaps, and next steps in the record. Dissent and qualifications are assembled from exact participant objections, positions, counterarguments, conditions, and assumptions, with note references; unanimous votes cannot erase them. Model details determine the
-available context. A conservative byte-based estimate reserves room for output;
-requests that exceed the model context stop with an explicit error rather than
-silently truncating the conversation. Each call has a two-minute timeout and
-1024 output-token budget, or 4096 for thinking-capable models when thinking cannot be disabled. Supported thinking controls come from model details; thinking is disabled when supported, otherwise low thinking is used when available. These are short discussion turns, not long essays.
+Each turn uses a fresh ephemeral host session in a temporary directory,
+with JSON schema output. Claude safe mode disables customizations, hooks,
+plugins and tools. Codex ignores user configuration and repository rules;
+hooks, plugins, shell, app, browser, agent and code execution features are
+disabled and its sandbox is read-only. Turns use only the supplied context;
+they do not browse or invoke tools. Unexpected tool activity or incomplete
+structured output is rejected. Each call has a two-minute timeout. Temporary
+files are removed after the call. Authentication stays with the existing host
+CLI. Context, participant briefs, and recorded conversation are sent to the
+selected provider; stored rooms and exports stay in the local library.
+Child processes inherit host authentication homes and basic OS settings only;
+API keys, provider URL overrides and model-remapping variables are excluded.
+Only fixed discussion policy and the response's structural shape are passed
+as command arguments. Source quotations, exact choices and conversation text
+travel on stdin; the protocol validates those exact constraints after output.
+Codex additionally reads its full schema from the private temporary file.
+
+Required synthesis fields keep agreement, downsides, evidence gaps, and next
+steps in the record. Dissent and qualifications are assembled from exact
+participant objections, positions, counterarguments, conditions, and
+assumptions, with note references; unanimous votes cannot erase them.
 
 Rooms live in `PERSONA_LAB_HOME/discussions/<id>.json`. Their contract is separate
 from existing council reviews and CLI encounters. Turn requests carry an expected
@@ -88,6 +114,6 @@ referenced transcript remain available to check the synthesis. Citation checks v
 
 Provide actual UI descriptions and observations in the context field. Links
 alone are not fetched, and this text discussion does not inspect image pixels
-or browse for evidence. Local execution makes an internal room sufficient;
-Rally transport is not required. External host/Rally execution and importing
-external agents' turns are not implemented by this feature.
+or browse for evidence. The internal room manages the conversation and invokes
+the selected host once per turn. Rally transport and importing external agents'
+turns are not implemented by this feature.
