@@ -15,6 +15,24 @@ This is the canonical repository for the CLI/plugin and the Next.js web app.
   `npm run web:smoke`. The smoke uses disposable state and no model calls.
 - Publishing and deployment remain separate from local consolidation.
 
+## Consequential assumptions and decision review
+
+- Follow [decision-quality.md](docs/decision-quality.md) for material provider,
+  model, scope and acceptance choices. Record them in Build Loop's existing
+  assumption register; distinguish explicit instructions, repo facts and assumptions.
+- State the outcome and observable criteria before choosing an implementation.
+  Run the register validator and `npm run decisions:check -- <register> --phase preflight`.
+  Routine reversible details need no register or added approval step.
+- Discussion execution uses Luna high or Sonnet high. Keep coordination choices
+  separate from inference-provider choices; inspect and exercise representative output.
+- Before closeout, obtain an independent decision review and run
+  `npm run decisions:check -- <register> --phase review`. Mechanical checks alone
+  do not prove suitability. Revisit early choices when quality problems appear.
+- File confirmed failures through the existing retrospective filing flow, link
+  correction evidence and report captured incidents with `npm run decisions:report`.
+  Preserve unknown timing and denominator values; do not claim improvement from
+  passing checks or an empty detector. Do not invent human rulings.
+
 ## Build Loop closeout policy
 
 This repository defaults to solo-builder delivery: integrate completed, verified
