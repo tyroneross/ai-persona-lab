@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.10.0](https://github.com/tyroneross/ai-persona-lab/compare/persona-lab-v0.9.0...persona-lab-v0.10.0) (2026-10-05)
+
+
+### Features
+
+* add facilitated multi-persona discussions ([a2ca701](https://github.com/tyroneross/ai-persona-lab/commit/a2ca7015ec5c06d17352c2e1393a0a4db708fb78))
+* add source-backed Lenny persona options and task chooser ([d12bea3](https://github.com/tyroneross/ai-persona-lab/commit/d12bea31f0714aa009c0c1f3430d2064051efd9e))
+* track consequential assumptions and verify decision quality ([ad3f764](https://github.com/tyroneross/ai-persona-lab/commit/ad3f764f71a9a08b3c9fc8263b0bcb5de9dc1363))
+
+
+### Bug Fixes
+
+* preserve Lenny selections and constrain ambiguous role matches ([77a95c9](https://github.com/tyroneross/ai-persona-lab/commit/77a95c9bc94b4145d292e4d02a3cd0772a156aea))
+* run discussions with Luna high or Sonnet ([04fcd50](https://github.com/tyroneross/ai-persona-lab/commit/04fcd50be89138db18bca217cb36c67c55ee8a9a))
+
 ## [0.9.0](https://github.com/tyroneross/ai-persona-lab/compare/persona-lab-v0.8.0...persona-lab-v0.9.0) (2026-09-25)
 
 
