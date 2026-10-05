@@ -49,6 +49,13 @@ integrity evidence, not semantic validation of every mapping or synthetic
 review quality. Unresolved voices, source-only roles and advertisement-only
 identities are excluded from selectable expert sources.
 
+Transcript excerpts are third-party content owned by Lenny's Podcast and the
+respective guests. The source archive's [disclaimer and usage terms](https://github.com/ChatPRD/lennys-podcast-transcripts#license)
+state that transcripts are provided for personal and educational use. The
+repository's Apache-2.0 license does not grant rights to that third-party text.
+Source locators and hashes preserve attribution; they do not establish permission
+for additional uses.
+
 The selector uses complete words and phrases from role keywords, names, and
 explicit task aliases. Broad aliases such as “evaluate,” “docs,” and “cancel” require relevant domain context. It suppresses matches based only on generic words. The
 ranking has no calibrated confidence score: a higher score indicates more
