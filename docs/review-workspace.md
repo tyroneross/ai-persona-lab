@@ -14,9 +14,7 @@ In one frozen Atomize handoff pilot, one general reviewer and three specialist r
 
 Primary research does not support blanket capability gains from role prompting: [Zheng et al., EMNLP Findings 2024](https://arxiv.org/abs/2311.10054); a [2026 preprint](https://arxiv.org/abs/2605.29420) reports task-dependent depth/clarity tradeoffs. [Anthropic's workflow guidance](https://www.anthropic.com/engineering/building-effective-agents) supports starting simply and measuring added orchestration. The exact templates and recall policy are inferred design choices, not directly validated by these sources.
 
-Local evidence remains outside the distributable package:
-- `/Users/tyroneross/dev/research/topics/agents/agents.persona-lab-defaults-2026-09.md`
-- `/Users/tyroneross/dev/git-folder/build-loop-memory/projects/persona-lab/assessments/2026-09-07-handoff-personas/assessment.md`
+The supporting local evidence is kept outside the distributable package and is not publicly available.
 
 ## Validation contract
 

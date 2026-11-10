@@ -2,11 +2,11 @@
 set -euo pipefail
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RALLY="${RALLY:-/Users/tyroneross/dev/git-folder/agent-rally-point/target/release/rally}"
+RALLY="${RALLY:-$(command -v rally || echo rally)}"
 
 if [[ ! -x "$RALLY" ]]; then
   echo "Rally binary not found or not executable: $RALLY" >&2
-  echo "Build it with: cd /Users/tyroneross/dev/git-folder/agent-rally-point && cargo build --workspace --release" >&2
+  echo "Install or build it from https://github.com/tyroneross/agent-rally-point (cargo build --workspace --release), then set RALLY to the binary path" >&2
   exit 1
 fi
 

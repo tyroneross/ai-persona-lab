@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/tyroneross/persona-lab/schemas/run.schema.json",
+  "$id": "https://github.com/tyroneross/ai-persona-lab/schemas/run.schema.json",
   "title": "Persona run",
   "description": "One persona panel as a durable object. personas.json holds who a persona is; encounters/ holds what one persona saw in one sitting; a run holds what happened in the panel \u2014 the roster, the frozen artifact, the lanes in order, and what nobody could settle.",
   "type": "object",

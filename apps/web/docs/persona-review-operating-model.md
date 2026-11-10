@@ -82,10 +82,9 @@ Primary evidence paths:
 - `councils/runs/haiku-scale-20260609-01/PANEL-REPORT.md`
 - `docs/architecture.md`
 - `docs/data-contracts.md`
-- `/Users/tyroneross/dev/git-folder/prompt-builder/README.md`
-- `/Users/tyroneross/dev/git-folder/agent-builder-platform/README.md`
-- `/Users/tyroneross/dev/git-folder/agent-builder/plugin/README.md`
-- `/Users/tyroneross/dev/git-folder/build-loop-memory/experiments/review-qc/2026-06-10-review-qc-findings.md`
+- `<repos-root>/prompt-builder/README.md` (github.com/tyroneross/prompt-builder)
+- `<repos-root>/agent-builder-platform/README.md` (github.com/tyroneross/agent-builder-platform)
+- `<repos-root>/agent-builder/plugin/README.md` (github.com/tyroneross/agent-builder)
 
 ## Product Concept
 
