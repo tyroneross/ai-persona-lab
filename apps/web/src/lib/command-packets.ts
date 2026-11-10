@@ -29,7 +29,7 @@ export function buildCommandPacket(bundle: PersonaReviewBundle): CommandPacket {
   const rallyPreamble =
     run.coordination_mode === "rally"
       ? [
-          'export RALLY="${RALLY:-/Users/tyroneross/dev/git-folder/agent-rally-point/target/release/rally}"',
+          'export RALLY="${RALLY:-$(command -v rally || echo rally)}"',
           `"${"$"}RALLY" room --json`,
           `"${"$"}RALLY" say claim --tool codex --subject ${quote(`run ${run.id} persona review`)} --path ${quote(`run:${run.id}`)} --json`,
         ]
